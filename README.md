@@ -65,10 +65,10 @@ It represents **unique tokenized assets**, such as real estate fractions, precat
 ## Repository Structure
 ```
 
-/contracts
+/src
 ├── MyToken.sol
 ├── NFT.sol
-/docs
+/
 └── README.md (this file)
 
 ```
