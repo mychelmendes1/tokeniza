@@ -1,80 +1,71 @@
 # Tokeniza Smart Contracts Documentation
 
-This repository contains the core smart contracts used by **Tokeniza** in the tokenization of Real World Assets (RWA).  
+This repository contains the core smart contracts used by **Tokeniza** in the tokenization of Real World Assets (RWA) on the Moonbeam Network.
+
+This hub also provides documentation on our architecture and processes to give developers and investors a clear understanding of our ecosystem.
+
+---
+
+## Ecosystem Overview & Documentation
+
+To understand how these contracts are used by our platform, please see the following documents:
+
+* **[PROCESS.md](./PROCESS.md):** **(Start Here)** Explains *how* funding, minting, and trading work. It details the off-chain logic that connects to these on-chain contracts.
+* **[ARCHITECTURE.md](./ARCHITECTURE.md):** Provides a detailed breakdown of our "schema" and system architecture, from the front-end to the "Token Controller" and the blockchain.
+* **[SECURITY.md](./SECURITY.md):** Details our security-first approach, including on-chain access control and off-chain data protection.
+
+---
+
+## Our Tech Stack
+
+Our platform is built on modern, secure, and scalable technologies.
+
+* **Front-End:** Angular.js, Zoe.js, Webpack
+* **Back-End:** .NET, Node.js, Nginx
+* **Blockchain:** Moonbeam (Polkadot), Solidity
+* **Infrastructure:** AWS, Docker (implied)
+
+---
+
+## Core Smart Contracts
+
 Below is the documentation describing the **purpose** and **functions** of each contract.
 
----
+### 1. MyToken.sol (ERC-20)
 
-## 1. MyToken.sol
+* **Purpose:** The **MyToken** contract implements a **fungible token (ERC-20)**. It represents digital value within the Tokeniza ecosystem and is used as the base unit for transactions, liquidity, and governance.
+* **Usage:** Base token for RWA transactions, medium of payment, and staking.
+* **Key Functions:** `transfer`, `approve`, `transferFrom`, `mint` (Owner-only), `burn`.
 
-### Purpose
-The **MyToken** contract implements a **fungible token (ERC-20)**.  
-It represents digital value within the Tokeniza ecosystem and is used as the base unit for transactions, liquidity, and governance.
+### 2. NFT.sol (ERC-721)
 
-### Key Functions
-| Function        | Description |
-|-----------------|-------------|
-| `constructor`   | Initializes the contract with name, symbol, initial supply, and assigns all tokens to the deployer. |
-| `transfer`      | Allows users to send tokens to another address. |
-| `approve`       | Authorizes a spender to move tokens on behalf of the owner. |
-| `transferFrom`  | Executes transfers on behalf of another user, respecting allowance limits. |
-| `mint` (optional) | Creates new tokens, increasing total supply. |
-| `burn` (optional) | Destroys tokens, reducing total supply. |
-
-### Usage in Tokeniza
-- Base token for RWA transactions.
-- Medium of payment and liquidity.
-- Staking and governance participation within Tokeniza.
-- Backbone for on-chain settlement of tokenized assets.
+* **Purpose:** The **NFT** contract implements a **non-fungible token (ERC-721)**. It represents **unique tokenized assets**, such as real estate fractions, precatórios, or agricultural projects.
+* **Usage:** Represents unique assets, provides digital proof of ownership, and enables fractionalized investment.
+* **Key Functions:** `mint` (Minter-only), `tokenURI`, `transferFrom`, `ownerOf`.
 
 ---
 
-## 2. NFT.sol
+## Roadmap (High-Level)
 
-### Purpose
-The **NFT** contract implements a **non-fungible token (ERC-721)**.  
-It represents **unique tokenized assets**, such as real estate fractions, precatórios, or agricultural projects.
-
-### Key Functions
-| Function           | Description |
-|--------------------|-------------|
-| `constructor`      | Defines collection name and symbol. |
-| `mint`             | Creates a new NFT and assigns it to a specific wallet. |
-| `tokenURI`         | Returns metadata of the NFT (JSON with description, image, attributes). |
-| `transferFrom`     | Transfers ownership of an NFT between users. |
-| `safeTransferFrom` | Transfers an NFT with safety checks. |
-| `ownerOf`          | Returns the current owner of a token. |
-| `balanceOf`        | Returns how many NFTs are owned by an address. |
-
-### Usage in Tokeniza
-- Represents unique assets or specific investment allocations.
-- Provides digital proof of ownership and traceability.
-- Enables fractionalized investment in tokenized assets.
-- Integrates with Tokeniza Invest for transparent user dashboards.
+* **Q4 2025:** Launch of V2 Marketplace with enhanced trading features.
+* **Q1 2026:** Integration with Polkadot ecosystem for cross-chain assets.
+* **Q2 2026:** Introduction of governance features via `MyToken`.
+* **Q3 2026:** Expansion into new asset classes.
 
 ---
 
-## Benefits for Moonbeam
-- Enhances **transparency** by publishing verified contracts on Moonscan.  
-- Establishes **auditable standards** for RWA tokenization.  
-- Facilitates integration with **DeFi pools** and liquidity protocols.  
-- Strengthens Moonbeam’s position as a **global hub for regulated tokenization**.
+## Frequently Asked Questions (FAQ)
 
----
+**Q: Why are my `mint` transactions failing on Moonscan?**
+A: This is intentional. As described in our **[SECURITY.md](./SECURITY.md)** and **[PROCESS.md](./PROCESS.md)** files, minting is restricted to our backend "Token Controller" service. This ensures that every token created is backed by a verified asset and a completed off-chain funding transaction.
 
-## Repository Structure
-```
+**Q: How do I get tokens?**
+A: Tokens are distributed to your wallet by the Tokeniza platform after you successfully participate in a crowdfunding offering or purchase an asset on our marketplace.
 
-/src
-├── MyToken.sol
-├── NFT.sol
-/
-└── README.md (this file)
-
-```
+**Q: Are these contracts audited?**
+A: Our contracts are built on heavily audited OpenZeppelin libraries. We are committed to performing regular external audits as our platform evolves.
 
 ---
 
 ## License
 This repository is licensed under MIT.
-
