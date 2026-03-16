@@ -1,0 +1,79 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.sendBy' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.userEmailFrom }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.paidBy' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.userEmailTo }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20" *ngIf="charge?.name">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.name' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.name }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20" *ngIf="charge?.document">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.userToPayDocument' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.document }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.fiatValue' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.fiduciaryAmount | currency: usefulSettings.fiatCurrency.currency }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20" *ngIf="isOwner()">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.currencyToReceive' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">
+            {{ charge?.unitOfMoneyRequested + ' (' + (charge?.amountRequested | number: '1.6-6') + ')' }}
+        </span>
+    </div>
+
+    <div class="column align-start margin-top-20" *ngIf="!isOwner()">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.currencyToSend' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">
+            {{ charge?.unitOfMoneyRequested + ' (' + (charge?.amountRequested | number: '1.6-6') + ')' }}
+        </span>
+    </div>
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.status' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">
+            {{ 'viewInternalChargeModal.status.' + charge?.status | translate }}
+        </span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.sendDate' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.creationDate | date:'shortDate':' ': usefulSettings.selectedLanguage }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20 gap-4" *ngIf="charge?.requestMessage">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.message' | translate }}</span>
+        <textarea class="custom-text-area medium-border textarea min-height-150" readonly style="min-height: 80px;"
+            [value]="charge?.requestMessage">
+        </textarea>
+    </div>
+
+    <div class="cotainer-buttons centered gap-20 margin-top-30" *ngIf="charge?.status === 'PENDING' && isOwner() || charge?.status === 'PENDING' && !isOwner()">
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('CANCELLED')"
+            *ngIf="charge?.status === 'PENDING' && isOwner()" [disabled]="loading">
+            {{ ('button.cancel') | translate }}
+        </button>
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('DISAPPROVED')"
+            *ngIf="charge?.status === 'PENDING' && !isOwner()" [disabled]="loading">
+            {{ ('button.decline') | translate }}
+        </button>
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('APPROVED')"
+            *ngIf="charge?.status === 'PENDING' && !isOwner()" [disabled]="loading">
+            {{ ('button.approve') | translate }}
+        </button>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

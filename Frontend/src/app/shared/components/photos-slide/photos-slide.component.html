@@ -1,0 +1,25 @@
+<div class="photos-slide">
+    <ng-container *ngFor="let midia of midias; let i = index">
+        <div class="photos-slide-image" [style.background-image]="'url(' + midia.url + ')'"
+            *ngIf="i === selectedPic && midia?.type !== midiaType.VIDEO">
+            <div class="container-icon to-point" (click)="showPrevious()">
+                <mat-icon fontSet="material-icons-round">chevron_left</mat-icon>
+            </div>
+            <div class="container-icon to-point" (click)="showNext()">
+                <mat-icon fontSet="material-icons-round" >chevron_right </mat-icon>
+            </div>
+        </div>
+
+        <div class="fieldWrapper" *ngIf="midia?.url && midia?.type === midiaType.VIDEO && i === selectedPic"
+            style="display: inline-block;">
+            <iframe
+                width="100%"
+                height="430"
+                [src]="midia.safeUrl"
+                frameborder="0"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </ng-container>
+</div>

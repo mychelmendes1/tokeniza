@@ -1,0 +1,395 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .wallet-container {
+        background: v.$normal-grey;
+        padding: 32px;
+    }
+
+    .input-container {
+        max-width: 400px;
+    }
+
+    .masked-value span {
+        display: flex;
+        gap: 15px;
+        font-size: 39px;
+    }
+
+    .offer-card-grid {
+        column-gap: 50px;
+        row-gap: 50px;
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .card-border-primary-transparent {
+            padding-left: 10px;
+
+            @include mix.mq("phone-wide", max) {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        .token-content-wrapper {
+            @include mix.mq("phone-wide", max) {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .token-info {
+                @include mix.mq("phone-wide", max) {
+                    text-align: center;
+                    gap: 10px;
+                }
+
+                .token-id-row {
+                    @include mix.mq("phone-wide", max) {
+                        justify-content: center !important;
+                    }
+                }
+
+                .token-value {
+                    flex: 0 !important;
+                    overflow: visible !important;
+                }
+            }
+
+            .text-exchange-statistics {
+                text-align: end;
+
+                @include mix.mq("phone-wide", max) {
+                    text-align: center !important;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .exibition-container {
+        margin-left: auto;
+        @include mix.mq("tablet", max) {
+            align-self: end;
+        }
+    }
+
+    .transform-diagonal {
+        transform: rotate(45deg);
+    }
+
+    .responsive-column {
+        @include mix.mq("tablet", max) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    .responsive-wrap {
+        @include mix.mq("phone-wide", max) {
+            flex-wrap: wrap;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .margin-left-auto {
+            @include mix.mq("phone-wide", max) {
+                margin-left: 0;
+            }
+
+            .text-align-end {
+                @include mix.mq("phone-wide", max) {
+                    text-align: center !important;
+                }
+            }
+        }
+    }
+
+    .card-border-primary-transparent {
+        @include mix.mq("phone-wide", max) {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+    }
+
+    .btn {
+        @include mix.mq("tablet", max) {
+            font-size: 15px;
+        }
+    }
+
+    .hovered {
+        display: inline-flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 10px;
+
+        &:hover {
+            background-color: v.$primary-500;
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 9999;
+        }
+    }
+
+    .offers-cards {
+        @extend .offer-card-grid;
+        column-gap: 32px !important;
+        row-gap: 32px !important;
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        }
+
+        .card {
+            padding: 16px;
+            min-width: 0 !important;
+            background-color: v.$dark-shade !important;
+        }
+
+        .container-icon {
+            display: flex;
+            width: min-content !important;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: v.$primary-500;
+        }
+    }
+
+    .wallet-actions-wrapper {
+        margin-top: 30px;
+        background-color: #1F201E;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .wallet-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 20px;
+        width: 100%;
+
+        @include mix.mq("tablet-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+
+        @include mix.mq("tablet", max) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .wallet-actions__item {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .wallet-actions__card {
+            width: 100%;
+            min-height: 130px;
+            border: 1px solid #2B2C2A;
+            border-radius: 10px;
+            background-color: #16171A;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .wallet-actions__label {
+            color: #A5A6A4;
+            font-size: 16px;
+        }
+
+        .container-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(v.$primary-500, 0.15);
+        }
+    }
+
+    .custom-margin {
+        margin: 15px 0;
+    }
+
+    .tabs-container {
+        padding: 32px;
+
+        input {
+            max-width: 400px;
+        }
+    }
+
+    .circular-min-img, .img-token {
+        width: 40px;
+        height: 40px;
+        max-width: 40px;
+        min-width: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .img-token {
+        object-fit: scale-down;
+    }
+
+    .progress-bar {
+        background-color: v.$light-shade;
+        max-width: 600px !important;
+    }
+
+    .cancel-token-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        background-color: transparent;
+        width: fit-content;
+        border-radius: 8px;
+
+        &:hover {
+            background-color: v.$red-50;
+        }
+    }
+
+    .link-icon {
+        @extend .cancel-token-icon;
+        &:hover {
+            background-color: v.$light-grey;
+        }
+    }
+}
+
+div.table {
+    .table.mat-mdc-table {
+        th.mat-column-actions1column,
+        th.mat-column-actions3column {
+
+            @include mix.mq("tablet", max) {
+                min-width: 220px !important;
+            }
+        }
+
+        td.mat-column-actions1column {
+            justify-content: flex-end !important;
+        }
+    }
+}
+
+.skeleton-class.wallet {
+    width: 100%;
+    max-width: 100px;
+
+    ::ng-deep {
+        .skeleton-loader {
+            height: 40px !important;
+            margin: 0 0 4px 5px !important;
+            width: 100px;
+        }
+    }
+}
+
+.btn {
+    &.see-more {
+        width: 150px;
+    }
+}
+
+.transaction-canceled {
+    color: v.$red-600;
+}
+
+.transaction-income {
+    color: v.$yellow-400;
+}
+
+.transaction-started {
+    color: v.$primary-700;
+}
+
+.history-transaction-card .stake-icon .transaction-canceled {
+    position: relative;
+    margin-left: -1px;
+    margin-right: 1px;
+
+    &::after {
+        position: absolute;
+        content: "";
+        width: 22px;
+        height: 0px;
+        border-bottom: 1px solid var(v.$light-text);
+        border-top: 2px solid v.$red-600;
+        transform: rotate(45deg);
+        left: 4px;
+        top: 10px;
+    }
+}
+
+.token-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.token-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+}
+
+.token-id-row {
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.token-id {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 19px;
+}
+
+.token-value {
+    font-size: 19px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.token-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    white-space: nowrap;
+    gap: 8px;
+}

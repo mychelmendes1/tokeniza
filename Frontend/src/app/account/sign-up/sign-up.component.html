@@ -1,0 +1,248 @@
+<div class="account-left-container column gap-12">
+    <div class="between column">
+        <div class="column gap-12 wth-100">
+            <h2 class="primary-600 fw-600">{{ translateHeaderText().title | translate }}</h2>
+            <span class="fs-20 fw-400">{{ translateHeaderText().subtitle | translate }}</span>
+            <div class="progress-bar">
+                <div class="progress-bar__value" [ngStyle]="{'width.%' : progressBarWidth}"></div>
+            </div>
+        </div>
+        <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+            <!-- Step 0 Form Personal Informations -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formPersonalInfo">
+                    <div class="form sign-up">
+                        <div class="input-container column margin-left-10">
+                            <div class="radio-container inline">
+                                <mat-radio-group formControlName="typeSale" class="radio-group inline gap-100" required>
+                                    <mat-radio-button value="pt-br">{{ 'account.signUp.pt' | translate }}</mat-radio-button>
+                                    <mat-radio-button value="en">{{ 'account.signUp.en' | translate }}</mat-radio-button>
+                                    <mat-radio-button value="es">{{ 'account.signUp.es' | translate }}</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                        <div class="input-container icon-suffix">
+                            <label>{{ 'account.signUp.nationality' | translate }}<span class="primary-red"> *</span></label>
+                            <mat-icon class="suffix svg-icon primary-dark to-point" svgIcon="search" *ngIf="!searchResults['nationality']"></mat-icon>
+                            <mat-progress-spinner *ngIf="searchResults['nationality']" class="spinner-small secondary input-icon" [mode]="'indeterminate'"></mat-progress-spinner>
+                            <input class="input-fill-default" formControlName="nationality" [matAutocomplete]="auto"
+                                [placeholder]="'placeholder.select' | translate" required maxlength="150"
+                            >
+                            <mat-autocomplete #auto="matAutocomplete" classList="autocomplete-panel">
+                                <mat-option class="input amount-input" *ngFor="let nationality of filteredNationalityList"
+                                    (onSelectionChange)="onSelectNationality(nationality.name)" [value]="nationality.name">
+                                    <span class="input amount-input">{{ nationality.name }}</span>
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('nationality', formPersonalInfo) && !formPersonalInfo?.controls?.nationality?.errors?.['incorrectCountry']">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="showError('nationality', formPersonalInfo) && formPersonalInfo?.controls?.nationality?.errors?.['incorrectCountry']">
+                                    {{ 'completeYourRegistration.invalidCountry' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container">
+                            <label>{{ 'account.signUp.fullName' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="fullName"
+                                [placeholder]="'placeholder.fullName' | translate" required maxlength="150" onlyLettersAndSpace
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('fullName', formPersonalInfo) && formPersonalInfo.get('fullName')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="formPersonalInfo.get('fullName')?.hasError('completeFullNameError')">
+                                    {{ formPersonalInfo.get('fullName')?.getError('completeFullNameError') | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container">
+                            <label>Username<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="userName" required
+                                [placeholder]="'placeholder.userName' | translate" maxlength="150"
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="formInputTouched('userName', formPersonalInfo) && formPersonalInfo.get('userName')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container" style="margin-bottom: 24px;">
+                            <label>{{ 'account.signUp.indication' | translate }}</label>
+                            <input class="input-fill-default" formControlName="indication"
+                                [placeholder]="'placeholder.indication' | translate" type="text" maxlength="150"
+                                [disabled]="isIndicationFromUrl"
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showIndicationError()">
+                                    {{ 'account.signUp.error.indicationUsernameMustStartWithAt' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 1 Account Type -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formAccountType">
+                    <div class="input-container column margin-left-10">
+                        <label>{{ 'account.signUp.accountType' | translate }}<span class="primary-red"> *</span></label>
+                        <div class="radio-container inline">
+                            <mat-radio-group formControlName="accountType" class="radio-group inline gap-100" required (change)="onRadioGroupChange($event)">
+                                <mat-radio-button value="0">{{ 'account.signUp.personal' | translate }}</mat-radio-button>
+                                <mat-radio-button value="1">{{ 'account.signUp.corporate' | translate }}</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <div class="input-container column align-start margin-top-30" *ngIf="formAccountType?.controls?.accountType?.value === '0' || formAccountType?.controls?.accountType?.value === '1'" [@fadeIn]>
+                        <label>{{ 'account.signUp.documentType' | translate }}</label>
+                        <mat-select class="select-fill-primary" disableOptionCentering
+                            [placeholder]="'Selecione...'" panelClass="select-fill-primary" formControlName="documentType">
+                            <mat-option *ngFor="let document of documentType" [value]="document">
+                                {{ 'account.signUp.document.'+ document | translate }}
+                            </mat-option>
+                        </mat-select>
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('documentType', formAccountType) && formAccountType.get('documentType')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="input-container margin-bottom-30" *ngIf="formAccountType.controls.accountType.value === '0' || formAccountType.controls.accountType.value === '1'">
+                        <label>{{ 'account.signUp.identity' | translate }}<span class="primary-red"> *</span></label>
+                        <input class="input-fill-default" 
+                            formControlName="identity"
+                            [placeholder]="'placeholder.identity' | translate"
+                            [mask]="isBrazilian ? 
+                            (
+                                formAccountType.controls.accountType.value === '0' ? '000.000.000-00' : 
+                                formAccountType.controls.accountType.value === '1' ? '00.000.000/0000-00' : ''
+                            ) : ''" 
+                            required>
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('identity', formAccountType) && formAccountType.get('identity')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                            <ng-container *ngIf="formAccountType.get('identity')?.invalid && formAccountType.get('identity')?.value">
+                                {{ isBrazilian ? (formAccountType.controls.accountType.value === '0' ? ('errorHint.cpf' | translate) : (formAccountType.controls.accountType.value === '1' ? ('errorHint.cnpj' | translate) : '')) : '' }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="input-container icon-suffix" *ngIf="formAccountType?.controls?.accountType?.value === '0'" [@fadeIn]>
+                        <label>{{ 'label.birthday' | translate }}<span class="primary-red"> *</span></label>
+                        <input matInput class="input-fill-default" [matDatepicker]="pickerDateOfBirth" formControlName="dateOfBirth"
+                             required [matDatepickerFilter]="dateFilter" [placeholder]="'placeholder.birthDateFormat' | translate" (input)="onDateInput($event, 'dateOfBirth')">
+                        <mat-datepicker-toggle matSuffix [for]="pickerDateOfBirth" class="calendar-icon input-with-label">
+                            <mat-icon matDatepickerToggleIcon svgIcon="calendar" class="svg-icon primary-dark"></mat-icon>
+                        </mat-datepicker-toggle>
+                        <mat-datepicker startView="multi-year" class="calendar-primary" #pickerDateOfBirth disabled="false"></mat-datepicker>
+                    </div>
+                    <div class="input-container icon-suffix" *ngIf="formAccountType?.controls?.accountType?.value === '1'" [@fadeIn]>
+                        <label>{{ 'label.openingDate' | translate }}<span class="primary-red"> *</span></label>
+                        <input class="input-fill-default" [matDatepicker]="pickerOpeningDate" formControlName="openingDate"
+                        [placeholder]="'placeholder.openingDateFormat' | translate" required [matDatepickerFilter]="dateFilter" (input)="onDateInput($event, 'openingDate')">
+                        <mat-datepicker-toggle matSuffix [for]="pickerOpeningDate" class="calendar-icon input-with-label">
+                            <mat-icon matDatepickerToggleIcon svgIcon="calendar" class="svg-icon primary-dark"></mat-icon>
+                        </mat-datepicker-toggle>
+                        <mat-datepicker startView="multi-year" class="calendar-primary" #pickerOpeningDate disabled="false"></mat-datepicker>
+                    </div>
+                    <div class="input-container margin-bottom-30" *ngIf="formAccountType?.controls?.accountType?.value === '1'" [@fadeIn]>
+                        <label>{{ (isBrazilian ? ('label.cpf' | translate) : ('label.document' | translate)) }} {{ 'label.manager' | translate }}<span class="primary-red"> *</span></label>
+                        <input class="input-fill-default" formControlName="managerIdentity"
+                            [placeholder]="'placeholder.document' | translate" [mask]="isBrazilian ? '000.000.000-00' : ''" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('managerIdentity', formAccountType) && formAccountType.get('managerIdentity')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                            <ng-container *ngIf="formAccountType.get('managerIdentity')?.invalid && formAccountType.get('managerIdentity')?.value">
+                                {{ 'errorHint.cpf' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 2 Contact and Security -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formContactAndSecurity">
+                    <div class="input-container">
+                        <label>{{ 'label.email' | translate }}</label>
+                        <input class="input-fill-default" formControlName="email" maxlength="150"
+                            [placeholder]="'placeholder.email' | translate" type="email" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('email', formContactAndSecurity) && formContactAndSecurity.get('email')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                            <ng-container *ngIf="formContactAndSecurity.get('email')?.invalid && formContactAndSecurity.get('email')?.value">
+                                {{ 'errorHint.email' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <app-password-strength (onFunctionCalled)="updatePasswordForm($event)"></app-password-strength>
+                    <div class="input-container icon-suffix margin-bottom-30">
+                        <label>{{ 'label.celphone' | translate }}</label>
+                        <label>{{ 'label.celphone.example' | translate }}</label>
+                        <label>{{ 'label.celphone.example2' | translate }}</label>
+                        <input class="input-fill-default" formControlName="phoneNumber"
+                            [placeholder]="'placeholder.celphone' | translate"
+                            autocomplete="false" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('phoneNumber', formContactAndSecurity) && formContactAndSecurity.get('phoneNumber')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="inline margin-top-30 gap-5">
+                        <mat-checkbox formControlName="terms" color="primary" class="checkbox-v-mark">
+                            {{ 'account.signUp.read' | translate }}
+                        </mat-checkbox>
+                        <span class="button-link underline" (click)="openTerms()">
+                            {{ 'Termos de Serviço' | translate }}
+                        </span>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 3 DIDIT KYC Verification -->
+            <mat-step *ngIf="showDidit" [editable]="false">
+                <div class="didit-verification-wrapper">
+                    <h1 class="title">{{ 'account.signUp.didit.title' | translate }}</h1>
+                    <p class="subtitle">{{ 'account.signUp.didit.subtitle' | translate }}</p>
+                    <div class="didit-iframe-container">
+                        <iframe
+                            *ngIf="diditVerificationUrlSafe"
+                            [src]="diditVerificationUrlSafe"
+                            frameborder="0"
+                            allow="camera; microphone; fullscreen"
+                            allowfullscreen
+                            title="Didit Identity Verification">
+                        </iframe>
+                    </div>
+                </div>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </div>
+    <div class="column gap-16 wth-100">
+        <div class="inline gap-16">
+            <button class="btn dark-shade margin-top-30 wth-100" (click)="previousStepper()" *ngIf="currentStepperIndex !== 0"
+                (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                <mat-icon class="svg-icon" svgIcon="arrow-left"
+                    [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                ></mat-icon>
+                <span>{{ 'button.back' | translate }}</span>
+            </button>
+            <button class="btn primary margin-top-30 wth-100" (click)="advanceButton()" [disabled]="disabledContinueButton() || loading">
+                <span class="primary-dark">{{ (currentStepperIndex === 2 ? 'button.conclude' : 'button.continue') | translate }}</span>
+                <mat-icon class="svg-icon primary-dark" [svgIcon]="currentStepperIndex === 2 ? 'check' : 'arrow-right'"></mat-icon>
+            </button>
+        </div>
+        <p class="inline gap-5">
+            <span>{{ 'account.signUp.haveAnAccount' | translate }}</span>
+            <span class="button-link underline" (click)="goToLogin()">{{ 'button.enter' | translate }}</span>
+        </p>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

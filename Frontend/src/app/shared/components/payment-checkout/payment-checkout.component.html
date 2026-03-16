@@ -1,0 +1,96 @@
+<div class="column checkout-component">
+    <div class="column flex1">
+        <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30" [(selectedIndex)]="selectedTab" 
+            (selectedTabChange)="onSelectedTabPaymentChange($event)"
+            mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab [label]="'Criptos / Tokens'">
+                <!-- Criptos / Tokens -->
+                <div class="payment-options-container column margin-top-30 align-start">
+                    <mat-radio-group class="column radio-group" (change)="toggleAdd($event.value, opt.allowed)"
+                        [disabled]="loading" *ngFor="let opt of cryptoOptions; index as i">
+                        <!-- radio button and description when payment is mandatory in multi-currency -->
+                        <mat-radio-button *ngIf="opt.isSplitted && (cryptoOptions[i - 1] === undefined || !cryptoOptions[i - 1].isSplitted)"
+                            class="default-label" [value]="payTypeMulticurrency" [checked]="option === payTypeMulticurrency">
+                            <span class="primary-dark fw-500"
+                                [matTooltip]="'paymentModal.bothCurrenciesInfo' | translate"
+                                matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                                {{ 'paymentModal.bothCurrencies' | translate }}
+                            </span>
+                        </mat-radio-button>
+
+                        <div class="radio-button-mandatory" *ngIf="opt.isSplitted">
+                            <p class="primary-dark fw-500 fs-12">{{ opt?.value | floorCurrency: opt?.name: true: decimalPlaces }} {{opt?.showMissingBalance ? ('paymentModal.missingBalance' | translate) : ''}}</p>
+                        </div>
+                        <!-- end of components when payment is mandatory in multi-currency -->
+
+                        <mat-radio-button *ngIf="!opt.isSplitted"
+                            [disabled]="!opt.allowed || opt.name === fiatCurrency.currency" class="default-label"
+                            [value]="opt.name" [checked]="option == opt?.name || opt?.isMandatory">
+                            <span class="primary-dark fw-500">{{ opt?.value | floorCurrency: opt?.name: true: decimalPlaces }}</span>
+                            <span class="primary-dark fw-500" *ngIf="opt?.showMissingBalance"> {{ 'paymentModal.missingBalance' | translate }}</span>
+                        </mat-radio-button>
+                    </mat-radio-group>
+
+                    <p class="no-digital-accepted primary-dark fw-500" *ngIf="cryptoOptions?.length === 0">{{ 'paymentModal.noDigitalAssetsAccepted' | translate }}</p>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'Tradicionais'">
+                <!-- Traditional (Fiduciary) - Fiduciary payment must never be divided -->
+                <div class="payment-options-container traditional column margin-top-30 align-start">
+                    <mat-radio-group class="column radio-group" (change)="toggleAdd($event.value, opt.allowed)" [disabled]="loading" *ngFor="let opt of traditionalOptions">
+                        <mat-radio-button 
+                            [disabled]="(!opt?.allowed && opt?.name === fiatCurrency.currency) || valueReachLimit(opt)" class="default-label" [value]="opt.name" [checked]="option == opt?.name">
+                            <span class="primary-dark fw-500">
+                                {{ opt?.name === fiatCurrency.currency ? ('paymentModal.paymentTypes.fiatBalance' | translate) + '(' + fiatCurrency.currency + ')' : 
+                                    opt?.name === 'DEPOSITS' ? ('paymentModal.deposits' | translate) : 
+                                    opt?.name === 'CELCOIN_INTEGRATION' ? ('paymentModal.pix' | translate) : 
+                                    opt?.name === 'BRLAUSDT' ? ('paymentModal.pixToToken' | translate) : 
+                                    opt?.name === 'DIGITAL_BANKING' ? ('paymentModal.banking' | translate) + merchantExtendedName : opt.name | translate }} 
+                            </span>
+                            <span class="primary-dark fw-500" *ngIf="opt?.limitToBuy && opt.limitToBuy?.isGreaterThan(0)">- {{ 'paymentModal.transactionLimit' | translate }}: {{ getNumberFromBigNumber(opt?.limitToBuy) | floorCurrency: fiatCurrency.currency: true: '1.2-2' }}</span>
+                            <span class="primary-dark fw-500" *ngIf="opt?.showMissingBalance"> {{ 'paymentModal.missingBalance' | translate }}</span>
+                            <span class="primary-dark fw-500" *ngIf="opt?.showTax"> (+{{  ('paymentModal.tax' | translate ) +  ' R$' }} {{opt?.taxValue | number:'1.2-2'}})</span>
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+
+        <div class="cotainer-buttons centered gap-20 margin-top-30">
+            <button class="btn dark-shade wth-100"
+                (click)="checkout()"
+                [disabled]="loading || !hasAnyEnoughBalance() || !enablePaymentButton || !checkHasCorrectQuantity() || optionValueReachLimit()">
+                {{ 'button.makePayment' | translate }}
+            </button>
+        </div>
+
+        <div class="metamask-container column" *ngIf="isMetamaskAllowed && selectedTab === 1">
+            <div *ngIf="!loadingMetamask">
+                <button mat-flat-button class="btn metamask"
+                    [disabled]="verifyDisableMetaMaskButton() || !checkHasCorrectQuantity()">
+                        <div class="inline">
+                            <img class="logo-metamask" src="assets/images/metamask_logo.svg" alt="Logo MetaMask">
+                            {{ 'paymentModal.continueWithWeb3.button' | translate }}
+                        </div>
+                </button>
+                <div *ngIf="hasCryptoInPaymentList && !showMetamaskErrorMessage">
+                    <p *ngIf="!showInstallMetamask" class="metamask-label">{{ 'paymentModal.continueWithWeb3.label' | translate }}</p>
+                    <p *ngIf="showInstallMetamask" class="metamask-label">
+                        {{ 'paymentModal.continueWithWeb3.labelToInstall' | translate }}
+                        <strong (click)="openMetaMaskLinkToInstall()">{{ 'paymentModal.continueWithWeb3.link' | translate }}</strong>
+                    </p>
+                </div>
+                <p *ngIf="!hasCryptoInPaymentList && !showMetamaskErrorMessage" class="metamask-label">{{ 'paymentModal.continueWithWeb3.cantPayAssetWithMetamask' | translate }}</p>
+                <!-- When the api's to use MetaMask is not working -->
+                <strong class="metamask-label" *ngIf="showMetamaskErrorMessage">{{ 'paymentModal.metamaskUnavailable' | translate }}</strong>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="waitingMetaMask" class="inline-vertical-align waiting-metamask-margin">
+        <div class="metamask-waiting-payment">
+            <p>{{'paymentModal.waitingMetaMaskPayment' | translate}}</p>
+            <p>{{'paymentModal.waitingMetaMaskPaymentWarning' | translate}}</p>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner class="spinner" [mode]="'indeterminate'" *ngIf="loading || loadingTokens || loadingFeatureStatus"></mat-progress-spinner>

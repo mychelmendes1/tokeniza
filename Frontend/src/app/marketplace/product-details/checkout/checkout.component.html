@@ -1,0 +1,639 @@
+<app-menu-button-mobile
+    class="resp-menu-mobile"
+    [colorIcon]="
+        loading || showErrorPage
+            ? 'svg-icon primary-dark'
+            : 'svg-icon primary-light'
+    "
+></app-menu-button-mobile>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<ng-template [ngIf]="!showErrorPage">
+    <div class="checkout-product-container" *ngIf="!loading">
+        <div class="content-container wth-100">
+            <ng-container>
+                <div class="header-page inline between wth-100 wrap gap-30">
+                    <div class="inline gap-16 wrap">
+                        <div
+                            class="inline to-point gap-16"
+                            (click)="goToMarketplace()"
+                        >
+                            <strong class="fs-16 fw-600 primary-700">{{
+                                "marketplace.title" | translate
+                            }}</strong>
+                            <strong class="fs-16 fw-600 primary-700">></strong>
+                        </div>
+                        <div class="inline to-point gap-16" (click)="backPage()">
+                            <strong class="fs-16 fw-600 primary-700">{{
+                                product?.collection?.name
+                            }}</strong>
+                            <strong class="fs-16 fw-600 primary-700">></strong>
+                        </div>
+                        <span class="primary-light fs-16 fw-600">{{
+                            product?.name
+                        }}</span>
+                    </div>
+                    <button class="btn primary" (click)="goToWallet()">
+                        <mat-icon
+                            class="svg-icon primary-dark"
+                            svgIcon="wallet"
+                        ></mat-icon>
+                        <span class="primary-dark">{{
+                            "button.wallet" | translate
+                        }}</span>
+                    </button>
+                </div>
+                <div class="checkout-product inline gap-70 margin-top-30 wrap">
+                    <div class="stretch flex-1 wth-100">
+                        <img class="product-img" [src]="getMainPhoto()" alt="" />
+                    </div>
+                    <div class="column gap-20 flex-1 wth-100">
+                        <div class="inline between wth-100 wrap gap-20 align-start">
+                            <div class="column gap-8 wth-100">
+                                <div class="inline between gap-10 wth-100">
+                                    <h1 class="primary-light fw-600 fs-49">
+                                        {{ product?.name }}
+                                    </h1>
+                                    <div
+                                        class="container-icon to-point"
+                                        (click)="shareWhatsapp()"
+                                        (mouseenter)="
+                                            hoverIconClassService.onMouseEnter(
+                                                'share-2'
+                                            )
+                                        "
+                                        (mouseleave)="
+                                            hoverIconClassService.onMouseLeave(
+                                                'share-2'
+                                            )
+                                        "
+                                    >
+                                        <mat-icon
+                                            class="svg-icon"
+                                            svgIcon="share-2"
+                                            [ngClass]="
+                                                hoverIconClassService.getSvgClass(
+                                                    'share-2',
+                                                    'svg-icon primary-dark',
+                                                    'svg-icon primary'
+                                                )
+                                            "
+                                        >
+                                        </mat-icon>
+                                    </div>
+                                </div>
+                                <span
+                                    *ngIf="product?.blockchainId"
+                                    class="fs-25 fw-400"
+                                    >ID: {{ product?.blockchainId }}</span
+                                >
+                                <div
+                                    class="container-product-info margin-top-30 inline gap-10"
+                                    *ngIf="!isOnResale && product?.auction"
+                                >
+                                    <mat-icon
+                                        class="svg-icon primary"
+                                        svgIcon="clock"
+                                    ></mat-icon>
+                                    <span>{{ product.auctionTimeExpiration }}</span>
+                                </div>
+                                <div class="column margin-top-30">
+                                    <span class="fs-16 fw-400">{{
+                                        product?.description
+                                    }}</span>
+                                </div>
+                                <div
+                                    class="column margin-top-30"
+                                    *ngIf="product?.resale?.sellerId === userLogged"
+                                >
+                                    <p class="available-tokens">
+                                        {{
+                                            "marketplace.checkout.yourProduct"
+                                                | translate
+                                        }}
+                                    </p>
+                                </div>
+                                <div
+                                    class="column margin-top-30"
+                                    *ngIf="
+                                        product?.resale?.onlyForCustomer &&
+                                        product?.resale?.onlyForCustomer !==
+                                            userLoggedEmail
+                                    "
+                                >
+                                    <p class="available-tokens">
+                                        {{
+                                            "productDetails.nftForCustomer"
+                                                | translate
+                                        }}
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="column margin-top-30"
+                                    *ngIf="!product?.only_package"
+                                >
+                                    <span
+                                        class="fs-25 fw-400 strikethrough-text"
+                                        *ngIf="product?.price > 0 && isOnResale"
+                                    >
+                                        {{
+                                            getAssetOriginalPrice(product)
+                                                | currency
+                                                    : getSymbom(product)
+                                                    : true
+                                                    : "1.2-2"
+                                        }}
+                                    </span>
+                                    <div
+                                        class="inline gap-10"
+                                        *ngIf="!product?.only_package"
+                                    >
+                                        <span
+                                            class="fs-49 fw-700 primary-600"
+                                            *ngIf="
+                                                !product?.auction &&
+                                                product?.price > 0
+                                            "
+                                        >
+                                            {{
+                                                getCorrectPrice(product)
+                                                    | currency
+                                                        : getSymbom(product)
+                                                        : true
+                                                        : "1.2-2"
+                                            }}
+                                        </span>
+                                        <span
+                                            class="column gap-10"
+                                            *ngIf="!isOnResale && product?.auction"
+                                        >
+                                            <span class="fs-25 fw-400">{{
+                                                "marketplace.checkout.minValueAuction"
+                                                    | translate
+                                            }}</span>
+                                            <span class="fs-49 fw-700 primary-600">
+                                                {{
+                                                    getMinimumPriceAccepted()
+                                                        | currency
+                                                            : fiatCurrency.currency
+                                                            : true
+                                                            : "1.2-2"
+                                                }}
+                                            </span>
+                                        </span>
+                                        <div
+                                            class="variation-container inline gap-4"
+                                            *ngIf="
+                                                getVariation(product) !== 0 &&
+                                                getAssetOriginalPrice(product) > 0
+                                            "
+                                            [ngClass]="{
+                                                'bg-red-r-3500':
+                                                    getVariation(product) < 0,
+                                                'bg-primary-p-3500':
+                                                    getVariation(product) > 0
+                                            }"
+                                        >
+                                            <mat-icon
+                                                class="low-high-icon svg-icon"
+                                                [ngClass]="{
+                                                    'primary-50':
+                                                        getVariation(product) > 0,
+                                                    'primary-red-50':
+                                                        getVariation(product) < 0
+                                                }"
+                                                [svgIcon]="
+                                                    getVariation(product) > 0
+                                                        ? 'arrow-up-mini'
+                                                        : 'arrow-down-mini'
+                                                "
+                                            >
+                                            </mat-icon>
+                                            <span
+                                                class="token-small"
+                                                [ngClass]="{
+                                                    'primary-50':
+                                                        getVariation(product) > 0,
+                                                    'primary-red-50':
+                                                        getVariation(product) < 0
+                                                }"
+                                                *ngIf="
+                                                    getAssetOriginalPrice(
+                                                        product
+                                                    ) && product?.resale?.onResale
+                                                "
+                                                >{{ getVariation(product) }}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="column gap-4 margin-top-30"
+                            *ngIf="characteristics.length > 0"
+                        >
+                            <span class="fs-20 fw-700">{{
+                                "marketplace.checkout.attributes" | translate
+                            }}</span>
+                            <div class="offers-cards no-margin gap-30">
+                                <div
+                                    class="card column gap-10"
+                                    *ngFor="let info of characteristics"
+                                >
+                                    <span class="primary-gray">{{
+                                        info?.key
+                                    }}</span>
+                                    <span>{{ info?.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column gap-10 offers-cards inline-flex">
+                            <span class="fs-20 fw-700">{{
+                                "marketplace.checkout.details" | translate
+                            }}</span>
+                            <div *ngFor="let detail of detailsList; let i = index">
+                                <div
+                                    *ngIf="detail.condition !== false"
+                                    [ngClass]="{
+                                        'card inline-flex gap-10':
+                                            i % 2 !== 0 &&
+                                            detail.condition !== false,
+                                        'between custom-pad':
+                                            i % 2 === 0 &&
+                                            detail.condition !== false,
+                                        'to-point': detail.isLink
+                                    }"
+                                    (click)="
+                                        detail.isLink ? goToUrl(detail.link) : null
+                                    "
+                                >
+                                    <span class="primary-gray">{{
+                                        detail.label | translate
+                                    }}</span>
+                                    <span *ngIf="!detail.pipe">{{
+                                        detail.value
+                                    }}</span>
+                                    <span *ngIf="detail.pipe === 'currency'">
+                                        {{
+                                            detail.value
+                                                | currency
+                                                    : fiatCurrency.currency
+                                                    : true
+                                                    : "1.2-2"
+                                        }}
+                                    </span>
+                                    <span
+                                        *ngIf="
+                                            detail.pipe === 'titlecase' &&
+                                            detail.value
+                                        "
+                                        >{{
+                                            detail.value.toString() | titlecase
+                                        }}</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            class="btn primary margin-top-30"
+                            (click)="goToCheckout()"
+                            [disabled]="
+                                !accepted &&
+                                (product?.collection?.contract_url ||
+                                    collection.collectionDetails?.contract_url)
+                            "
+                            *ngIf="
+                                !hideBuyButton &&
+                                !loading &&
+                                toNumber(product?.quantity) > reservationCount &&
+                                !product?.auction
+                            "
+                        >
+                            <span class="primary-dark">{{
+                                "button.buy" | translate
+                            }}</span>
+                        </button>
+                        <mat-radio-group
+                            class="radio-group inline gap-100"
+                            *ngIf="
+                                product?.collection?.contract_url ||
+                                collection?.collectionDetails?.contract_url
+                            "
+                        >
+                            <mat-radio-button
+                                [value]="true"
+                                #button
+                                (click)="changeTermsStatus(button)"
+                            >
+                                <span
+                                    class="to-point"
+                                    (click)="$event.stopPropagation()"
+                                    >{{
+                                        "marketplace.tokenProfile.accept"
+                                            | translate
+                                    }}</span
+                                >
+                            </mat-radio-button>
+                        </mat-radio-group>
+                        <button
+                            (click)="createBid()"
+                            class="btn margin-top-30"
+                            [ngClass]="{
+                                'dark-shade reverse': product?.auction?.expired,
+                                primary: !product?.auction?.expired
+                            }"
+                            *ngIf="
+                                !loading &&
+                                product?.auction &&
+                                product?.auction?.status !=
+                                    auctionStatusEnum.WAITING &&
+                                product?.auction?.auctioneerId !== userLogged
+                            "
+                        >
+                            {{
+                                (product?.auction?.expired
+                                    ? "button.expired"
+                                    : "button.bid"
+                                ) | translate
+                            }}
+                        </button>
+                        <button
+                            (click)="cancelMyBid()"
+                            class="btn dark-shade reverse"
+                            *ngIf="
+                                !loading &&
+                                product?.auction &&
+                                product?.auction?.status ===
+                                    auctionStatusEnum.CREATED &&
+                                product?.auction?.auctioneerId !== userLogged &&
+                                iHaveAnOffer
+                            "
+                        >
+                            {{ "button.cancelMyBid" | translate }}
+                        </button>
+                        <button
+                            (click)="cancelAuction()"
+                            class="btn danger margin-top-30"
+                            *ngIf="
+                                !loading &&
+                                product?.auction &&
+                                product?.auction?.status ===
+                                    auctionStatusEnum.CREATED &&
+                                product?.auction?.auctioneerId === userLogged
+                            "
+                        >
+                            {{ "button.cancelAuction" | translate }}
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div
+        class="tabs-container column content-container wth-100"
+        *ngIf="
+            !loading &&
+            (product?.projectCustomHtml ||
+                product?.auction ||
+                distributionsDataSource.data.length > 0)
+        "
+    >
+        <mat-tab-group
+            [disablePagination]="false"
+            class="custom-tabs margin-top-30"
+            mat-stretch-tabs="false"
+            mat-align-tabs="start"
+        >
+            <mat-tab
+                [label]="'marketplace.checkout.bidsMade' | translate"
+                *ngIf="product?.auction"
+            >
+                <div class="table margin-top-30">
+                    <table
+                        mat-table
+                        [dataSource]="dataSource"
+                        class="table"
+                        matSort
+                    >
+                        <!-- Value -->
+                        <ng-container matColumnDef="value">
+                            <th
+                                mat-header-cell
+                                *matHeaderCellDef
+                                class="first-column"
+                            >
+                                <span>{{
+                                    "marketplace.checkout.value" | translate
+                                }}</span>
+                            </th>
+                            <td
+                                mat-cell
+                                *matCellDef="let element"
+                                class="first-column"
+                            >
+                                <div class="inline gap-8 custom-margin">
+                                    <span
+                                        class="primary-off-white-darker fw-400 fs-13"
+                                    >
+                                        {{
+                                            element?.price
+                                                | currency
+                                                    : fiatCurrency.currency
+                                                    : true
+                                                    : "1.2-2"
+                                        }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Date -->
+                        <ng-container matColumnDef="date">
+                            <th
+                                mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header
+                                disableClear
+                            >
+                                <span>{{
+                                    "marketplace.checkout.date" | translate
+                                }}</span>
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span
+                                        class="primary-off-white-darker fw-400 fs-13"
+                                        >{{
+                                            element?.when | date : "shortDate"
+                                        }}
+                                        -
+                                        {{
+                                            element?.when | date : "shortTime"
+                                        }}</span
+                                    >
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr
+                            mat-header-row
+                            *matHeaderRowDef="displayedColumns"
+                        ></tr>
+                        <tr
+                            mat-row
+                            *matRowDef="let row; columns: displayedColumns"
+                        ></tr>
+
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td [attr.colspan]="displayedColumns.length">
+                                <p
+                                    class="no-data-text"
+                                    [innerHTML]="'noFoundText' | translate"
+                                ></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab
+                [label]="'marketplace.checkout.details' | translate"
+                *ngIf="product?.projectCustomHtml"
+            >
+                <div
+                    class="descriptions-content margin-top-30"
+                    *ngIf="product?.projectUrl"
+                >
+                    <p class="descriptions-label primary-dark fw-700">
+                        {{ "marketplace.checkout.projectLink" | translate }}
+                    </p>
+                    <span
+                        class="to-point primary-dark fw-400"
+                        (click)="goToUrl(product?.projectUrl)"
+                        [matTooltip]="'tooltip.accessProject' | translate"
+                        matTooltipClass="dark-tooltip"
+                        matTooltipPosition="above"
+                    >
+                        {{ product?.projectUrl }}
+                    </span>
+                </div>
+                <div
+                    class="descriptions-content margin-top-30"
+                    *ngIf="product?.projectDescription"
+                >
+                    <p class="primary-dark fw-700">
+                        {{
+                            "marketplace.checkout.projectDescription"
+                                | translate
+                        }}
+                    </p>
+                    <p class="primary-dark fw-400">
+                        {{ product?.projectDescription }}
+                    </p>
+                </div>
+                <div
+                    class="customHtmlContent margin-top-30"
+                    [innerHTML]="customHtmlContent"
+                ></div>
+            </mat-tab>
+            <mat-tab
+                [label]="'marketplace.checkout.distributions' | translate"
+                *ngIf="distributionsDataSource.data.length > 0"
+            >
+                <div class="table margin-top-30">
+                    <table
+                        mat-table
+                        [dataSource]="distributionsDataSource"
+                        class="table"
+                        matSort
+                    >
+                        <ng-container matColumnDef="projectDate">
+                            <th mat-header-cell *matHeaderCellDef>
+                                {{
+                                    "productDetails.distributionsDate"
+                                        | translate
+                                }}
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{
+                                    element?.request_date | date : "dd/MM/yyyy"
+                                }}</span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="projectValue">
+                            <th mat-header-cell *matHeaderCellDef>
+                                {{
+                                    "productDetails.distributionsValue"
+                                        | translate
+                                }}
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{
+                                    element?.total_to_distribute
+                                        | number : "1.6-6"
+                                }}</span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="projectToken">
+                            <th mat-header-cell *matHeaderCellDef>
+                                {{
+                                    "productDetails.distributionsToken"
+                                        | translate
+                                }}
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{ element?.token_id }}</span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="projectStatus">
+                            <th mat-header-cell *matHeaderCellDef>
+                                {{
+                                    "productDetails.distributionsStatus"
+                                        | translate
+                                }}
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{
+                                    translateDistributionsStatus(
+                                        element?.status
+                                    ) | translate
+                                }}</span>
+                            </td>
+                        </ng-container>
+
+                        <tr
+                            mat-header-row
+                            *matHeaderRowDef="distributionsDisplayedColumns"
+                        ></tr>
+                        <tr
+                            mat-row
+                            *matRowDef="
+                                let row;
+                                columns: distributionsDisplayedColumns
+                            "
+                        ></tr>
+
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td
+                                [attr.colspan]="
+                                    distributionsDisplayedColumns.length
+                                "
+                            >
+                                <p
+                                    class="no-data-text"
+                                    [innerHTML]="'noFoundText' | translate"
+                                ></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</ng-template>
+<mat-progress-spinner
+    *ngIf="loading || loadingRequest"
+    class="spinner"
+    [mode]="'indeterminate'"
+></mat-progress-spinner>

@@ -1,0 +1,16 @@
+<div class="pagseguro-modal modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'paymentModal.pagSeguro.title' | translate }}{{ paymentProcessor }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <span class="primary-dark fw-400 text-align-left margin-top-20">{{ 'paymentModal.pagSeguro.info' | translate }}</span>
+
+    <div class="modal-buttons inline gap-16 wth-100 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'paymentModal.pagSeguro.close' | translate }}</button>
+        <button class="btn dark-shade wth-100"
+            (click)="openCoin()">
+            {{ 'paymentModal.pagSeguro.go' | translate }}
+        </button>
+    </div>
+    <mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
+</div>

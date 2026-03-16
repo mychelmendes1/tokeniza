@@ -1,0 +1,19 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+
+.modal-container {
+    .container-warning-icon {
+        padding: 10px;
+        border-radius: 50%;
+        background-color: v.$red-50;
+
+        mat-icon {
+            @include mix.iconSize(28px, true);
+        }
+    }
+}
+
+::ng-deep .custom-modal.warning-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

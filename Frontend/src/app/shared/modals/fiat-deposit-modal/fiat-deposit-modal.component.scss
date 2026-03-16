@@ -1,0 +1,71 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.fiat-deposit-modal {
+    min-height: 510px;
+
+    .container-buttons {
+        margin-top: 30px;
+
+        .btn {
+            width: 70px;
+            height: 36px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    }
+
+    .add-file {
+        margin-top: 40px;
+
+        .input-file {
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+        
+        .not-match {
+            margin: 3px 0 0 0;
+        }
+    }
+
+    p {
+        font-size: 14px;
+        font-weight: bold;
+        word-break: break-word;
+    }
+
+    .modal-wallet {
+        margin-top: 10px;
+
+        .modal-wallet-text {
+            font-size: 12px;
+        }
+
+        .inline-flex {
+            display: flex;
+
+            mat-icon {
+                margin-left: 25px;
+            }
+        }
+
+        .modal-wallet-code {
+            word-break: break-word;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    }
+
+    .modal-info {
+        font-size: 13px;
+        margin-top: 15px;
+        text-align: center;
+    }
+}
+
+::ng-deep .custom-modal.fiat-deposit-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 600px;
+}

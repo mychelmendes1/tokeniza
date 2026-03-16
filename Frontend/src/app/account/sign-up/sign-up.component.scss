@@ -1,0 +1,285 @@
+@use '../../../assets/styles/variables.scss' as v;
+@use '../../../assets/styles/mixins.scss' as mix;
+@use '../../../assets/styles/material-component.scss';
+
+.account-left-container {
+    width: max-content !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    overflow-y: auto;
+    height: 100% !important;
+    padding-bottom: 20px;
+
+    @include mix.mq("tablet", max) {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px !important;
+        box-sizing: border-box;
+    }
+
+    @include mix.mq("phone-wide", max) {
+        padding: 16px !important;
+    }
+
+    h2 {
+        @include mix.mq("phone-wide", max) {
+            font-size: 32px !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    }
+
+    span.fs-20 {
+        @include mix.mq("phone-wide", max) {
+            font-size: 16px !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    }
+
+    .radio-group {
+        @include mix.mq("phone-wide", max) {
+            gap: 20px !important;
+            flex-wrap: wrap !important;
+        }
+
+        @include mix.mq("phone", max) {
+            gap: 12px !important;
+        }
+    }
+
+    .radio-container {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+        }
+    }
+
+    .margin-left-10 {
+        @include mix.mq("phone-wide", max) {
+            margin-left: 0 !important;
+        }
+    }
+
+    .gap-100 {
+        @include mix.mq("phone-wide", max) {
+            gap: 20px !important;
+        }
+
+        @include mix.mq("phone", max) {
+            gap: 12px !important;
+        }
+    }
+
+    .input-container {
+        min-height: fit-content;
+        overflow: visible;
+
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        label {
+            @include mix.mq("phone-wide", max) {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                font-size: 12px !important;
+            }
+        }
+
+        input,
+        .input-fill-default,
+        .select-fill-primary {
+            @include mix.mq("phone-wide", max) {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box;
+                font-size: 16px !important; // Previne zoom no iOS
+            }
+        }
+    }
+
+    .form {
+        padding: 0 !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 0 !important;
+        }
+    }
+
+    .progress-bar {
+        background-color: v.$dark;
+        max-width: 600px !important;
+
+        @include mix.mq("phone-wide", max) {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
+
+    .select-fill-primary {
+        background-color: v.$input !important;
+
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box;
+        }
+    }
+
+    mat-select {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box;
+        }
+    }
+
+    .inline {
+        @include mix.mq("phone-wide", max) {
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+        }
+    }
+
+    .btn {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box;
+            font-size: 14px !important;
+        }
+    }
+
+    mat-horizontal-stepper {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+
+    mat-step {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+
+    mat-radio-button {
+        @include mix.mq("phone-wide", max) {
+            white-space: nowrap;
+            font-size: 14px !important;
+        }
+    }
+
+    mat-autocomplete {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+
+    .autocomplete-panel {
+        @include mix.mq("phone-wide", max) {
+            width: 100% !important;
+            max-width: calc(100vw - 32px) !important;
+        }
+    }
+
+    .error-hint {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        color: v.$red !important;
+        
+        @include mix.mq("phone-wide", max) {
+            font-size: 11px !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100% !important;
+        }
+    }
+
+    mat-checkbox {
+        @include mix.mq("phone-wide", max) {
+            font-size: 12px !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    }
+
+    .button-link {
+        @include mix.mq("phone-wide", max) {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-size: 12px !important;
+        }
+    }
+
+    p.inline {
+        @include mix.mq("phone-wide", max) {
+            flex-wrap: wrap !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    }
+
+    // DIDIT Verification Styles
+    .didit-verification-wrapper {
+        width: 100%;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+
+        .title {
+            font-size: 28px;
+            color: v.$primary-500;
+            font-weight: 700;
+            text-align: center;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: v.$light-text;
+            font-size: 16px;
+            text-align: center;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .didit-iframe-container {
+            width: 100%;
+            min-height: 700px;
+            height: 80vh;
+            max-height: 900px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            background-color: v.$secondary-900;
+
+            @include mix.mq("tablet") {
+                max-width: 800px;
+            }
+
+            @include mix.mq("phone-large", max) {
+                min-height: 600px;
+                height: 70vh;
+                max-height: 700px;
+            }
+
+            iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                display: block;
+            }
+        }
+    }
+}

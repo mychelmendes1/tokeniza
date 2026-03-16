@@ -1,0 +1,149 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'transferModal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+
+    <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+        <!-- Step 0 Token Select -->
+        <mat-step [editable]="true">
+            <form [formGroup]="formTokenSelected">
+                <div class="input-container column align-start margin-top-30">
+                    <label class="label-dark">{{ 'transferModal.token' | translate }}</label>
+                    <mat-select class="select-fill-primary" disableOptionCentering formControlName="selectedToken" (selectionChange)="tokenSelectedChanged()"
+                        [placeholder]="'transferModal.selectToken' | translate" panelClass="select-fill-primary">
+                        <mat-select-trigger>
+                            <div class="inline gap-10">
+                                <img alt="token" class="img-token-small" [src]="formTokenSelected?.controls?.selectedToken?.value?.image_symbol">
+                                <span class="primary-dark fw-500">{{ formTokenSelected?.controls?.selectedToken?.value?.id }} - {{ 'transferModal.balance' | translate }}: {{ convertBigNumberToNumber(formTokenSelected?.controls?.selectedToken?.value?.userBalance) }}</span>
+                            </div>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let token of tokens" [value]="token">
+                            <div class="inline gap-10">
+                                <img alt="token" class="img-token-small" [src]="token?.image_symbol">
+                                <span class="primary-dark fw-500">{{ token?.id }} - {{ 'transferModal.balance' | translate }}: {{ convertBigNumberToNumber(token?.userBalance) }}</span>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </div>
+                <div class="inline gap-16 margin-top-30 container-buttons">
+                    <button class="btn doutline wth-100" matDialogClose>
+                        <span>{{ 'button.cancel' | translate }}</span>
+                    </button>
+                    <button class="btn dark-shade wth-100" [disabled]="!formTokenSelected.valid || isZeroOrInvalidBalance() || loading" (click)="goForward()">
+                        <span>{{ 'button.continue' | translate }}</span>
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- Step 1 Transfer Type Select -->
+        <mat-step [editable]="true">
+            <form [formGroup]="formIsInternal">
+                <div class="input-container column margin-top-30 align-start" [@fadeIn]>
+                    <label class="label-dark">{{ 'transferModal.transferTypeSelect' | translate }}</label>
+                    <div class="radio-container inline">
+                        <mat-radio-group class="radio-group inline gap-100" formControlName="isInternal" (change)="isInternalChanged()">
+                            <mat-radio-button [value]="true">
+                                <span class="primary-dark fw-500">{{ 'transferModal.internal' | translate }}</span>
+                            </mat-radio-button>
+                            <mat-radio-button [value]="false">
+                                <span class="primary-dark fw-500">{{ 'transferModal.external' | translate }}</span>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            
+                <div class="inline gap-16 margin-top-30 container-buttons">
+                    <button class="btn dark-shade wth-100" matStepperPrevious [disabled]="loading"
+                        (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                        <mat-icon class="svg-icon" svgIcon="arrow-left"
+                            [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                        ></mat-icon>
+                        <span>{{ 'button.back' | translate }}</span>
+                    </button>
+                    <button class="btn dark-shade wth-100" [disabled]="!formIsInternal.valid || loading" (click)="goForward()">
+                        <span>{{ 'button.continue' | translate }}</span>
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- Step 2 Wallet validated -->
+        <mat-step [editable]="true">
+            <form [formGroup]="formWalletToTransfer">
+                <div class="input-container column margin-top-30 align-start" [@fadeIn]>
+                    <div class="column align-start wth-100 gap-3">
+                        <label class="label-dark">{{ formIsInternal.controls.isInternal.value ? ('transferModal.userData' | translate) : ('transferModal.walletAddress' | translate) }}</label>
+                        <input class="input-fill-default medium-border" [formControl]="formWalletToTransfer.get(formIsInternal.controls.isInternal.value ? 'emailToTransfer' : 'walletToTransfer')"
+                            [placeholder]="(formIsInternal.controls.isInternal.value ? 'transferModal.internalWalletPlaceholder' : 'transferModal.externalWalletPlaceholder') | translate">
+                    </div>
+                </div>
+                <div class="inline gap-16 margin-top-30 container-buttons">
+                    <button class="btn dark-shade wth-100" matStepperPrevious [disabled]="loading"
+                        (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                        <mat-icon class="svg-icon" svgIcon="arrow-left"
+                            [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                        ></mat-icon>
+                        <span>{{ 'button.back' | translate }}</span>
+                    </button>
+                    <button class="btn dark-shade wth-100" (click)="goToTransferValue()"
+                        [disabled]="!(formIsInternal.controls.isInternal.value ? formWalletToTransfer.get('emailToTransfer')?.valid : formWalletToTransfer.get('walletToTransfer')?.valid) || loading">
+                        <span>{{ 'button.continue' | translate }}</span>
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- Step 2 Value -->
+        <mat-step [editable]="true">
+            <form [formGroup]="formTransferValue">
+                <div class="input-container column margin-top-30" [@fadeIn]>
+                    <div class="column align-start wth-100 gap-3">
+                        <label class="label-dark">{{ 'transferModal.howMuch' | translate }}: {{ formWalletToTransfer.controls.walletToTransfer.value }}</label>
+                        <div class="between margin-top-16">
+                            <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'transferModal.available' | translate }}</span>
+                            <div class="inline gap-8">
+                                <span class="primary-gray fw-400 fs-16 text-align-left">{{ convertValueToDisplay(formTokenSelected?.controls?.selectedToken?.value?.userBalance) }}</span>
+                            </div>
+                        </div>
+                        <input class="input-fill-default medium-border" type="text" placeholder="0,000000" (keypress)="allowOnlyNumbers($event)" (input)="changedAmount()" formControlName="transferValue" appMaskToken>
+                    </div>
+                    <div class="between margin-top-16">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'transferModal.tax' | translate }}</span>
+                        <div class="inline gap-8">
+                            <span class="primary-gray fw-400 fs-16 text-align-left">{{ convertValueToDisplay(tax) }}</span>
+                        </div>
+                    </div>
+                    <div class="between margin-top-10">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'transferModal.total' | translate }}</span>
+                        <div class="inline gap-8">
+                            <span class="primary-gray fw-400 fs-16 text-align-left">{{ convertValueToDisplay(total) }}</span>
+                        </div>
+                    </div>
+                    <div class="between margin-top-10">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'transferModal.value' | translate }}</span>
+                        <div class="inline gap-8">
+                            <span class="primary-gray fw-400 fs-16 text-align-left">{{ totalInFiat | currency: fiatCurrency?.symbol: '': '1.6-6' }}</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="error-hint" *ngIf="error && errorMessage">{{ errorMessage | translate }}</span>
+                <div class="inline gap-16 margin-top-30 container-buttons">
+                    <button class="btn dark-shade wth-100" matStepperPrevious [disabled]="loading"
+                        (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                        <mat-icon class="svg-icon" svgIcon="arrow-left"
+                            [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                        ></mat-icon>
+                        <span>{{ 'button.back' | translate }}</span>
+                    </button>
+                    <button class="btn dark-shade wth-100" [disabled]="!formTransferValue.valid || isZeroOrInvalidBalance() || loading || errorMessage" (click)="handleTransferValue()">
+                        <span>{{ 'button.continue' | translate }}</span>
+                    </button>
+                </div>
+                <p *ngIf="minAmount || 0 > 0" class="primary-gray fw-400 fs-16 text-align margin-top-10">{{ 'transferModal.minValue' | translate }} {{minAmount }} {{ 'transferModal.tokens' | translate }}</p>
+            </form>
+        </mat-step>
+    </mat-horizontal-stepper>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

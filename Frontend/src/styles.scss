@@ -1,0 +1,84 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+@use './assets/styles/variables.scss' as v;
+@use './assets/styles/app-theme.scss' as theme; // Custom theme palette
+@use './assets/styles/mixins.scss' as mix;
+@use './assets/styles/scrollbar.scss';
+@use './assets/styles/common-classes.scss';
+@use './assets/styles/material-component.scss';
+@import 'swiper/scss';
+@import 'swiper/scss/navigation';
+@import 'swiper/scss/pagination';
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$theme-primary: mat.m2-define-palette(theme.$app-primary);
+$theme-accent: mat.m2-define-palette(theme.$app-secondary);
+$theme-warn: mat.m2-define-palette(theme.$app-red);
+
+$theme-typography: mat.m2-define-typography-config($font-family: 'Inter');
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$app-theme: mat.m2-define-light-theme((
+    color:(
+        primary: $theme-primary,
+        accent: $theme-accent,
+        warn: $theme-warn,
+    ),
+    typography: $theme-typography,
+));
+
+// Initialize the custom theme
+@include mat.all-component-themes($app-theme);
+
+@include mat.datepicker-overrides((
+  calendar-date-selected-state-text-color: v.$primary-500,
+  calendar-date-selected-state-background-color: v.$dark,
+  calendar-container-shape: none,
+  calendar-header-divider-color: none,
+  calendar-date-today-selected-state-outline-color: transparent,
+  calendar-date-today-outline-color: v.$primary-500,
+  calendar-body-label-text-color: v.$light-text,
+  calendar-period-button-text-color: v.$dark,
+  calendar-period-button-icon-color: transparent,
+  calendar-navigation-button-icon-color: v.$dark
+));
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: v.$light-text;
+    cursor: default;
+    font-family: Roboto, "Inter", sans-serif;
+}
+
+.content-container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+    box-sizing: border-box;
+    letter-spacing: 0px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Espaçamento geral só quando for app */
+body.is-app {
+}

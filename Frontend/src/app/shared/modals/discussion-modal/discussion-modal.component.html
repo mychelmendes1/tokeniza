@@ -1,0 +1,25 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ data.title | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <form [formGroup]="form">
+        <div class="input-container column align-start">
+            <label class="label-dark">{{ data.label | translate }}</label>
+            <textarea #discussionText class="custom-text-area medium-border textarea min-height-150"
+                formControlName="discussion" maxlength="250" [placeholder]="data.placeholder | translate">
+            </textarea>
+            <span class="error-hint" *ngIf="showError('discussion', form) && form?.controls?.['discussion']?.errors?.['minlength']">
+                {{ 'errorHint.minTwentyChars' | translate }}
+            </span>
+            <span class="length-hint">
+                {{ discussionText?.value?.length || 0 }} / 250
+            </span>
+        </div>
+        <div class="inline send-btn">
+            <button class="btn dark-shade" (click)="close(true)" [disabled]="!form.valid">
+                {{ data.button | translate }}
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,74 @@
+@use '../../assets/styles/variables.scss' as v;
+@use '../../assets/styles/mixins.scss' as mix;
+
+.account-container {
+    background-color: v.$normal-grey;
+    display: flex;
+    min-height: 100dvh;
+    overflow: auto;
+    gap: 20px;
+
+    @include mix.mq("phone-wide", max) {
+        overflow-x: hidden;
+    }
+
+    .logo-container {
+        width: calc(100% - 32px);
+        margin-top: 32px;
+        align-items: baseline !important;
+    }
+
+    .left {
+        justify-content: center;
+        align-items: center;
+        max-height: 100%;
+        flex: 1 1 25%;
+    }
+
+    .left-content {
+        width: 100%;
+        height: 100%;
+        padding: 40px 0 0 40px;
+
+        @include mix.mq("tablet", max) {
+            padding: 0 !important;
+        }
+    }
+
+    .right {
+        position: relative;
+        min-height: 100dvh;
+        overflow: hidden;
+
+        img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-top-left-radius: 100px;
+            border-bottom-left-radius: 100px;
+            position: relative;
+        }
+
+        .text-img {
+            position: absolute;
+            bottom: 0;
+            padding: 40px;
+            z-index: 4;
+        }
+    }
+
+    .back-shadow.right::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent 50%);
+        border-top-left-radius: 100px;
+        border-bottom-left-radius: 100px;
+        z-index: 3;
+        pointer-events: none;
+        border: 1px solid transparent;
+    }
+}

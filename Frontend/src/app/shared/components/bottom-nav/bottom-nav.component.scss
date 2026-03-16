@@ -1,0 +1,46 @@
+@use '../../../../assets/styles/variables.scss' as v;
+@use '../../../../assets/styles/mixins.scss' as mix;
+
+:host {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999 !important;
+}
+
+.bottom-nav {
+    z-index: 2500 !important;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    gap: 4px;
+    background: v.$dark-shade;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: v.$light-text;
+    text-decoration: none;
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+.item .svg-icon {
+    width: 22px;
+    height: 22px;
+    color: v.$secondary-900;
+}
+
+.item.active,
+.item:active {
+    opacity: 1;
+}
+
+

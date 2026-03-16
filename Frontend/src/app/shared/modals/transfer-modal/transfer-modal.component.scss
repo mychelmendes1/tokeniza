@@ -1,0 +1,40 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    @include mix.mq("phone-wide", max) {
+        padding: 22px 10px !important;
+    }
+}
+
+.container-buttons {
+    @include mix.mq("phone-wide", max) {
+        flex-wrap: wrap-reverse;
+    }
+}
+
+.select-fill-primary {
+    @include mix.mq("phone-wide", max) {
+        min-width: 310px !important;
+    }
+}
+
+::ng-deep.img-token-small {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    object-fit: scale-down;
+}
+
+::ng-deep .custom-modal.transfer-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}
+
+.error-hint {
+    color: red;
+    font-size: 14px;
+}

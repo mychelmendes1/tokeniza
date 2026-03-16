@@ -1,0 +1,183 @@
+@use './../../../assets/styles/common-classes.scss';
+@use './../../../assets/styles/variables.scss' as v;
+@use './../../../assets/styles/material-component.scss';
+@use './../../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .header-page {
+        @include mix.mq("tablet", max) {
+            padding-top: 30px;
+        }
+    }
+
+    .crowdfunding-details-container {
+        background: v.$normal-grey;
+        padding: 32px;
+        position: relative;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 30px 10px;
+        }
+
+        .input-container {
+            max-width: 400px;
+        }
+
+        .container-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background-color: v.$primary-FG200;
+            border-radius: 8px;
+
+            &:hover {
+                background-color: v.$primary-500;
+                z-index: 9999;
+            }
+        }
+    }
+
+    .hovered-primary:hover {
+        color: v.$primary-600 !important;
+    }
+
+    .tabs-container {
+        padding: 0px 32px 32px;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 0 10px 32px;
+        }
+    }
+
+    .crowdfunding-product {
+        align-items: flex-start;
+
+        @include mix.mq("tablet-wide", max) {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .carousel {
+            display: flex;
+            justify-content: center !important;
+            gap: 0;
+            width: 100%;
+
+            @include mix.mq("tablet", max) {
+                justify-content: center;
+            }
+
+            @include mix.mq("phablet", max) {
+                app-photos-slide {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .crowdfunding-faq__container {
+        span {
+            @include mix.mq("phone-wide", max) {
+                font-size: 15px;
+            }
+        }
+    }
+
+    .box-card {
+        background-color: v.$light-text;
+        border-radius: 12px;
+        padding: 24px;
+    }
+
+    .thumbs-slide {
+        @include mix.mq("tablet", max) {
+            display: none !important;
+        }
+    }
+
+    .offers-cards {
+        @extend .offer-card-grid;
+        column-gap: 32px !important;
+        row-gap: 32px !important;
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        }
+
+        .card {
+            padding: 16px;
+            min-width: 0 !important;
+            background-color: v.$dark-shade !important;
+
+            &.inline-flex {
+                justify-content: space-between !important;
+                flex-direction: row !important;
+            }
+        }
+
+        &.inline-flex {
+            display: inline-flex !important;
+            justify-content: space-between !important;
+            row-gap: 10px !important;
+        }
+    }
+
+    .custom-pad {
+        padding: 0 16px;
+    }
+
+    .project-name {
+        min-width: fit-content !important;
+    }
+
+    .skeleton-class {
+        max-width: 350px !important;
+        width: 350px !important;
+
+        &.dark::ng-deep {
+            .skeleton-loader {
+                background: v.$dark !important;
+            }
+        }
+
+        &.long {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
+
+    .send-btn {
+        justify-content: flex-end !important;
+        margin: 40px 0 20px;
+    }
+
+    .btn.wallet {
+        margin-left: auto;
+    }
+
+    .resp-column {
+        @include mix.mq("tablet", max) {
+            flex-direction: column;
+        }
+    }
+
+    app-photos-slide {
+        width: 100%;
+    }
+}
+
+.risk-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    color: v.$dark;
+}
+
+.risk-list li {
+    margin-bottom: 8px;
+}

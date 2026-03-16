@@ -1,0 +1,80 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+$header-template-columns: 152px min-content auto;
+$header-template-areas: "logo language user";
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .ir-container {
+        background-color: v.$normal-grey;
+
+    }
+
+    .summary,
+    .ir-container {
+        padding: 32px;
+    }
+
+    .summary .table-container {
+
+        &.max-view {
+            max-width: 1024px !important;
+            width: 1024px !important;
+            margin: 0 auto !important;
+            zoom: 100% !important;
+        }
+
+        .header {
+            width: 100%;
+            display: grid;
+            height: 90px;
+            background: v.$primary-600;
+            align-items: center;
+            min-width: 320px;
+            padding: 20px 30px 20px 30px;
+            row-gap: 20px;
+            grid-template-columns: $header-template-columns;
+            grid-template-areas: $header-template-areas;
+
+            .sidebar {
+                grid-area: sidebar;
+            }
+
+            .logo-container {
+                grid-area: logo;
+                margin: auto;
+
+                .logo {
+                    height: 49px;
+                    width: auto;
+
+                    @include mix.mq("phone-wide", max) {
+                        max-width: 116px;
+                    }
+                }
+            }
+        }
+
+        .report-title {
+            text-align: center;
+            color: v.$dark;
+        }
+
+        .user-details p {
+            color: v.$dark;
+        }
+
+        .company p {
+            text-align: center;
+            color: v.$dark;
+            font-weight: 700;
+        }
+    }
+}

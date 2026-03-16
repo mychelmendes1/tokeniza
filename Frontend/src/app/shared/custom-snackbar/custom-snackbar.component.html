@@ -1,0 +1,5 @@
+<div class="snackbar-container gap-8">
+    <mat-icon class="svg-icon primary-red-fill-600" *ngIf="theme === eSnackBarTheme.error" svgIcon="close-circle-fill"></mat-icon>
+    <mat-icon class="svg-icon primary-fill" *ngIf="theme === eSnackBarTheme.success" svgIcon="tick-circle-fill"></mat-icon>
+    <p>{{ message }}</p>
+</div>

@@ -1,0 +1,400 @@
+<div class="account-left-container column gap-12">
+    <div class="between column">
+        <div class="column gap-12 wth-100">
+            <h2 class="primary-600 fw-600">{{ translateHeaderText().title | translate }}</h2>
+            <span class="fs-20 fw-400">{{ translateHeaderText().subtitle | translate }}</span>
+            <div class="progress-bar">
+                <div class="progress-bar__value" [ngStyle]="{'width.%' : progressBarWidth}"></div>
+            </div>
+        </div>
+        <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+            <!-- Step 0 Form Identification -->
+            <mat-step [editable]="true">
+                <form [formGroup]="identificationForm">
+                    <div class="form sign-up">
+                        <div class="input-container column margin-left-10">
+                            <label>{{ 'completeYourRegistration.gender' | translate }}<span class="primary-red"> *</span></label>
+                            <div class="radio-container inline">
+                                <mat-radio-group formControlName="gender" class="radio-group inline" required>
+                                    <mat-radio-button class="gender-options" *ngFor="let gender of genderList"
+                                        [value]="gender?.code">{{ gender?.text || '' | translate }}
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                        <div class="input-container icon-suffix margin-bottom-20">
+                            <label>{{ 'completeYourRegistration.profession' | translate }}<span class="primary-red"> *</span></label>
+                            <mat-icon class="suffix svg-icon primary-dark to-point" svgIcon="search" *ngIf="!searchResults['employmentType']"></mat-icon>
+                            <mat-progress-spinner *ngIf="searchResults['employmentType']" class="spinner-small secondary input-icon" [mode]="'indeterminate'"></mat-progress-spinner>
+                            <input class="input-fill-default" 
+                                [matAutocomplete]="employment" formControlName="employmentType"
+                                [placeholder]="'completeYourRegistration.select.profession' | translate" required maxlength="150"
+                            >
+                            <mat-autocomplete #employment="matAutocomplete" classList="autocomplete-panel">
+                                <mat-option class="input amount-input" *ngFor="let type of employmentTypeList"
+                                    (onSelectionChange)="onEmploymentSelected(type)" [value]="capitalizeFirstLetter(type)">
+                                    <span class="input amount-input">{{ capitalizeFirstLetter(type) }}</span>
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('employmentType', identificationForm) && !identificationForm?.controls?.employmentType?.errors?.['incorrectEmployment']">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="showError('employmentType', identificationForm) && identificationForm?.controls?.employmentType?.errors?.['incorrectEmployment']">
+                                    {{ 'completeYourRegistration.invalidEmployment' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container column align-start margin-top-30">
+                            <label>{{ 'completeYourRegistration.marital' | translate }}<span class="primary-red"> *</span></label>
+                            <mat-select class="select-fill-primary" disableOptionCentering required
+                                [placeholder]="'placeholder.select' | translate" panelClass="select-fill-primary" formControlName="marritalStatus">
+                                <mat-option *ngFor="let status of marritalStatus" [value]="status?.code">{{ status?.text || '' | translate }}</mat-option>
+                            </mat-select>
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('marritalStatus', identificationForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container icon-suffix margin-bottom-20">
+                            <label>{{ 'completeYourRegistration.country' | translate }}<span class="primary-red"> *</span></label>
+                            <mat-icon class="suffix svg-icon primary-dark to-point" svgIcon="search" *ngIf="!searchResults['country']"></mat-icon>
+                            <mat-progress-spinner *ngIf="searchResults['country']" class="spinner-small secondary input-icon" [mode]="'indeterminate'"></mat-progress-spinner>
+                            <input class="input-fill-default" formControlName="country" [matAutocomplete]="country"
+                                [placeholder]="'placeholder.select' | translate" required maxlength="150"
+                            >
+                            <mat-autocomplete #country="matAutocomplete" classList="autocomplete-panel">
+                                <mat-option class="input amount-input" *ngFor="let nationality of filteredNationalityList"
+                                    (onSelectionChange)="onSelectNationality(nationality.name)" [value]="nationality.name">
+                                    <span class="input amount-input">{{ nationality.name }}</span>
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('country', identificationForm) && !identificationForm?.controls?.country?.errors?.['incorrectCountry']">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="showError('country', identificationForm) && identificationForm?.controls?.country?.errors?.['incorrectCountry']">
+                                    {{ 'completeYourRegistration.invalidCountry' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 1 Form Declarations -->
+            <mat-step [editable]="true">
+                <form [formGroup]="declarationForm" class="margin-top-30">
+                    <div class="form sign-up column">
+                        <mat-checkbox color="primary" class="checkbox-v-mark" formControlName="vinculatedToCompany"
+                            (change)="clearDeclarationFormBoxes(false)">
+                            {{ 'completeYourRegistration.linked' | translate }} {{getCompanyName()}}
+                        </mat-checkbox>
+                        <mat-checkbox color="primary" class="checkbox-v-mark" formControlName="usPerson"
+                            (change)="clearDeclarationFormBoxes(false)">
+                            {{ 'completeYourRegistration.usPerson' | translate }}
+                        </mat-checkbox>
+                        <mat-checkbox color="primary" class="checkbox-v-mark" formControlName="pep" (change)="clearDeclarationFormBoxes(false)">
+                            {{ 'completeYourRegistration.politicallyExposed' | translate }}
+                        </mat-checkbox>
+                        <mat-checkbox color="primary" class="checkbox-v-mark" formControlName="noAlternative"
+                            (change)="clearDeclarationFormBoxes(true)">
+                            {{ 'completeYourRegistration.none' | translate }}
+                        </mat-checkbox>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 2 address -->
+            <mat-step [editable]="true">
+                <form [formGroup]="addressForm">
+                    <div class="inline gap-10 responsive-column">
+                        <div class="input-container flex-1">
+                            <label>{{ 'completeYourRegistration.country' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="country"
+                                required maxlength="150" readonly
+                            >
+                        </div>
+                        <div class="input-container flex-1">
+                            <label>{{ 'completeYourRegistration.form.address.cep' | translate }}<span class="primary-red"> *</span></label>
+                            <div class="inline">
+                                <input class="input-fill-default" formControlName="cep" #cepInput (input)="findCep(cepInput?.value); clearFormAdress(); markAddressFormUntouchedAndPristine();"
+                                    [placeholder]="'placeholder.insert' | translate" maxlength="20">
+                            </div>
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('cep', addressForm) && !addressForm?.controls?.cep?.value">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="showError('country', addressForm) && addressForm?.controls?.cep?.errors?.['minLengthError'] && addressForm?.controls?.cep?.value">
+                                    {{ 'completeYourRegistration.form.hint.cep' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="inline gap-10 responsive-column">
+                        <div class="flex-1 input-container">
+                            <label class="input-label">{{ 'completeYourRegistration.form.address.publicPlace' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="publicPlace" maxlength="200"
+                                [placeholder]="'placeholder.insert' | translate">
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('publicPlace', addressForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container flex-1">
+                            <label class="input-label">{{ 'completeYourRegistration.form.address.number' | translate }}<span class="primary-red"> *</span></label>
+                            <div class="inline">
+                                <input class="input-fill-default" #numberInput formControlName="number" maxlength="10"
+                                    [placeholder]="'placeholder.insert' | translate" (input)="isEmpty()" [required]="!addressForm.value.noNumber"
+                                >
+                                <mat-checkbox color="primary" class="checkbox-v-mark to-number" formControlName="noNumber" (change)="clearNumber();" [checked]="!numberInput.value">
+                                    <span>{{ 'completeYourRegistration.form.address.noNumber' | translate }}</span>
+                                </mat-checkbox>
+                            </div>
+                            <span class="error-hint to-number">
+                                <ng-container *ngIf="showError('number', addressForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <label class="input-label">{{ 'completeYourRegistration.form.address.complement' | translate }}</label>
+                        <input class="input-fill-default" formControlName="complement" maxlength="100"
+                            [placeholder]="'placeholder.insert' | translate">
+                    </div>
+                    <div class="input-container">
+                        <div class="wrapper-hint flex-1">
+                            <label class="input-label">{{ 'completeYourRegistration.form.address.neighborhood' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="neighborhood" maxlength="100"
+                                [placeholder]="'placeholder.insert' | translate" required
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('neighborhood', addressForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="inline gap-10 responsive-column margin-bottom-20">
+                        <div class="flex-1 input-container">
+                            <label class="input-label">{{ 'completeYourRegistration.form.address.state' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="state" maxlength="100"
+                                [placeholder]="'placeholder.insert' | translate"
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('state', addressForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="flex-1 input-container">
+                            <label class="input-label">{{ 'completeYourRegistration.form.address.city' | translate }}<span class="primary-red"> *</span></label>
+                            <input class="input-fill-default" formControlName="city" maxlength="100"
+                                [placeholder]="'placeholder.insert' | translate"
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('city', addressForm)">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 3 Investment -->
+            <mat-step [editable]="true">
+                <form [formGroup]="investmentForm">
+                    <div class="inline gap-10 baseline responsive-column">
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.monthlyIncome' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.monthlyIncome.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="monthlyIncome"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'"
+                                currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                            >
+                            <div class="not-match" *ngIf="showError('monthlyIncome', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.financialInvestments' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.financialInvestments.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="financialApplications"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'" currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                            >
+                            <div class="not-match" *ngIf="showError('financialApplications', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="inline gap-10 baseline responsive-column">
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.realEstate' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.realEstate.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="realEstate"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'"
+                                currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric">
+                            <div class="not-match" *ngIf="showError('realEstate', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.personalty' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.personalty.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="movableProperties"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'" currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                            />
+                            <div class="not-match" *ngIf="showError('movableProperties', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="inline gap-10 baseline responsive-column">
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.alternativeActives' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.alternativeActives.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="realActives"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'" currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                            >
+                            <div class="not-match" *ngIf="showError('realActives', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+
+                        <div class="flex-1 input-container">
+                            <div class="inline gap-8">
+                                <label class="input-label">{{ 'completeYourRegistration.others' | translate }}</label>
+                                <mat-icon class="svg-icon primary-light to-point alert-circle"
+                                    [matTooltip]="'completeYourRegistration.others.tooltip' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="alert-circle">
+                                </mat-icon>
+                            </div>
+                            <input class="input-fill-default" formControlName="others"
+                                [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'" currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                            >
+                            <div class="not-match" *ngIf="showError('others', investmentForm)">
+                                {{ 'default.hint.requiredField' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 4 Profiling -->
+            <mat-step [editable]="true">
+                <form [formGroup]="investorProfilingForm" class="margin-top-30">
+                    <div class="declaration-boxes column">
+                        <mat-checkbox color="primary" class="checkbox-v-mark" required *ngFor="let investor of investorProfiling" [required]="investor?.selected"
+                            [checked]="investor?.selected" (change)="onProfilingCheckboxChange($event, investor)" [value]="investor?.code || ''">
+                            {{ investor?.text || '' | translate }}
+                        </mat-checkbox>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 5 Fraud control -->
+            <mat-step [editable]="true">
+                <form [formGroup]="fraudAndSecurityForm" class="margin-top-30">
+                    <div class="upload-file-container column gap-10">
+                        <div class="upload-file-content" [ngClass]="{'done': fraudAndSecurityForm.value.documentFront }">
+                            <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentFront')" />
+                            <div class="section-thumbnail inline">
+                                <img class="document-icon" *ngIf="!fraudAndSecurityForm.value.documentFront" src="assets/images/document-front-model.svg">
+                                <img class="real-document" *ngIf="fraudAndSecurityForm.value.documentFront" [src]="fraudAndSecurityForm.value.documentFront" alt="">
+                                <div class="content-document">
+                                    <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="fraudAndSecurityForm.value.documentFront">verified</mat-icon>
+                                    <p class="column middle-gap">
+                                        <span class="dark-text">{{ 'completeYourRegistration.documentFront' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-file-content" [ngClass]="{'done': fraudAndSecurityForm.value.documentBack }">
+                            <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentBack')" />
+                            <div class="section-thumbnail inline">
+                                <img class="document-icon" *ngIf="!fraudAndSecurityForm.value.documentBack" src="assets/images/document-back-model.svg">
+                                <img class="real-document" *ngIf="fraudAndSecurityForm.value.documentBack" [src]="fraudAndSecurityForm.value.documentBack" alt="">
+                                <div class="content-document">
+                                    <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="fraudAndSecurityForm.value.documentBack">verified</mat-icon>
+                                    <p class="column middle-gap">
+                                        <span class="dark-text">{{ 'completeYourRegistration.documentBack' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-file-content" [ngClass]="{'done': fraudAndSecurityForm.value.documentSelfie }">
+                            <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentSelfie')" />
+                            <div class="section-thumbnail selfie-with-document inline">
+                                <img class="document-icon" *ngIf="!fraudAndSecurityForm.value.documentSelfie" src="assets/images/selfie-with-document.svg">
+                                <img class="real-document" *ngIf="fraudAndSecurityForm.value.documentSelfie" [src]="fraudAndSecurityForm.value.documentSelfie" alt="">
+                                <div class="content-document">
+                                    <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="fraudAndSecurityForm.value.documentSelfie">verified</mat-icon>
+                                    <p class="column middle-gap">
+                                        <span class="dark-text">{{ 'completeYourRegistration.selfieWithDocument' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                        <span class="light-text">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </div>
+    <div class="column gap-16 wth-100">
+        <div class="inline gap-16">
+            <button class="btn dark-shade margin-top-30 wth-100" (click)="previousStepper()" *ngIf="currentStepperIndex !== 0"
+                (mouseenter)="hoverIconClassService.onMouseEnter('back')" [disabled]="loading || loadingDocuments"
+                (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                <mat-icon class="svg-icon" svgIcon="arrow-left"
+                    [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                ></mat-icon>
+                <span>{{ 'button.back' | translate }}</span>
+            </button>
+            <button class="btn primary margin-top-30 wth-100" (click)="advanceButton()" [disabled]="disabledContinueButton() || loading || loadingDocuments">
+                <span class="primary-dark">{{ (lastCurrentStepperIndex ? 'button.conclude' : 'button.next') | translate }}</span>
+                <mat-icon class="svg-icon primary-dark" [svgIcon]="lastCurrentStepperIndex ? 'check' : 'arrow-right'"></mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading || loadingDocuments" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

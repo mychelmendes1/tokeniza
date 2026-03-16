@@ -1,0 +1,188 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="modal-full-content">
+        <div class="between">
+            <span class="primary-dark fw-700 fs-20">{{ 'withdraw.modal.title' | translate }}</span>
+            <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+        </div>
+        <div class="column align-start margin-top-30 wth-100">
+            <span class="primary-gray text-align-left">
+                {{ 'withdraw.modal.amountValueAvailable' | translate }} 
+                <strong class="fw-700" *ngIf="!loading">
+                    {{ unitOfMoney + ' ' + (toNumber(money) | number: '1.6-6')}} ({{ getTotalAmountInFiduciary() | floorCurrency: usefulSettings.fiatCurrency.currency }})
+                </strong>
+                <ngx-skeleton-loader class="skeleton-class withdraw" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+            </span>
+
+            <div *ngIf="(favorites?.length ?? 0) > 0" class="input-container column align-start margin-top-20" [@fadeIn]>
+                <label class="label-dark">{{ 'withdrawal.favorites' | translate }}</label>
+                <mat-select class="select-fill-primary" disableOptionCentering panelClass="select-fill-primary"
+                    [placeholder]="'placeholder.select' | translate" (selectionChange)="selectedFavorites($event.value)">
+                    <mat-option *ngFor="let favorite of favorites" [value]="favorite" >
+                        <span>{{ favorite?.bank }} - {{ favorite?.account}}</span>
+                    </mat-option>
+                </mat-select>
+            </div>
+
+            <form class="column gap-30 margin-top-30 wth-100" [formGroup]="formWithdraw">
+                <div class="input-container align-start wth-100">
+                    <label class="label-dark">{{ 'label.fullName' | translate }}</label>
+                    <input class="input-fill-default medium-border" formControlName="fullName"
+                        [placeholder]="'placeholder.fullName' | translate" required maxlength="150"
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('fullName', formWithdraw) && formWithdraw.get('fullName')?.hasError('required')">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                        <ng-container *ngIf="formWithdraw.get('fullName')?.hasError('completeFullNameError')">
+                            {{ formWithdraw.get('fullName')?.getError('completeFullNameError') | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="input-container align-start wth-100 icon-suffix">
+                    <label class="label-dark">{{ 'label.institution' | translate }}</label>
+                    <mat-icon class="suffix svg-icon primary-dark to-point" svgIcon="search"></mat-icon>
+                    <input #searchInput class="input-fill-default medium-border" [matAutocomplete]="auto" formControlName="institutionName"
+                        [placeholder]="'placeholder.institution' | translate" required (input)="searchBank(searchInput.value)">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option class="input amount-input" *ngFor="let bank of filteredBankList" [value]="bank?.name" (click)="changeBank(bank)">
+                            <span class="input amount-input">{{ bank?.code }} - {{ bank?.name }}</span>
+                        </mat-option>
+                    </mat-autocomplete>
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('institution', formWithdraw) && formWithdraw.get('institution')?.hasError('required')">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="input-container column align-start">
+                    <label class="label-dark">{{ 'label.accountType' | translate }}</label>
+                    <mat-select class="select-fill-primary" disableOptionCentering formControlName="bankAccountType" [disabled]="!formWithdraw.value.institution?.hasSavingAccount"
+                        [placeholder]="'placeholder.accountType' | translate" panelClass="select-fill-primary" required (selectionChange)="onSelectChange($event)">
+                        <mat-option *ngFor="let type of accountTypeList" [value]="type">
+                            <span>{{ 'banking.accountType.' + type | translate }}</span>
+                        </mat-option>
+                    </mat-select>
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('type', formWithdraw) && formWithdraw.get('type')?.hasError('required')">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="inline gap-10" *ngIf="this.formWithdraw.value.institution">
+                    <div class="input-container align-start flex-1">
+                        <label class="label-dark">{{ 'label.agency' | translate }}</label>
+                        <input class="input-fill-default medium-border" formControlName="branchCode" [readonly]="!allowBranchEdit"
+                            [placeholder]="'0000'" mask="0000" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('branchCode', formWithdraw) && formWithdraw.get('branchCode')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="input-container align-start flex-1">
+                        <label class="label-dark">{{ 'label.account' | translate }}</label>
+                        <input formControlName="accountCode" mask="0000099999999" type="text" [placeholder]="'00000'" required
+                            inputmode="numeric" class="input-fill-default medium-border" (input)="getInternalAccountInfo(false)"
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('accountCode', formWithdraw) && formWithdraw.get('accountCode')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="input-container align-start flex-1" *ngIf="hasAccountDigit">
+                        <label class="label-dark">{{ 'label.digit' | translate }}</label>
+                        <input formControlName="digitCode" mask="09" type="text" inputmode="numeric"
+                            class="input-fill-default medium-border" [placeholder]="'00'"
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('digitCode', formWithdraw) && formWithdraw.get('digitCode')?.hasError('required')">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                </div>
+                <div class="inline account-container align-start" *ngIf="this.formWithdraw.value.institution">
+                    <div class="input-container align-start">
+                        <label class="label-dark">{{ 'PIX' | translate }}</label>
+                        <input required formControlName="pix" type="text" inputmode="text" class="input-fill-default medium-border" [placeholder]="'Insira sua chave pix...'">
+                    </div>
+                </div>
+                <!-- This isInternalTransfer must be tested with '=== false' because it's a tri-state variable: true, false and undefined (when the form is rendered and there is no selected option) -->
+                <div class="input-container align-start" *ngIf="isInternalTransfer === false">
+                    <!-- This transferFor must be tested with '=== false' because it's a tri-state variable: true, false and undefined (when the form is rendered and there is no selected option) -->
+                    <label class="label-dark">{{ 'label.transferTo' | translate }}</label>
+                    <mat-select class="select-fill-primary" formControlName="forYourself" disableOptionCentering panelClass="select-fill-primary"
+                        (selectionChange)="changeTransferDestiny()" [placeholder]="'placeholder.select' | translate"
+                        [disabled]="isInternalTransfer">
+                        <mat-option [value]="undefined">{{ 'withdraw.modal.opt1' | translate }}</mat-option>
+                        <mat-option [value]="true"><span>{{ 'withdraw.modal.opt2' | translate }}</span></mat-option>
+                    </mat-select>
+                </div>
+                <div class="input-container align-start">
+                    <label class="label-dark">
+                        {{ 'CPF/CNPJ' }}
+                    </label>
+                    <input class="input-fill-default medium-border" formControlName="document" [readonly]="!formWithdraw.controls.bankAccountType.value" (input)="getInternalAccountInfo()"
+                        [placeholder]="'placeholder.document' | translate" [mask]="cpfCnpjMask" (focusin)="resetCpfCnpjMask()" (keyup)="setCpfCnpjMask()" (focusout)="updateCpfCnpjMask()" required
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('document', formWithdraw) && formWithdraw.get('document')?.hasError('required') && formWithdraw.controls.bankAccountType.value">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                        <ng-container *ngIf="formWithdraw.get('document')?.invalid && formWithdraw.get('document')?.value">
+                            {{ 'errorHint.insertValidDocument' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="column gap-10">
+                    <div class="input-container gap-10">
+                        <div class="column align-start wth-100 gap-3">
+                            <label class="label-dark">{{ 'label.value' | translate }}</label>
+                            <input class="input-fill-default medium-border" [placeholder]="'R$'" formControlName="value"
+                                currencyMask [options]="{ prefix: 'R$' + ' ', precision: 6 }" inputmode="numeric" required
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('value', formWithdraw) && formWithdraw.get('value')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="between margin-top-10">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'withdraw.modal.tax' | translate }}</span>
+                        <div class="inline gap-8">
+                            <mat-icon class="svg-icon" svgIcon="wallet"></mat-icon>
+                            <span class="primary-gray fw-400 fs-16 text-align-left">{{ toNumber(tax) || 0 | floorCurrency: usefulSettings.fiatCurrency.currency }}</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="primary-700 underline-text to-point" (click)="maxBalance()" >{{ 'withdrawal.allBalance' | translate }}</p>
+                <mat-checkbox class="inline internal-box checkbox-v-mark" formControlName="saveAccount" color="primary" *ngIf="!usedFavorite">
+                    {{ 'withdraw.modal.saveAccount' | translate }}
+                </mat-checkbox>
+                <span class="primary-gray text-align-left">
+                    {{ 'withdraw.modal.processWithdraw' | translate }}
+                </span>
+            </form>
+        </div>
+        <div class="container-buttons centered gap-20 margin-top-30">
+            <button class="btn doutline wth-100" matDialogClose>
+                {{ 'button.cancel' | translate }}
+            </button>
+
+            <div class="flex column gap-8 wth-100">
+                <button class="btn dark-shade wth-100" [disabled]="!formWithdraw.valid || loading || insufficientBalance"
+                    (click)="sendWithdrawalRequest()">
+                    {{ 'button.confirm' | translate }}
+                </button>
+
+                <span class="error-hint primary-red" *ngIf="insufficientBalance">
+                    {{ 'errorHint.insufficientBalance' | translate }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

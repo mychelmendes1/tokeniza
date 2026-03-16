@@ -1,0 +1,26 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.container-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    align-items: baseline;
+}
+
+::ng-deep .custom-modal.staking-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+    overflow-y: auto;
+}
+
+::ng-deep.img-token-small {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    object-fit: scale-down;
+}

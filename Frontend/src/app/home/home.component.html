@@ -1,0 +1,286 @@
+<div class="home">
+    <div class="home-header inline "> 
+        <div class="content-container">
+            <div class="inline between wth-100">
+                <div class="left">
+                    <mat-icon class="logo" svgIcon="logo"></mat-icon>
+                    <span class="light underline-primary-text to-point" (click)="goToElement('offers')">
+                        {{ 'home.opportunity' | translate }}
+                    </span>
+                </div>
+                <div class="right">
+                    <button class="btn primary outline" (click)="goToSignUp()">
+                        {{ 'home.beInvestor' | translate }}
+                    </button>
+                    <button class="btn primary" (click)="goToLogin()">
+                        <mat-icon class="svg-icon primary-dark" svgIcon="simple-user"></mat-icon>
+                        <span class="primary-dark">{{ 'button.enter' | translate }}</span>
+                    </button>
+                </div>
+            </div>
+            <div class="investment content-container">
+                <div class="investment-content column flex-1 gap-20">
+                    <div class="rounded inline">
+                        <mat-icon class="svg-icon primary-fill" svgIcon="primary-check"></mat-icon>
+                        <span class="light">
+                            {{ 'home.cvmSecurity' | translate }}
+                        </span>
+                    </div>
+                    <h2 class="pre-line">
+                        <span>{{ 'home.invest' | translate }}</span>
+                        <span class="primary-600">{{ 'home.tokenizationRealAssets' | translate }}</span>
+                    </h2>
+                    <span class="pre-line fs-20 text-light-shade line-height-15">
+                        {{ 'home.investText1' | translate }}
+                    </span>
+                    <div class="container-buttons inline gap-30 wrap">
+                        <button class="btn primary outline" (mouseenter)="hoverIconClassService.onMouseEnter('simulateInvestment')" (click)="goToElement('simulation')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('simulateInvestment')">
+                            {{ 'home.simulateInvestment' | translate }}
+                            <mat-icon svgIcon="trending-up" [ngClass]="hoverIconClassService.getSvgClass('simulateInvestment', 'svg-icon primary-dark', 'svg-icon primary')"></mat-icon>
+                        </button>
+                        <button class="btn primary" (click)="goToLogin()">
+                            <span class="primary-dark">{{ 'home.investNow' | translate }}</span>
+                            <mat-icon class="svg-icon primary-dark" svgIcon="arrow-right"></mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <img class="flex-1" src="assets/images/home-image.svg" alt="home-image">
+            </div>
+        </div>
+    </div>
+    <div class="custom-pad" *ngIf="projectList.length > 0" id="offers">
+        <div class="content-container wth-100">
+            <app-crowdfunding-card [projectsList]="projectList" [hasTitleText]="true"></app-crowdfunding-card>
+        </div>
+    </div>
+
+    <div class="performance" id="app">
+        <div class="content-container wth-100">
+            <div class="app-section">
+                <div class="app-image-container" style="display: flex; justify-content: center;">
+                    <img src="assets/images/mockup.png" alt="app-image"/>
+                </div>
+                <div class="app-content">
+                    <div class="app-text-content">
+                        <h2 class="pre-line">
+                            <span class="primary-600">{{ 'home.appTitle' | translate }}</span> <br/>
+                            <span> {{ 'home.appTitleSpan' | translate }}</span>
+                        </h2>
+                        <span class="text-medium fs-20 fw-400 pre-line">{{ 'home.appText' | translate }}</span>
+                        <div class="app-downloads">
+                            <div class="qrcode-container">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://play.google.com/store/apps/details?id=br.com.tokeniza" alt="qrcode-image"/>
+                                <!-- <img src="assets/images/appimages/qrcode.png" alt="qrcode-image"/> -->
+                            </div>
+                            <div class="store-buttons">
+                                <a href="https://play.google.com/store/apps/details?id=br.com.tokeniza" target="_blank">
+                                    <img src="assets/images/appimages/playstore.png" alt="google-play-image"/>
+                                </a>
+                                <!-- <img src="assets/images/appimages/appstore.png" alt="app-store-image"/> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="invest-tips gap-40 column">
+        <div class="content-container wth-100">
+            <h2 class="pre-line">
+                <span class="primary-600">{{ 'home.howToInvest' | translate }}</span>
+                <span> {{ 'home.in' | translate }} {{ 'company.name' | translate }}</span>
+            </h2>
+            <div class="invest-boxes inline gap-80">
+                <div class="column gap-10">
+                    <img class="flex-1" src="assets/images/user-check-container.svg" alt="user-check-image">
+                    <span class="fs-25 fw-600">{{ 'home.investTipsTitle1' | translate }} {{ 'company.name' | translate }}</span>
+                    <span class="text-medium line-height-15 fs-16 fw-400">{{ 'home.investTipsText1' | translate }}</span>
+                </div>
+                <div class="column gap-10">
+                    <img class="flex-1" src="assets/images/search-container.svg" alt="search-image">
+                    <span class="fs-25 fw-600">{{ 'home.investTipsTitle2' | translate }}</span>
+                    <span class="text-medium line-height-15 fs-16 fw-400">{{ 'home.investTipsText2' | translate }}</span>
+                </div>
+                <div class="column gap-10">
+                    <img class="flex-1" src="assets/images/menu-container.svg" alt="menu-image">
+                    <span class="fs-25 fw-600">{{ 'home.investTipsTitle3' | translate }}</span>
+                    <span class="text-medium line-height-15 fs-16 fw-400">{{ 'home.investTipsText3' | translate }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="performance" id="simulation">
+        <div class="content-container between">
+            <div class="column gap-20 flex-1">
+                <h2 class="pre-line">
+                    <span>{{ 'home.seeHowMuch' | translate }}</span>
+                    <span class="primary-600"> {{ 'home.moneyYields' | translate }}</span>
+                </h2>
+                <span class="text-medium fs-20 fw-400 pre-line">{{ 'home.completedOperations' | translate }}</span>
+            </div>
+            <div class="simulation-container column flex-2 gap-30">
+                <div class="simulation-value centered hover-border-primary">
+                    <div class="inline">
+                        <span class="text-medium fs-16 fw-400">{{ 'home.rentability' | translate }}</span>
+                    </div>
+                    <input class="input-fill" [placeholder]="'%'" [(ngModel)]="rentability" (keypress)="allowOnlyNumbers($event)" (ngModelChange)="calcInvestment()"
+                        currencyMask [options]="{ prefix: '', suffix: ' %', decimal: ',', thousands: '.', precision: 2 }" inputmode="numeric" maxlength="14"
+                    >
+                </div>
+                <div class="simulation-value centered hover-border-primary">
+                    <div class="inline">
+                        <span class="text-medium fs-16 fw-400">{{ 'home.value' | translate }}</span>
+                    </div>
+                    <input class="input-fill" [placeholder]="'R$'" [(ngModel)]="investment" (keypress)="allowOnlyNumbers($event)" (ngModelChange)="calcInvestment()"
+                        currencyMask [options]="{ prefix: 'R$' + ' ', precision: 2 }" inputmode="numeric" maxlength="14"
+                    >
+                </div>
+                <div class="view-simulation-container between">
+                    <div class="view-simulation centered column gap-10">
+                        <span class="text-medium fs-16 fw-400">{{ 'home.in18months' | translate }}:</span>
+                        <span class="primary">{{ viewROIEighteenMonths | currency: 'BRL' }}</span>
+                    </div>
+                    <div class="view-simulation centered column gap-10">
+                        <span class="text-medium fs-16 fw-400">{{ 'home.in32months' | translate }}:</span>
+                        <span class="primary">{{ viewROIThirtyTwoMonthss | currency: 'BRL' }}</span>
+                    </div>
+                    <div class="view-simulation centered column gap-10">
+                        <span class="text-medium fs-16 fw-400">{{ 'home.in48months' | translate }}:</span>
+                        <span class="primary">{{ viewROIFortyEightMonths | currency: 'BRL' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="projects column gap-40">
+        <div class="content-container">
+            <h2 class="pre-line">
+                <span class="primary-600">{{ 'home.projects' | translate }}</span>
+                <span> {{ 'company.name' | translate }}</span>
+            </h2>
+            <div class="projects-container">
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card1')" (mouseleave)="onMouseLeave('card1')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.agro' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.agroText' | translate }}</span>
+                </div>
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card2')" (mouseleave)="onMouseLeave('card2')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.auto' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.autoText' | translate }}</span>
+                </div>
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card3')" (mouseleave)="onMouseLeave('card3')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.athlete' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.athleteText' | translate }}</span>
+                </div>
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card4')" (mouseleave)="onMouseLeave('card4')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.finance' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.financeText' | translate }}</span>
+                </div>
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card5')" (mouseleave)="onMouseLeave('card5')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.property' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.propertyText' | translate }}</span>
+                </div>
+                <div class="project-card column gap-40 hover-border-primary" (mouseenter)="onMouseEnter('card6')" (mouseleave)="onMouseLeave('card6')">
+                    <div class="between">
+                        <span class="fs-20 fw-700">{{ 'company.name' | translate }} {{ 'home.startup' | translate }}</span>
+                    </div>
+                    <span class="text-off-white-normal line-height-15 fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.startupText' | translate }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="home-footer column">
+        <div class="content-container wth-100">
+            <div class="border-btm between wth-100">
+                <mat-icon class="logo" svgIcon="logo"></mat-icon>
+                <form [formGroup]="formNewsletter">
+                    <div class="assign-newsletter inline gap-10">
+                        <div class="input-container">
+                            <label>{{ 'label.email' | translate }}</label>
+                            <input class="input-fill-default" formControlName="email" maxlength="150"
+                                [placeholder]="'placeholder.email' | translate" type="email" required
+                            >
+                            <span class="error-hint">
+                                <ng-container *ngIf="showError('email', formNewsletter) && formNewsletter.get('email')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="formNewsletter.get('email')?.invalid && formNewsletter.get('email')?.value">
+                                    {{ 'errorHint.email' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <button class="btn primary" [disabled]="!formNewsletter.valid" (click)="sendEmailNewsletter()">
+                            <span class="primary-dark">{{ 'home.assignNewsletter' | translate }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="footer-content between wth-100">
+                <div class="column gap-20">
+                    <span class="fs-20 fw-700">{{ 'home.products' | translate }}</span>
+                    <span class="text-off-white-normal">{{ 'company.name' | translate }} {{ 'home.agro' | translate }}</span>
+                    <span class="text-off-white-normal">{{ 'company.name' | translate }} {{ 'home.auto' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.athlete' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.finance' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.property' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400">{{ 'company.name' | translate }} {{ 'home.startup' | translate }}</span>
+                </div>
+                <div class="column gap-20">
+                    <span class="fs-20 fw-700">{{ 'home.juridical' | translate }}</span>
+                    <span class="text-off-white-normal underline-primary-text to-point" (click)="goToUrl(environmentUrl.faqUrl)">{{ 'home.faq' | translate }}</span>
+                    <span class="text-off-white-normal underline-primary-text to-point" (click)="goToUrl(environmentUrl.termsUrl)">{{ 'home.terms' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.cvmAuthorizationUrl)">{{ 'home.cvmAuthorization' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.privacyPolicyUrl)">{{ 'home.privacyPolicy' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.crowdfundingRegulationUrl)">{{ 'home.crowdfundingREgulations' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.codeConductUrl)">{{ 'home.codeConduct' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.teachingMaterialUrl)">{{ 'home.didacticMaterial' | translate }}</span>
+                </div>
+                <div class="column gap-20">
+                    <span class="fs-20 fw-700">{{ 'home.contents' | translate }}</span>
+                    <span class="text-off-white-normal underline-primary-text to-point" (click)="goToUrl(environmentUrl.blogUrl)">{{ 'home.blog' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.contactUsEmail)">{{ 'home.contactUs' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.whoWeAreUrl)">{{ 'home.whoWeAre' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.youtubeUrl)">{{ 'home.youtube' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToUrl(environmentUrl.wantCaptureUrl)">{{ 'home.wantCapture' | translate }}</span>
+                    <span class="text-off-white-normal fs-16 fw-400 underline-primary-text to-point" (click)="goToLogin()">{{ 'home.wantInvest' | translate }}</span>
+                </div>
+                <div class="column between gap-20">
+                    <div class="column gap-20">
+                        <span class="fs-20 fw-700">{{ 'home.contactUs' | translate }}</span>
+                        <span class="text-off-white-normal">{{ contactUsPhone }}</span>
+                        <span class="text-off-white-normal fs-16 fw-400">{{ email }}</span>
+                    </div>
+                    <div class="between">
+                        <div class="inline gap-8">
+                            <div class="socials-container centered to-point" (click)="goToUrl(environmentUrl.instagramUrl)">
+                                <img class="flex-1" src="assets/images/instagram.svg" alt="instagram">
+                            </div>
+                            <div class="socials-container centered to-point" (click)="goToUrl(environmentUrl.linkedinUrl)">
+                                <img class="flex-1" src="assets/images/linkedin.svg" alt="linkedin">
+                            </div>
+                            <div class="socials-container centered to-point" (click)="openWhatsApp()">
+                                <img class="flex-1" src="assets/images/whatsapp.svg" alt="whatsapp">
+                            </div>
+                        </div>
+                        <div>
+                            <img class="flex-1" src="assets/images/cvm-logo.svg" alt="cvm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

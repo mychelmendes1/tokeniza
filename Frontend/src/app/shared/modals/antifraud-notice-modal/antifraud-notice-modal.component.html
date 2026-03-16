@@ -1,0 +1,26 @@
+<div class="antifraud-modal">
+    <button class="close-button" *ngIf="data?.type !== 'blocked'" mat-dialog-close aria-label="Close">
+        <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="brand">
+       <img class="brand-logo brand-logo--dark" src="assets/icons/logo.svg" alt="Logo" draggable="false">
+            <img class="brand-logo brand-logo--light" src="assets/icons/logo.svg" alt="Logo" draggable="false">
+   </div>
+
+    <div class="badge" [ngClass]="data?.type">
+        <span class="dot"></span>
+        <span>{{ badgeKey | translate }}</span>
+    </div>
+
+    <h2>{{ titleKey | translate }}</h2>
+    <p class="body">{{ bodyKey | translate }}</p>
+
+    <button class="action" *ngIf="data?.type !== 'blocked'" mat-flat-button color="primary" (click)="onConfirm()">
+        {{ 'antifraudModal.action.confirm' | translate }}
+    </button>
+    <button class="action action--locked" *ngIf="data?.type === 'blocked'" mat-flat-button color="primary" disabled>
+        <mat-icon>lock</mat-icon>
+        {{ 'antifraudModal.action.confirm' | translate }}
+    </button>
+</div>

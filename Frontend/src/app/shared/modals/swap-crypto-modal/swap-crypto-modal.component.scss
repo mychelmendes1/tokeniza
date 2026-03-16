@@ -1,0 +1,80 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    overflow: hidden;
+    padding: 8px;
+
+    .modal-full-content {
+        overflow: auto;
+        padding: 22px;
+    }
+
+    .img-token-small {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    .alert-circle {
+        @include mix.iconSize(10px, true);
+        margin-top: -5px;
+    }
+
+    .container-swap__card--transaction-info {
+        @include mix.mq("phone-wide", max) {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .transaction-info-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 0.78rem;
+
+            @include mix.mq("phone-wide", max) {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .transaction-info-line__left {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+
+                mat-icon {
+                    font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                }
+            }
+        }
+    }
+
+    .container-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+        align-items: baseline;
+    }
+}
+
+::ng-deep.img-token-small {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    object-fit: scale-down;
+}
+
+::ng-deep .custom-modal.swap-crypto-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

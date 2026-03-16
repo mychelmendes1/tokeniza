@@ -1,0 +1,52 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'payment.modal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <div class="payment-info column" *ngIf="!loading">
+        <div class="content">
+            <div class="tokens-amount-container column" *ngIf="data?.collection?.price && !data?.resale?.onResale">
+                <div class="input-container column margin-top-5 align-start">
+                    <label class="label-dark">{{ ('payment.modal.amountToPay' | translate) + ' (' + currency + ')' }}</label>
+                    <input (keypress)="allowOnlyNumbers($event)" (input)="sendToCheckout($event)" type="text" class="input-fill-default medium-border" placeholder="0,00" [(ngModel)]="amountToPay" appMaskTokenNft>
+                </div>
+    
+                <div class="input-container column margin-top-5 align-start" *ngIf="showExternal">
+                    <label class="label-dark">{{ ('payment.modal.external_id' | translate) }}</label>
+                    <input (input)="sendToCheckoutExternalId($event)" type="text" class="input-fill-default medium-border" [(ngModel)]="external_id">
+                </div>
+
+                <div class="input-container column margin-top-5 align-start" *ngIf="!isLogged">
+                    <label class="label-dark">{{ ('payment.modal.externalEmail' | translate) }}</label>
+                    <input (input)="sendToCheckoutEmail($event)" type="text" class="input-fill-default medium-border" [(ngModel)]="email">
+                </div>
+
+                <div class="between margin-top-10" *ngIf="minToBuy" [style.order]="5">
+                    <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'payment.modal.minAmount' | translate }}:</span>
+                    <div class="inline gap-8">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ minToBuy | number: '1.2-2' }}</span>
+                    </div>
+                </div>
+
+                <div class="between margin-top-10" *ngIf="maxToBuy" [style.order]="5">
+                    <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'payment.modal.maxAmount' | translate }}:</span>
+                    <div class="inline gap-8">
+                        <span class="primary-gray fw-400 fs-16 text-align-left">{{ maxToBuy | number: '1.2-2' }}</span>
+                    </div>
+                </div>
+
+                <div class="between margin-top-10" [style.order]="6">
+                    <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'payment.modal.operation' | translate }}</span>
+                </div>
+
+                <div class="between margin-top-10" *ngIf="checkout_text" [style.order]="7">
+                    <span class="primary-gray fw-400 fs-16 text-align-left">{{ checkout_text }}</span>
+                </div>
+            </div>
+            <div class="checkout-container">
+                <app-payment-checkout [listenChanges]="listenChanges" [checkoutObject]="checkoutObject" (waitingMetaMaskOutput)="waitingMetaMaskOutput = $event" (finishOperation)="close()"></app-payment-checkout>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

@@ -1,0 +1,35 @@
+<div class="clearledger-modal modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'paymentModal.' + from + '.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <span class="primary-dark fw-400 text-align-left margin-top-20">{{ 'paymentModal.' + from + '.subtitle' | translate  }}</span>
+
+    <div class="modal-qrcode margin-top-30">
+        <qrcode [ngClass]="{'hide' : loading}" class="qr-code-link" elementType="img" [margin]="2"
+            [qrdata]="pixQrcode" [width]="QRWidth">
+        </qrcode>
+    </div>
+
+    <div class="modal-wallet margin-top-20">
+        <div class="inline-flex">
+            <span class="modal-wallet code primary-dark fw-700">{{  'paymentModal.'+ from + '.btc' | translate  }}{{ amount | currency: 'BRL' }}</span>
+        </div>
+    </div>
+    <div class="modal-wallet">
+        <div class="inline gap-16">
+            <span class="modal-wallet code primary-dark fw-700">{{ pixQrcode.substring(0, 30) }}</span>
+            <div class="hover-icon primary-shade" (click)="copyPixKey()"
+                [matTooltip]="'tooltip.copy' | translate"
+                matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                <mat-icon class="svg-icon primary-dark to-point" svgIcon="copy"></mat-icon>
+            </div>
+        </div>
+    </div>
+    <span class="primary-dark fw-400 text-align-left">{{ 'paymentModal.' + from + '.warning' | translate  }}</span>
+
+    <div class="modal-buttons margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'paymentModal.pagSeguro.close' | translate }}</button>
+    </div>
+    <mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
+</div>

@@ -1,0 +1,44 @@
+<ng-container *ngIf="comments && comments.length">
+    <ul>
+        <li *ngFor="let comment of comments" class="comment">
+
+            <div class="comment-info">
+
+                <p style="white-space: pre-line">
+                    {{ comment?.comment }}
+                </p>
+
+                <strong class="comment-userName">
+                    {{ comment?.user_name }}
+                </strong>
+                <span class="comment-time">
+                    {{ comment?.when | date: 'dd/MM/yyyy' }}
+                </span>
+
+                <li *ngFor="let cmt of comment?.parent" class="comment">
+
+                    <div class="comment-info">
+        
+                        <p style="white-space: pre-line">
+                            {{ cmt?.child?.comment }}
+                        </p>
+        
+                        <strong class="comment-userName">
+                            {{ cmt?.child?.user_name }}
+                        </strong>
+                        <span class="comment-time">
+                            {{ cmt?.child?.when | date: 'dd/MM/yyyy' }}
+                        </span>
+                    </div>
+                </li>
+            </div>
+
+            <div  class="inline send-btn">
+                <!-- <button class="btn dark-shade" (click)="openConfirmationModal(comment.id)" [disabled]="loading">
+                    {{ 'button.answer' | translate }}
+                </button> -->
+            </div>
+        </li>
+    </ul>
+</ng-container>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

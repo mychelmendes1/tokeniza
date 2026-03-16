@@ -1,0 +1,14 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.send-btn {
+    justify-content: flex-end !important;
+    margin-top: 40px;
+}
+
+::ng-deep .custom-modal.discussion-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

@@ -1,0 +1,8 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="column">
+        <mat-icon class="svg-icon close primary-gray to-point" svgIcon="close" (click)="close()"></mat-icon>
+        <img class="icon-img" alt="" [src]="data.icon ?? 'assets/images/check-container.svg'">
+    </div>
+    <strong class="primary-dark fw-700 fs-20">{{ data.title | translate }}</strong>
+    <span class="primary-gray fw-400 fs-16">{{ data.subtitle | translate }}</span>
+</div>

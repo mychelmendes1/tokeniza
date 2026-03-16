@@ -1,0 +1,136 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container.modal-content {
+    max-width: 100%;
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+    padding: 8px !important;
+
+    .modal-full-content {
+        overflow: auto;
+        padding: 22px;
+    }
+
+    .modal-header-themes {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 38px;
+    
+        h1 {
+            font-size: 20px;
+        }
+    
+        mat-icon {
+            cursor: pointer;
+            color: v.$dark;
+        }
+    }
+
+    .content {
+        display: flex;
+        gap: 30px;
+
+        &.error-page {
+            margin: auto;
+
+            .tokens-amount-container {
+                display: none;
+            }
+        }
+
+        @include mix.mq('tablet', max) {
+            flex-direction: column;
+        }
+
+        .tokens-amount-container {
+            padding-right: 30px;
+            border-right: 1px solid v.$light-grey-hover;
+            flex: 1;
+            height: auto;
+            align-self: stretch;
+            margin-top: 6px;
+
+            @include mix.mq('tablet', max) {
+                padding: 0;
+                border: none;
+            }
+    
+            .thin-label {
+                margin-bottom: 10px;
+            }
+    
+            .swap-icon {
+                margin: 10px auto;
+                color: v.$dark;
+            }
+    
+            .quotation-value {
+                font-size: 12px;
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
+
+        .checkout-container {
+            flex: 1;
+
+            @include mix.mq("tablet", max) {
+                width: 100% !important;
+            }
+        }
+    }
+
+    .loading-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .input, .custom-text-area {
+        color: var(--color-main) !important;
+        background: var(--bg-main) !important;
+    
+        ::-webkit-input-placeholder {
+            color: var(--color-main) !important;
+            opacity: 1;
+        }
+    
+        :-moz-placeholder {
+            color: var(--color-main) !important;
+            opacity: 1;
+        }
+    
+        ::-moz-placeholder {
+            color: var(--color-main) !important;
+            opacity: 1;
+        }
+    
+        :-ms-input-placeholder {
+            color: var(--color-main) !important;
+            opacity: 1;
+        }
+    }
+}
+
+.info-balance {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+
+    .info-about-balance {
+        font-size: 12px;
+        color: v.$dark;
+    }
+}
+
+::ng-deep .custom-modal.token-payment-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 880px;
+}

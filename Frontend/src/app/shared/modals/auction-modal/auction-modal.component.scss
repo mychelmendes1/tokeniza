@@ -1,0 +1,19 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    .asset-info {
+        text-align: start;
+    }
+
+    .calendar-icon {
+        top: 22px !important;
+    }
+}
+
+::ng-deep .custom-modal.auction-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

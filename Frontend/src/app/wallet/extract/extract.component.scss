@@ -1,0 +1,98 @@
+@use './../../../assets/styles/common-classes.scss';
+@use './../../../assets/styles/variables.scss' as v;
+@use './../../../assets/styles/material-component.scss';
+@use './../../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .extract-container {
+        padding: 32px;
+
+        .input-container {
+            max-width: 400px;
+        }
+
+        .table-extract {
+            background-color: v.$light-text;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+
+            mat-icon {
+                @include mix.iconSize(16px, true);
+            }
+
+            .lines {
+                padding: 22px;
+            }
+
+            .lines:hover {
+                background-color: rgba(v.$primary-500, 0.1);
+            }
+
+            .lines:first-child:hover {
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+            }
+
+            .lines:last-child:hover {
+                border-bottom-left-radius: 12px;
+                border-bottom-right-radius: 12px;
+            }
+        }
+
+        .responsive-extract {
+            @include mix.mq("tablet", max) {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    }
+
+    .btn {
+        &.see-more {
+            width: 150px;
+        }
+    }
+}
+
+::ng-deep.mat-mdc-select-panel.tokens-panel {
+    padding: 8px 0;
+    margin-top: 15px !important;
+    background: v.$light-text;
+    position: relative;
+    left: -15px;
+
+    .mat-mdc-option.mat-selected:not(.mat-option-multiple) {
+        background: v.$light-text;
+        color: v.$primary-500;
+    }
+
+    .mat-mdc-option {
+        color: v.$dark !important;
+    }
+
+    .mat-mdc-option.token-filter-select {
+        color: var(--color-main);
+        line-height: 46px !important;
+        height: 46px !important;
+
+        span {
+            font-size: 14px !important;
+            white-space: nowrap !important;
+            font-weight: 500;
+
+            .token-filter-img {
+                width: 30px;
+                height: 30px;
+                border-radius: 5px;
+                margin-right: 10px;
+                object-fit: contain;
+            }
+        }
+    }
+}

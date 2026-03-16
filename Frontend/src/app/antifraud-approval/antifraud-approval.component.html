@@ -1,0 +1,25 @@
+<div class="approval-page">
+    <div class="approval-card">
+        <div class="brand">
+            <img class="brand-logo brand-logo--dark" src="assets/icons/logo.svg" alt="Logo" draggable="false">
+            <img class="brand-logo brand-logo--light" src="assets/icons/logo.svg" alt="Logo" draggable="false">
+        </div>
+        <div class="badge" [ngClass]="status">
+            <span class="dot"></span>
+            <span class="badge-text">{{ ('antifraudApproval.status.' + status) | translate }}</span>
+        </div>
+
+        <h1>{{ 'antifraudApproval.title' | translate }}</h1>
+        <p class="subtitle">{{ 'antifraudApproval.subtitle' | translate }}</p>
+
+        <div class="status-panel" [ngClass]="status">
+            <div class="spinner" *ngIf="loading"></div>
+            <p class="message">{{ messageKey | translate }}</p>
+            <p class="detail" *ngIf="detail">{{ detail }}</p>
+        </div>
+
+        <p class="helper" *ngIf="status === 'pending'">
+            {{ 'antifraudApproval.helper.pending' | translate }}
+        </p>
+    </div>
+</div>

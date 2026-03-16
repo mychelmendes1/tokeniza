@@ -1,0 +1,6 @@
+export enum SortFilterEnum {
+    RECENT = 'RECENT',
+    LOWER_VALUE = 'LOWER_VALUE',
+    HIGHEST_VALUE = 'HIGHEST_VALUE',
+    ALPHABETICAL = 'ALPHABETICAL'
+}

@@ -1,0 +1,292 @@
+@use "sass:map";
+@use './app-theme.scss' as theme;
+
+// COLORS
+$primary-50: map.get(theme.$app-primary, 50);
+$primary-500: map.get(theme.$app-primary, 500);
+$primary-600: map.get(theme.$app-primary, 600);
+$primary-700: map.get(theme.$app-primary, 700);
+$primary-800: map.get(theme.$app-primary, 800); //Darken
+$primary-3500: map.get(theme.$app-primary, 3500);
+$warning-600: map.get(theme.$app-warning, 600);
+$red-50: map.get(theme.$app-red, 50);
+$red-600: map.get(theme.$app-red, 600);
+$red-3500: map.get(theme.$app-red, 3500);
+$green-50: map.get(theme.$app-green, 50);
+$green-800: map.get(theme.$app-green, 800);
+$yellow-400: map.get(theme.$app-yellow, 400);
+$blue-50: map.get(theme.$app-blue, 50);
+$blue-100: map.get(theme.$app-blue, 100);
+$blue-700: map.get(theme.$app-blue, 700);
+$primary-FG200: map.get(theme.$app-primary, FG200);
+$primary-shade-500: lighten($primary-500, 10%);
+$primary-tint: lighten($primary-500, 25%);
+$secondary-400: map.get(theme.$app-secondary, 500);
+$secondary-500: map.get(theme.$app-secondary, 500);
+$secondary-900: map.get(theme.$app-secondary, 900);
+
+//Backgrounds
+$input: #fff;
+
+//Texts colors
+$gray-text: #777;
+$red: #D83333;
+
+//Light
+$light-text: #fff;
+$light-shade: #E4E4E7;
+$off-white-light: #F9FAFB;
+
+//Medium
+$medium: #B1B3B5;
+$medium-active: #BABABA;
+$off-white-darker: #535454;
+$off-white-normal: #BDBFC1;
+$dark-grey: #141414;
+$normal-grey: #1A1A1A;
+$light-grey: #E9E9E9;
+$light-grey-hover: #DEDEDE;
+
+//Dark
+$dark: #000000;
+$dark-active: #0F0F0F;
+$dark-shade: #212121;
+$dark-medium-shade: #29332B;
+
+//Components
+$color-checkbox-checked: $primary-600;
+$color-checkbox-disabled: $medium;
+$color-loading-spinner: $primary-600;
+$color-background-hover-row-table: #ECEFF1;
+
+//Default svg-icons
+$color-svg: #ACABB8;
+
+// Get classes for the customer pallet.
+$colors: () !default;
+$colors: map-merge((
+    "primary": $primary-500,
+    "secondary": $secondary-900,
+    "red": $red-600
+), $colors);
+
+@each $key, $value-shade in $colors {
+    $tint: lighten($value-shade, 25%);
+    $primary-value: lighten($value-shade, 10%);
+    $gradient-right: lighten($value-shade, 17.5%);
+
+    // For backgrounds.
+    .bg-#{$key} {
+        // Ex: class="bg-secondary"
+        background-color: $primary-value;
+
+        // Ex: class="bg-primary-tint"
+        &-tint {
+            background-color: $tint;
+        }
+
+        // Ex: class="bg-secondary-shade"
+        &-shade {
+            background-color: $value-shade;
+        }
+
+        &-p-50 {
+            background-color: $primary-50;
+        }
+
+        &-p-600 {
+            background-color: $primary-600;
+        }
+
+        &-p-3500 {
+            background-color: $primary-3500;
+        }
+
+        &-r-50 {
+            background-color: $red-50;
+        }
+
+        &-r-600 {
+            background-color: $red-600;
+        }
+
+        &-r-3500 {
+            background-color: $red-3500;
+        }
+    }
+
+    // For color (text and icons). Ex: class="primary-tint"
+    .#{$key} {
+        color: $primary-value;
+
+        &-tint {
+            color: $tint;
+        }
+
+        &-light {
+            color: $light-text;
+        }
+
+        &-shade {
+            color: $value-shade;
+        }
+
+        &-50 {
+            color: $primary-50;
+        }
+
+        &-500 {
+            color: $primary-500;
+        }
+
+        &-600 {
+            color: $primary-600;
+        }
+
+        &-700 {
+            color: $primary-700;
+        }
+
+        &-800 {
+            color: $primary-800;
+        }
+
+        &-3500 {
+            color: $primary-3500;
+        }
+
+        &-medium {
+            color: $medium;
+        }
+
+        &-dark {
+            color: $dark;
+        }
+
+        &-warning {
+            color: $warning-600;
+        }
+
+        &-red-50 {
+            color: $red-50;
+        }
+
+        &-red {
+            color: $red-600;
+        }
+
+        &-gray {
+            color: $gray-text;
+        }
+
+
+        &-blue-100 {
+            color: $blue-100;
+        }
+
+        &-blue-700 {
+            color: $blue-700;
+        }
+
+        &-off-white-darker {
+            color: $off-white-darker;
+        }
+
+        &-dark-shade {
+            color: $dark-shade;
+        }
+
+        &-dark-medium-shade {
+            color: $dark-medium-shade;
+        }
+    }
+
+    // For svg icons
+    .svg-icon.#{$key} {
+
+        //Stroke
+        ::ng-deep svg * {
+            stroke: $primary-value !important;
+        }
+
+        &-tint ::ng-deep svg * {
+            stroke: $tint !important;
+        }
+
+        &-shade ::ng-deep svg * {
+            stroke: $value-shade !important;
+        }
+
+        &-dark ::ng-deep svg * {
+            stroke: $dark !important;
+        }
+
+        &-light ::ng-deep svg * {
+            stroke: $light-text;
+        }
+
+        &-gray ::ng-deep svg * {
+            stroke: $gray-text !important;
+        }
+
+        &-50 ::ng-deep svg * {
+            stroke: $primary-50 !important;
+        }
+
+        &-600 ::ng-deep svg * {
+            stroke: $primary-600 !important;
+        }
+
+        &-700 ::ng-deep svg * {
+            stroke: $primary-700 !important;
+        }
+
+        &-red-50 ::ng-deep svg * {
+            stroke: $red-50;
+        }
+
+        &-red-600 ::ng-deep svg * {
+            stroke: $red-600;
+        }
+
+        &-blue-700 ::ng-deep svg * {
+            stroke: $blue-700;
+        }
+
+        &-blue-100 ::ng-deep svg * {
+            stroke: $blue-100;
+        }
+
+        &-off-white-darker ::ng-deep svg * {
+            stroke: $off-white-darker !important;
+        }
+
+        &-blue-700 ::ng-deep svg * {
+            stroke: $blue-700;
+        }
+
+        //Fill
+        &-tint-fill ::ng-deep svg * {
+            fill: $tint !important;
+        }
+
+        &-fill ::ng-deep svg * {
+            fill: $primary-600 !important;
+        }
+
+        &-red-fill-600 ::ng-deep svg * {
+            fill: $red-600;
+        }
+
+        &-light-fill ::ng-deep svg * {
+            fill: $light-text;
+        }
+    }
+}
+
+// Backdrop for modal
+::ng-deep {
+    .cdk-overlay-dark-backdrop {
+        background: rgba(0, 0, 0, 0.80) !important;
+    }
+}

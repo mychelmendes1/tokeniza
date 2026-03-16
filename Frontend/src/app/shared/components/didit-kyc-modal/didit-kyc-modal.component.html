@@ -1,0 +1,103 @@
+<div class="modal-header">
+    <h2 class="modal-title">{{ 'didit.verification.title' | translate }}</h2>
+    <div class="modal-actions">
+        <button mat-icon-button (click)="close()" [disabled]="loading && !error">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+
+<div class="didit-kyc-content">
+    <!-- Loading State -->
+    <div class="state-container" *ngIf="loading && !error">
+        <div class="loading-container">
+            <mat-spinner diameter="60" color="primary"></mat-spinner>
+            <p class="loading-text">{{ 'didit.verification.loading' | translate }}</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="state-container" *ngIf="error && !loading">
+        <div class="error-container">
+            <mat-icon class="state-icon error-icon" color="warn">error_outline</mat-icon>
+            <h3>{{ 'didit.verification.errorTitle' | translate }}</h3>
+            <p>{{ 'didit.verification.errorMessage' | translate }}</p>
+            <div class="action-buttons">
+                <button mat-stroked-button (click)="close()">
+                    {{ 'button.cancel' | translate }}
+                </button>
+                <button mat-raised-button color="primary" (click)="retry()">
+                    {{ 'button.retry' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Status State (User already completed verification) -->
+    <div class="state-container" *ngIf="showAnalysisStatus && !loading && !error">
+        <div class="analysis-container">
+            <!-- Pending/Review Status -->
+            <ng-container *ngIf="sessionStatus === 'pending' || sessionStatus === 'review' || sessionStatus === 'in_analysis'">
+                <mat-icon class="state-icon" color="accent">hourglass_empty</mat-icon>
+                <h3>{{ 'didit.verification.analysisTitle' | translate }}</h3>
+                <p>{{ 'didit.verification.analysisMessage' | translate }}</p>
+                <div class="info-card">
+                    <mat-icon color="primary">info</mat-icon>
+                    <span>{{ 'didit.verification.analysisInfo' | translate }}</span>
+                </div>
+            </ng-container>
+
+            <!-- Approved Status -->
+            <ng-container *ngIf="sessionStatus === 'approved'">
+                <mat-icon class="state-icon" color="primary">check_circle_outline</mat-icon>
+                <h3>{{ 'didit.verification.approvedTitle' | translate }}</h3>
+                <p>{{ 'didit.verification.approvedMessage' | translate }}</p>
+            </ng-container>
+
+            <!-- Rejected Status -->
+            <ng-container *ngIf="sessionStatus === 'rejected'">
+                <mat-icon class="state-icon error-icon" color="warn">highlight_off</mat-icon>
+                <h3>{{ 'didit.verification.rejectedTitle' | translate }}</h3>
+                <p>{{ 'didit.verification.rejectedMessage' | translate }}</p>
+                <div class="info-card rejected-info">
+                    <mat-icon color="warn">help_outline</mat-icon>
+                    <span>{{ 'didit.verification.rejectedInfo' | translate }}</span>
+                </div>
+            </ng-container>
+
+            <div class="action-buttons">
+                <button mat-flat-button color="primary" class="full-width" (click)="close()">
+                    {{ 'button.understood' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Didit Iframe -->
+    <div class="iframe-container" *ngIf="showIframe && !loading && !error">
+        <div class="iframe-info">
+            <mat-icon color="primary">info</mat-icon>
+            <p>{{ 'didit.verification.instructions' | translate }}</p>
+        </div>
+
+        <div class="didit-iframe-wrapper">
+            <iframe
+                [src]="diditVerificationUrlSafe"
+                frameborder="0"
+                allow="camera; microphone"
+                allowfullscreen
+                title="Didit Identity Verification">
+            </iframe>
+        </div>
+
+        <div class="iframe-footer">
+            <p class="footer-note">
+                <mat-icon class="success-icon">shield</mat-icon>
+                {{ 'didit.verification.footerNote' | translate }}
+            </p>
+            <button mat-button (click)="close()">
+                {{ 'didit.verification.completeLater' | translate }}
+            </button>
+        </div>
+    </div>
+</div>

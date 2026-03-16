@@ -1,0 +1,199 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .dark-container {
+        height: 80px;
+        background: v.$dark;
+        padding: 32px;
+    }
+
+    .profile-container {
+        padding: 0 32px 32px;
+
+        .profile {
+            margin-top: -42px;
+            gap: 30px;
+
+            @include mix.mq("tablet", max) {
+                margin-bottom: 30px;
+                margin-top: -30px;
+            }
+
+            .responsive-avatar {
+                @include mix.mq("phone-wide", max) {
+                    flex-direction: column;
+                    text-align: center;
+                    width: 100%;
+                }
+            }
+
+            .avatar-container {
+                position: relative;
+                display: inline-block;
+                width: 160px;
+                height: 160px;
+
+                .big-avatar {
+                    width: 160px;
+                    height: 160px;
+                    min-width: 160px;
+                    min-height: 160px;
+                    object-fit: cover;
+                    border: 3px solid v.$light-text;
+                    border-radius: 50%;
+                }
+
+                .simple-user {
+                    @extend .big-avatar;
+                    padding: 35px;
+                    background: rgba(0, 0, 0, 0.8);
+                }
+
+                .avatar {
+                    position: relative;
+                }
+
+                .edit-avatar {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: rgba(0, 0, 0, 0.8);
+                    @extend .big-avatar;
+                    position: absolute;
+                    top: 0;
+                    opacity: 0;
+                    transition: opacity 0.3s ease-in-out;
+
+                    &.visible {
+                        opacity: 1;
+                        pointer-events: all;
+                        cursor: pointer;
+                    }
+
+                    mat-icon.camera {
+                        @include mix.iconSize(58px, true);
+                    }
+                }
+            }
+        }
+    }
+
+    .spinner-medium {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    input {
+        min-width: 250px !important;
+    }
+
+    form {
+        padding-bottom: 40px;
+    }
+
+    .input-container {
+        input:disabled {
+            opacity: 0.5 !important;
+        }
+    }
+
+    .kyc-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &.kyc-approved {
+            background-color: v.$primary-700;
+            color: white;
+        }
+
+        &.kyc-pending {
+            background-color: v.$red-600;
+            color: white;
+        }
+    }
+
+    .align-center {
+        align-items: center;
+    }
+
+    .upload-file-container {
+        @include mix.mq("phone-wide", max) {
+            gap: 10px;
+        }
+
+        .upload-file-content {
+            gap: 10px;
+            border: 3px dashed grey;
+            border-radius: 5px;
+            background-color: transparent;
+            height: 100%;
+            width: 100%;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all .2s ease-in;
+            position: relative;
+
+            .section-thumbnail {
+                gap: 10px;
+                padding: 0px 1rem;
+                width: 100%;
+                justify-content: space-between;
+                flex-direction: row-reverse;
+
+                @include mix.mq("phone-wide", max) {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .content-document {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    gap: 10px;
+
+                    .verified-icon {
+                        color: v.$primary-700;
+                        margin-top: -10px;
+                    }
+                }
+
+                .real-document {
+                    height: 100px;
+                }
+            }
+
+            input {
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                cursor: pointer;
+            }
+
+            .document-icon {
+                height: 114px !important;
+                width: 114px !important;
+            }
+
+            &.done {
+                border: 3px solid v.$primary-700 !important;
+            }
+        }
+    }
+}

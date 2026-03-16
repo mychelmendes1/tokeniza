@@ -1,0 +1,66 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.clearledger-modal {
+    max-width: 635px;
+
+    h1 {
+        font-size: 20px;
+        margin-bottom: 30px;
+        color: v.$primary-700;
+    }
+
+    .input-label {
+        font-weight: normal;
+    }
+
+    .modal-buttons {
+        justify-content: center;
+    }
+
+
+    .modal-qrcode {
+        display: flex;
+        justify-content: center;
+    }
+
+
+    .modal-wallet {
+        margin-bottom: 8px;
+
+        &.text {
+            font-size: 12px;
+        }
+
+        .inline-flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &.code {
+            word-break: break-word;
+            font-weight: bold;
+            font-size: 15px;
+        }
+    }
+
+    .modal-info {
+        font-size: 13px;
+    }
+
+    qrcode {
+        height: max-content;
+        width: max-content;
+
+        &.hide {
+            visibility: hidden;
+        }
+    }
+}
+
+::ng-deep .custom-modal.clearledger-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 600px;
+}

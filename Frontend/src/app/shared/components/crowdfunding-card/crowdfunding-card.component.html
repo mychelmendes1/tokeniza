@@ -1,0 +1,74 @@
+<div class="inline gap-10 margin-bottom-10 content-end" *ngIf="!hasTitleText">
+    <button class="btn dark-shade" (click)="slide('prev', 'swiper')"
+        (mouseenter)="hoverIconClassService.onMouseEnter('back-top')"
+        (mouseleave)="hoverIconClassService.onMouseLeave('back-top')">
+        <mat-icon class="svg-icon chevron-icon" svgIcon="chevron-left"
+            [ngClass]="hoverIconClassService.getSvgClass('back-top', 'svg-icon primary-dark', 'svg-icon primary-light')"
+        ></mat-icon>
+    </button>
+    <button class="btn dark-shade" (click)="slide('next', 'swiper')"
+        (mouseenter)="hoverIconClassService.onMouseEnter('forward-top')"
+        (mouseleave)="hoverIconClassService.onMouseLeave('forward-top')">
+        <mat-icon class="svg-icon chevron-icon" svgIcon="chevron-right"
+            [ngClass]="hoverIconClassService.getSvgClass('forward-top', 'svg-icon primary-dark', 'svg-icon primary-light')"
+        ></mat-icon>
+    </button>
+</div>
+<div class="offers inline gap-30">
+    <div class="column" *ngIf="hasTitleText">
+        <h2 class="pre-line">
+            <span class="primary-600">{{ 'home.offers' | translate }}</span>
+            <span>{{ 'home.popular' | translate }}</span>
+        </h2>
+        <span class="pre-line fs-20 text-medium">
+            {{ 'home.descoveryAssets' | translate }}
+        </span>
+    </div>
+    <swiper-container #swiper pager="false" [loop]="false" class="offers-cards"
+        [ngClass]="{ 'personalized-width' : hasTitleText }"
+        [breakpoints]="swiperBreakpoints">
+        <swiper-slide *ngFor="let project of projectsList; trackBy: trackById" class="{{cardClickable ? 'to-point' : ''}}" (click)="cardClickable ? goToCrowdfundfingDetails(project.id) : ''">
+            <div class="card" [ngClass]="getCardColorClass(project.daysRemaining).borderClass">
+                <div class="card-top inline">
+                    <img [src]="project?.img" alt="">
+                    <div class="column gap-10 wth-100">
+                        <span class="fs-25 fw-600">{{ project?.name }}</span>
+                        <div class="offer-type-row">
+                            <span class="offer-type-label" [ngClass]="project?.user_responsible ? 'offer-private' : 'offer-public'">
+                                {{ (project?.user_responsible ? 'home.privateOffer' : 'home.publicOffer') | translate }}
+                            </span>
+                        </div>
+                        <div class="between tag-name">
+                            <span class="light max-wth-180">{{ project?.company }}</span>
+                            <div class="remaining-container inline" *ngIf="project.finalDate && (project?.daysRemaining ?? 0) >= 0">
+                                <span class="fs-12 fw-500" [ngClass]="getCardColorClass(project.daysRemaining).textClass">{{ (project?.daysRemaining ?? 0) >= 0 ? project.daysRemaining : ''}} {{ (project.daysRemaining === 1 ? 'home.remainingDay' : 'home.remainingDays') | translate }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-bottom">
+                    <div class="card-bottom-content column gap-10">
+                        <div class="between border-btm">
+                            <span class="text-medium-active">{{ 'home.profitabilityProjected' | translate }}</span>
+                            <span class="text-medium-active">{{ project?.profitability }}% {{ 'home.perYear' | translate }}</span>
+                        </div>
+                        <div class="between border-btm">
+                            <span class="text-medium-active">{{ 'home.type' | translate }}</span>
+                            <span class="text-medium-active">{{ project?.type }}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar__value" [ngClass]="getCardColorClass(project.daysRemaining).progressBarClass"
+                                [ngStyle]="{'width.%' : percentageProgressBar(project.moneyReceived, project.targetCapture)}">
+                            </div>
+                        </div>
+                        <div class="between goal-cap">
+                            <span>{{ project?.moneyReceived | currency: project?.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }} {{ 'home.captured' | translate }}</span>
+                            <span>{{ 'home.goal' | translate }}: {{ project?.targetCapture | currency: project?.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </swiper-slide>
+    </swiper-container>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

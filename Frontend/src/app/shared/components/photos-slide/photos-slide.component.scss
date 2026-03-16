@@ -1,0 +1,61 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.photos-slide {
+    margin: 0 0 0 20px;
+
+    @include mix.mq("tablet", max) {
+        margin: 0;
+
+        &-image {
+            height: 340px !important;
+        }
+    }
+
+    @include mix.mq("phone-wide", max) {
+        width: 100%;
+
+        &-image {
+            background-size: cover;
+            background-position: center;
+        }
+    }
+
+    &-image {
+        width: 100%;
+        height: 100dvh;
+        min-height: 416px;
+        max-height: 490px;
+        border-radius: 10px;
+        background-position: center center;
+        background-size: cover;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .container-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+        background-color: v.$dark-shade;
+        border-radius: 8px;
+        margin: 0 10px;
+
+        &:hover {
+            background-color: v.$primary-500;
+            z-index: 9999;
+
+            mat-icon {
+                color: v.$dark !important;
+            }
+        }
+    }
+
+    .fieldWrapper {
+        width: 100%;
+    }
+}

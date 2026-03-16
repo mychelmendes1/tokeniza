@@ -1,0 +1,61 @@
+<div class="account-left-container column gap-12">
+    <form [formGroup]="formForgot">
+        <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+            <!-- Step 1 Form Forgot -->
+            <mat-step [editable]="true">
+                <div class="form forgot">
+                    <p class="text-align">
+                        <span class="primary-600 fs-31 fw-600">{{ 'forgot.title' | translate }}</span>
+                        <span class="text-align">{{ 'forgot.subtitle' | translate }}</span>
+                    </p>
+                    <div class="input-container">
+                        <label>{{ 'label.email' | translate }}</label>
+                        <input class="input-fill-default" formControlName="userEmail"
+                            [placeholder]="'placeholder.email' | translate" type="email"
+                        >
+                        <span class="error-hint" *ngIf="showError('userEmail') && formForgot?.controls?.userEmail?.value">{{ 'errorHint.email' | translate }}</span>
+                        <span class="error-hint" *ngIf="formInputTouched('userEmail') && !formForgot?.controls?.userEmail?.value">{{ 'errorHint.mandatory' | translate }}</span>
+                    </div>
+                    <button class="btn primary margin-top-30 wth-100" [disabled]="!formForgot.valid || loading" (click)="send()">
+                        <span class="primary-dark">{{ 'button.send' | translate }}</span>
+                    </button>
+                    <button class="btn dark-shade margin-top-30 wth-100" (click)="goToLogin()"
+                        (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                        <mat-icon class="svg-icon" svgIcon="arrow-left"
+                            [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                        ></mat-icon>
+                        <span>{{ 'button.back' | translate }}</span>
+                    </button>
+                </div>
+            </mat-step>
+            <!-- Step 2 Success -->
+            <mat-step [editable]="true">
+                <div class="form forgot">
+                    <p class="text-align">
+                        <span class="primary-600 fs-31 fw-600">{{ 'forgot.success.title' | translate }}</span>
+                        <span class="text-align">{{ 'forgot.success.subtitle' | translate }}</span>
+                    </p>
+                    <div class="input-container" *ngIf="this.currentStepperIndex === 1">
+                        <label>{{ 'label.code' | translate }}</label>
+                        <input class="input-fill-default" formControlName="code" OnlyNumbers
+                            [placeholder]="'placeholder.code' | translate" type="numeric" maxlength="6">
+                        <span class="error-hint" *ngIf="showError('code') && formForgot?.controls?.code?.value">{{ 'errorHint.code' |
+                            translate }}</span>
+                        <span class="error-hint" *ngIf="formInputTouched('code') && !formForgot?.controls?.code?.value">{{
+                            'errorHint.mandatory' | translate }}</span>
+                    </div>
+                    <app-password-strength (onFunctionCalled)="updatePasswordForm($event)"></app-password-strength>
+                    <div class="column gap-16">
+                        <button class="btn primary margin-top-30 wth-100" (click)="reset()"
+                            [disabled]="!formPassword || !formPassword.valid || !formForgot.valid || loading">
+                            <span class="primary-dark">{{ 'button.reset' | translate }}</span>
+                        </button>
+                        <span class="text-align button-link" (click)="goToLogin()">{{ 'forgot.backToLogin' | translate }}</span>
+                    </div>
+                </div>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </form>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

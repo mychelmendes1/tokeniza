@@ -1,0 +1,246 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="modal-full-content column gap-8">
+        <div class="between">
+            <span class="primary-dark fw-700 fs-20">{{ 'bridge.modal.title' | translate }}</span>
+            <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+        </div>
+        <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'bridge.modal.subtitle' | translate }}</span>
+        <div class="input-container margin-top-30">
+            <div class="inline input-line align-start wth-100">
+                <input class="input-fill-default medium-border amount-field" [(ngModel)]="quantityInputToken"
+                    (ngModelChange)="sanitizeTokensInput($event)" inputmode="numeric"
+                    placeholder="0.00">
+                <mat-select class="select-fill-primary token-select" disableOptionCentering
+                    [placeholder]="'placeholder.selectCurrency' | translate" panelClass="select-fill-primary"
+                    [(ngModel)]="inputToken">
+                    <mat-select-trigger *ngIf="inputToken">
+                        <div class="inline gap-10 token-trigger__content">
+                            <img alt="token" class="img-token-small" [src]="inputToken.img" />
+                            <span>{{ inputToken?.name ? (inputToken.name | slice:0:12) + '…' : '' }}</span>
+                        </div>
+                    </mat-select-trigger>
+                    <mat-option *ngFor="let token of tokensWithUserBalance" [value]="token">
+                        <div class="inline gap-10">
+                            <img alt="token" class="img-token-small" [src]="token.img" />
+                            <span class="primary-dark fw-500">{{ token.name }}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </div>
+        </div>
+        <div class="input-container column align-start">
+            <mat-select class="select-fill-primary" disableOptionCentering
+                [placeholder]="'placeholder.selectCurrency' | translate" panelClass="select-fill-primary"
+                [(ngModel)]="chainFrom">
+                <mat-select-trigger *ngIf="chainFrom">
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="chainFrom.img" />
+                        <span class="primary-dark fw-500">{{ chainFrom.name }}</span>
+                    </div>
+                </mat-select-trigger>
+                <mat-option *ngFor="let chain of acceptedOriginChains" [value]="chain">
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="chain.img" />
+                        <span class="primary-dark fw-500">{{ chain.name }}</span>
+                    </div>
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="between align-start wrap gap-10">
+            <div class="column gap-4 margin-top-5">
+                <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'bridge.modal.balance' | translate }}: {{
+                    inputTokenBalance }}</span>
+                <mat-chip (click)="buyMax()" class="mat-chip-hovered">{{ 'swap.max' | translate }}</mat-chip>
+            </div>
+            <div class="inline gap-8">
+                <mat-icon class="svg-icon" svgIcon="wallet"></mat-icon>
+                <span class="primary-gray fw-400 fs-16 text-align-left">{{ usefulSettings.fiatCurrency.symbol }} {{
+                    getInputTokenCurrency() | number }}</span>
+            </div>
+        </div>
+        <div class="centered gap-8 margin-top-10">
+            <div class="divider-line wth-100"></div>
+            <div class="double-chevron-container centered">
+                <mat-icon class="svg-icon primary-dark double-chevron" svgIcon="double-chevron-down"></mat-icon>
+            </div>
+            <div class="divider-line wth-100"></div>
+        </div>
+        <div class="input-container margin-top-30">
+            <div class="column align-start wth-100 gap-3">
+                <input class="input-fill-default medium-border"
+                    [value]="getTokensConverted() > 0 ? (getTokensConverted() | number: '1.2-7') : 0" disabled
+                    inputmode="numeric">
+            </div>
+        </div>
+        <div class="input-container column align-start">
+            <mat-select class="select-fill-primary" disableOptionCentering
+                [placeholder]="'placeholder.selectCurrency' | translate" panelClass="select-fill-primary"
+                [(ngModel)]="chainTo">
+                <mat-select-trigger *ngIf="chainTo">
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="chainTo.img" />
+                        <span class="primary-dark fw-500">{{ chainTo.name }}</span>
+                    </div>
+                </mat-select-trigger>
+                <mat-option *ngFor="let chain of acceptedDestinationChains" [value]="chain">
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="chain.img" />
+                        <span class="primary-dark fw-500">{{ chain.name }}</span>
+                    </div>
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="between wrap gap-10">
+            <span class="primary-gray fw-400 fs-16 text-align-left margin-top-5">{{ 'bridge.modal.balance' |
+                translate }}: {{ outputTokenBalance }}</span>
+            <div class="inline gap-8">
+                <mat-icon class="svg-icon" svgIcon="wallet"></mat-icon>
+                <span class="primary-gray fw-400 fs-16 text-align-left">{{ usefulSettings.fiatCurrency.symbol }} {{
+                    getOutputTokenCurrency() | number }}</span>
+            </div>
+        </div>
+        <div class="bridge-section">
+            <div class="inline gap-8 wth-100">
+                <p class="bridge-section__description">{{ 'bridge.recipient.description' | translate }}</p>
+                <div class="bridge-section__control">
+                    <mat-checkbox color="primary" class="bridge-section__checkbox"
+                        [disabled]="destinationRequiresRecipient" [(ngModel)]="useCustomRecipient"
+                        (change)="onRecipientToggle($event.checked)">
+                    </mat-checkbox>
+                    <span class="bridge-section__badge" *ngIf="destinationRequiresRecipient">{{
+                        'bridge.recipient.requiredBadge' | translate }}</span>
+                </div>
+            </div>
+            <div class="bridge-section__body" *ngIf="useCustomRecipient || destinationRequiresRecipient">
+                <div class="bridge-section__input">
+                    <input class="input-fill-default medium-border" type="text" pattern="^0x[a-fA-F0-9]{40}$"
+                        [placeholder]="'bridge.recipient.placeholder' | translate" [(ngModel)]="recipientAddress" />
+                </div>
+                <div class="bridge-section__helper">
+                    <span>{{ 'bridge.recipient.helper' | translate }}</span>
+                    <span *ngIf="destinationRequiresRecipient">{{ 'bridge.recipient.requiredHint' | translate }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="bridge-section">
+            <div class="inline gap-8 wth-100">
+                <p class="bridge-section__description">{{ 'bridge.slippage.description' | translate }}</p>
+                <div class="bridge-section__control">
+                    <mat-checkbox color="primary" class="bridge-section__checkbox" [checked]="slippageMode === 'custom'"
+                        (change)="onSlippageModeChange($event.checked ? 'custom' : 'auto')">
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div class="bridge-section__body" *ngIf="slippageMode === 'custom'">
+                <div class="bridge-section__input bridge-section__input--slippage">
+                    <input class="input-fill-default medium-border" type="number" min="0" max="100" inputmode="decimal"
+                        [(ngModel)]="slippagePercentage" />
+                    <span class="suffix">%</span>
+                </div>
+                <span class="bridge-section__helper">{{ 'bridge.slippage.helper' | translate }}</span>
+            </div>
+        </div>
+        <mat-accordion multi *ngIf="quantityInputToken && inputToken?.id && outputToken?.id" [@fadeIn]>
+            <mat-expansion-panel class="expansion-box" hideToggle="true" #panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-description>
+                        <mat-icon class="svg-icon primary-dark plus-icon" [ngClass]="{ 'rotate-plus' : panel.expanded }"
+                            svgIcon="plus">
+                        </mat-icon>
+                    </mat-panel-description>
+                    <mat-panel-title class="gap-10">
+                        <mat-icon>swap_horiz</mat-icon>
+                        {{ quantityInputToken + ' ' + inputToken?.id + ' ≈ '}} {{getTokensConverted() | number:
+                        '1.2-4'}} {{' ' +
+                        outputToken?.id}}
+                        (R$ {{ getOutputTokenCurrency() | number: '1.2-2'}})
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="container-swap__card--transaction-info">
+                    <div class="transaction-info-line">
+                        <div class="transaction-info-line__left">
+                            <span>{{ 'bridge.transaction.tax' | translate }}</span>
+                            <mat-icon class="icon-light"
+                                [matTooltip]="('bridge.transaction.tax.paragraphOne' | translate) + transactionInfo?.ourTax?.percentage + '%' + ( 'bridge.transaction.tax.paragraphTwo' | translate)"
+                                [matTooltipClass]="'tooltip-primary'">info</mat-icon>
+                        </div>
+                        <div class="transaction-info-line__right">
+                            <span>{{ transactionInfo?.ourTax?.amountTokens + ' ' + inputToken?.id }} - R${{
+                                transactionInfo?.ourTax?.amountInCurrency | number: '1.2-2' }}</span>
+                        </div>
+                    </div>
+                    <div class="transaction-info-line">
+                        <div class="transaction-info-line__left">
+                            <span>{{ 'bridge.transaction.cost' | translate }}</span>
+                            <mat-icon class="icon-light" [matTooltip]="'bridge.transaction.cost.info' | translate"
+                                [matTooltipClass]="'tooltip-primary'">info</mat-icon>
+                        </div>
+                        <div class="transaction-info-line__right">
+                            <span>{{bridgeFeeInTokens.toNumber() | number: '1.2-2'}}{{' ' + inputToken?.id }} - R${{
+                                bridgeFeeInCurrency.toNumber() | number: '1.2-2' }}</span>
+                        </div>
+                    </div>
+                    <div class="transaction-info-line">
+                        <div class="transaction-info-line__left">
+                            <span>{{ 'bridge.transaction.estimatedTime' | translate }}</span>
+                        </div>
+                        <div class="transaction-info-line__right">
+                            <span> {{bridgeEstimatedFillTimeSec}}</span>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <div class="container-buttons centered gap-20 margin-top-30">
+            <button class="btn doutline wth-100" matDialogClose>
+                {{ 'button.cancel' | translate }}
+            </button>
+            <div class="flex column gap-8 wth-100">
+                <button class="btn dark-shade wth-100" [disabled]="insufficientBalance || 
+                loading || 
+                slippagePercentage > 100 || 
+                slippagePercentage < 0 || 
+                quantityInputToken <= 0 || 
+                !quantityInputToken || 
+                showTransferLimitMaxError || 
+                showTransferLimitMinError ||
+                ((useCustomRecipient || destinationRequiresRecipient) && !isValidEvmAddress(recipientAddress))"
+                    (click)="createBridge()">{{
+                    ('bridge.modal.submit' | translate) }}</button>
+            </div>
+        </div>
+        <div class="flex column centered gap-4 wth-100">
+            <div class="bridge-error-container" *ngIf="insufficientBalance || 
+                slippagePercentage > 100 || 
+                slippagePercentage < 0 || 
+                showTransferLimitMaxError || 
+                showTransferLimitMinError ||
+                ((useCustomRecipient || destinationRequiresRecipient) && !isValidEvmAddress(recipientAddress))">
+                <mat-icon class="svg-icon primary-light to-point alert-circle" svgIcon="alert-circle"></mat-icon>
+                <div class="error-messages">
+                    @if (insufficientBalance) {
+                    <span class="error-hint primary-red">
+                        {{ 'errorHint.insufficientBalance' | translate }}
+                    </span>
+                    } @else if ((useCustomRecipient || destinationRequiresRecipient) &&
+                    !isValidEvmAddress(recipientAddress)) {
+                    <span class="error-hint primary-red">{{
+                        'bridge.error.invalidRecipient' | translate }}</span>
+                    }
+                    @else if (slippagePercentage > 100 || slippagePercentage < 0) { <span
+                        class="error-hint primary-red">{{'bridge.error.invalidSlippage' | translate }}</span>
+                        }
+                        @else if (showTransferLimitMaxError) {
+                        <span class="error-hint primary-red">{{
+                            'bridge.limit.maxWarning' | translate }}</span>
+                        } @else if (showTransferLimitMinError) {
+                        <span class="error-hint primary-red">{{
+                            'bridge.limit.minWarning' | translate }}</span>
+                        }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

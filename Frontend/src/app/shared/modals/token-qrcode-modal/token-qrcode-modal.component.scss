@@ -1,0 +1,17 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+
+.modal-container {
+    .key-share {
+        @include mix.mq("tablet", max) {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+}
+
+::ng-deep .custom-modal.token-qrcode-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

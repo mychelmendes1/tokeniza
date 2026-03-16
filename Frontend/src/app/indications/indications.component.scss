@@ -1,0 +1,71 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .indications-container {
+        background-color: v.$normal-grey;
+    }
+
+    .summary, .indications-container {
+        padding: 32px;
+    }
+
+    .input-container {
+        max-width: 400px;
+    }
+
+    .offer-card-grid {
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+
+    .card {
+        border-radius: 8px;
+        background-color: v.$dark-shade;
+        padding: 16px;
+
+        .container-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            background-color: rgb(v.$primary-500, 0.1);
+            border-radius: 8px;
+
+            &:hover {
+                background-color: v.$primary-500;
+                z-index: 9999;
+            }
+        }
+    }
+
+    .info-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+
+        .email-container {
+            flex: 1;
+            min-width: 0;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .level-container {
+            padding: 2px 8px;
+            border-radius: 16px;
+            background-color: v.$light-grey-hover;
+        }
+    }
+}

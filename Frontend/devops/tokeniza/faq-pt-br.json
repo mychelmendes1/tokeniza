@@ -1,0 +1,103 @@
+{
+    "faq": {
+        "title": "Perguntas Frequentes",
+        "sections": [
+            {
+                "title": "CONTA E SEGURANÇA",
+                "content": [
+                    { "quest": "Como criar uma conta?", "answer": "Acesse a aplicação e preencha o formulário de abertura de conta." },
+                    { "quest": "Como recuperar senha esquecida?", "answer": "Clique em ESQUECI MINHA SENHA para trocar a senha de acesso." },
+                    { "quest": "Quais os requisitos de segurança para minha conta?", "answer": "A aplicação conta com o mais moderno sistema de segurança disponível, e você pode contribuir utilizando senhas seguras e ativando o 2FA para aumentar a proteção e segurança." },
+                    { "quest": "Como ativar a Autenticação de 2 Fatores (2FA)?", "answer": "Dentro da aplicação, ao realizar uma operação, o sistema solicitará a ativação do 2FA via Email ou Auth. Escolha uma opção e complete o processo de cadastro do 2FA. Pronto, o 2FA estará ativado para validar todo o seu acesso com SEGURANÇA." },
+                    { "quest": "Como proteger minha conta contra acesso não autorizado?", "answer": "Ative e autentique o fator 2FA e mantenha suas senhas seguras, evitando compartilhá-las com terceiros." }
+                ]
+            },
+            {
+                "title": "DEPÓSITOS E SAQUES",
+                "content": [
+                    { "quest": "Quais Criptomoedas são suportadas?", "answer": "As 100 maiores e melhores Criptomoedas do mundo. TOP 100. (ex.: Bitcoin, Ethereum, USDT, USDC, MATIC, Aave, XRP, etc.)" },
+                    { "quest": "Como depositar Criptomoedas?", "answer": "Clique em DEPOSITAR CRIPTO, compartilhe sua chave ou QR Code e receba a cripto desejada." },
+                    { "quest": "Como sacar Criptomoedas?", "answer": "Entre na sua CARTEIRA, clique em SACAR, escolha o tipo de transferência desejado, digite a chave de destino e clique em CONTINUAR." },
+                    { "quest": "Quais são os limites de depósitos e saques em Criptomoedas?", "answer": "Os depósitos e saques em Criptomoedas são ilimitados." },
+                    { "quest": "Quais são os limites de depósitos e saques em Reais?", "answer": "Os limites de depósitos e saques em Reais obedecem aos critérios do Banco Central do Brasil. Normalmente, os limites acompanham o valor do saldo em conta. SEU SALDO SERÁ SEU LIMITE." },
+                    { "quest": "Quais são os prazos de processamento para depósitos e saques?", "answer": "O processamento é instantâneo, mas obedece ao fluxo de rede, que pode, em tese, demorar até 30 minutos para Criptomoedas. Em caso de Reais, varia de 30 segundos a 30 minutos para o PIX e até 1 hora para TED." }
+                ]
+            },
+            {
+                "title": "COMPRAS E VENDAS",
+                "content": [
+                    { "quest": "Como Comprar Criptomoedas?", "answer": "Clique em CARREGAR CONTA, transfira dinheiro para sua conta. Com saldo em conta, CLIQUE na moeda desejada. Em seguida, clique em NEGOCIAÇÃO RÁPIDA e COMPRAR." },
+                    { "quest": "Como vender Criptomoedas?", "answer": "Clique na moeda desejada, vá em NEGOCIAÇÃO RÁPIDA e clique em VENDER." },
+                    { "quest": "Quais são os métodos de pagamentos disponíveis?", "answer": "Os pagamentos podem ser em Criptomoedas, PIX ou TED." },
+                    { "quest": "Como cancelar uma ordem?", "answer": "As opções de cancelamento estão disponíveis nas páginas das ações. Uma vez verificada a possibilidade de cancelamento e optando pelo prosseguimento, essa ordem final é irrevogável nos casos de transferências de Criptomoedas." },
+                    { "quest": "Cancelamento de ordem ESCROW?", "answer": "SIM, a ordem ESCROW é passível de cancelamento durante o período de Pendente." },
+                    { "quest": "Cancelamento de PIX ou TED.", "answer": "Nos casos de PIX ou TED, o cancelamento por erro justificável, engano ou golpe é possível, conforme previsto nas normas do Banco Central do Brasil." }
+                ]
+            },
+            {
+                "title": "TAXAS E LIMITES",
+                "content": [
+                    { "quest": "Quais são as taxas de transação?", "answer": "As taxas de transação estão descritas no extrato das operações. Elas oscilam entre 1% e 2%, dependendo da rede, do horário e dos dias." },
+                    { "quest": "Quais são as taxas de depósitos e saques?", "answer": "As taxas das movimentações em Criptomoedas não são fixas; seu valor mínimo é 1% e o máximo é 2%. Já as taxas de movimentações em Reais obedecem às regras estabelecidas no sistema bancário brasileiro. Verifique no sistema." },
+                    { "quest": "Como calcular a taxa?", "answer": "1 real de taxa a cada 100 reais para movimentações ordinárias normais em dias normais e horário comercial. E 2 reais para cada 100 reais de movimentações extraordinárias em feriados e finais de semana após 0:00h." }
+                ]
+            },
+            {
+                "title": "NFT",
+                "content": [
+                    { "quest": "Como comprar um NFT?", "answer": "Acesse o ícone TOKENIZADORA, escolha o NFT, clique em COMPRAR e finalize sua compra." },
+                    { "quest": "Como vender um NFT?", "answer": "Acesse o seu NFT, escolha o ícone VENDER ou LEILOAR e realize a venda direta ou o leilão a qualquer momento." },
+                    { "quest": "Posso resgatar o meu NFT?", "answer": "Sim, o NFT pode ser vendido, leiloado e resgatado." }
+                ]
+            },
+            {
+                "title": "ESCRROW",
+                "content": [
+                    { "quest": "Como funciona o Escrow?", "answer": "É uma ferramenta que garante e dá segurança a uma negociação de cripto entre duas pessoas desconhecidas. O pagamento só é liberado para o vendedor quando o comprador recebe seu ativo." },
+                    { "quest": "Qual a garantia do Escrow?", "answer": "Garante que quem compra RECEBE e garante que quem vende RECEBE." },
+                    { "quest": "Qual o benefício do Escrow?", "answer": "O benefício da SEGURANÇA, pois você pode comprar, vender, trocar e negociar com pessoas de qualquer lugar do mundo através do ESCROW, sem correr o risco de golpes ou prejuízos." }
+                ]
+            },
+            {
+                "title": "COMMUNITY CYCLE",
+                "content": [
+                    { "quest": "O que é o Community Cycle?", "answer": "É uma ferramenta revolucionária que permite ganhar dinheiro por toda a vida." },
+                    { "quest": "Como ganhar dinheiro no Community Cycle?", "answer": "Ao INDICAR seus amigos, conhecidos e familiares, você construirá sua comunidade. A plataforma devolve para você 10% de todo lucro gerado pela sua comunidade, mensalmente, para o resto da vida." },
+                    { "quest": "Como faço para receber os 10% do lucro da minha comunidade?", "answer": "Os 10% do lucro da sua comunidade serão pagos em sua carteira, em Criptomoedas ou em moeda fiduciária disponível, mensalmente, conforme sua preferência." }
+                ]
+            },
+            {
+                "title": "SUPORTE TECNICO",
+                "content": [
+                    { "quest": "Como contatar o suporte?", "answer": "Clique em ENTRE EM CONTATO e você será direcionado ao nosso Suporte Técnico." },
+                    { "quest": "Quais são os horários de atendimento?", "answer": "Atendimento 24h por dia, 7 dias por semana, e 365 dias por ano. O atendimento personalizado é de segunda a sexta-feira, das 08:00h às 18:00h." }
+                ]
+            },
+            {
+                "title": "REGULAMENTAÇÃO E CONFORMIDADE",
+                "content": [
+                    { "quest": "A Exchange é regulamentada?", "answer": "SIM, é regulamentada e obedece a todas as normas e regras governamentais e de órgãos de controle." },
+                    { "quest": "Quais são as Políticas de Conformidade?", "answer": "KYC e PLD/FT." },
+                    { "quest": "Como reportar qualquer dúvida ou suspeita?", "answer": "Utilize o Suporte Técino para reportar suas dúvidas e denúncias." }
+                ]
+            },
+            {
+                "title": "OUTROS",
+                "content": [
+                    { "quest": "Como atualizar meus dados pessoais?", "answer": "Clique em MEU PERFIL e atualize seus dados cadastrais." },
+                    { "quest": "Como fechar minha conta?", "answer": "Clique em REMOVER CONTA, preencha o formulário e envie. Sua conta será encerrada em até 72 horas." },
+                    { "quest": "Quais são as Políticas de Privacidade?", "answer": "A Política de Privacidade e o Termo de Uso estão disponíveis na aplicação, para leitura e aceite. Ao abrir sua conta, você precisa aceitar os Termos de Uso e a Política de Privacidade, que regulam o uso e a segurança jurídica tanto para o cliente quanto para a empresa." },
+                    { "quest": "Como receber atualizações sobre a Exchange?", "answer": "As atualizações do sistema serão disponibilizadas automaticamente para o cliente, quando necessário. Ao acessar a aplicação, a atualização estará disponível para ser executada." }
+                ]
+            },
+            {
+                "title": "INFORMAÇÕES ADICIONAIS",
+                "content": [
+                    { "quest": "Quais são os riscos associados ao comercio de Criptomoedas?", "answer": "Existem diversos riscos, mas trabalhamos incansavelmente para minimizar os riscos de sistemas. Permanecem os riscos relacionados às escolhas e à avaliação pessoal. Hoje, o comércio de Criptomoedas é bastante seguro, mas ainda existem riscos associados à escolha de ativos, avaliações apressadas, manuseio e armazenamento de ativos. Por isso, garantimos a segurança no armazenamento e nas transações das suas Criptomoedas, oferecendo um sistema robusto e seguro para você guardar e operar com seus ativos sem riscos de perdas ou danos." },
+                    { "quest": "Como proteger meus Ativos Digitais?", "answer": "Você pode armazená-los em sua CARTEIRA DIGITAL ou em uma Cold Wallet. Ambos os métodos dependem da responsabilidade no uso e na segurança das senhas e do 2FA." },
+                    { "quest": "Quais são as melhores práticas de segurança online?", "answer": "Nunca forneça suas senhas. Utilize senhas fortes com letras maiúsculas, números e sinais. Ative a Autenticação de 2 Fatores (2FA) e use os sistemas com responsabilidade. Essas ações irão garantir a segurança e fornecer uma camada extra de proteção para seus ativos digitais." }
+                ]
+            }
+        ]
+    }
+}

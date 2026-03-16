@@ -1,0 +1,89 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'stakeModal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <span class="primary-gray fw-400 fs-16 text-align-left">{{ 'stakeModal.description' | translate }}</span>
+    <div class="column">
+        <div class="input-container column align-start margin-top-30">
+            <label class="label-dark">{{ 'stakeModal.token' | translate }}</label>
+            <mat-select class="select-fill-primary" disableOptionCentering [(ngModel)]="selectedToken" (selectionChange)="tokenSelectedChanged()"
+                [placeholder]="'stakeModal.selectToken' | translate" panelClass="select-fill-primary" [disabled]="loading">
+                <mat-select-trigger>
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="selectedToken?.image_symbol">
+                        <span class="primary-dark fw-500">{{ selectedToken?.id }}</span>
+                    </div>
+                </mat-select-trigger>
+                <mat-option *ngFor="let token of tokens" [value]="token">
+                    <div class="inline gap-10">
+                        <img alt="token" class="img-token-small" [src]="token?.image_symbol">
+                        <span class="primary-dark fw-500">{{ token?.id }}</span>
+                    </div>
+                </mat-option>
+            </mat-select>
+            <p class="primary-dark fw-500 margin-top-16" *ngIf="selectedToken && tokenBalance">{{ 'stakeModal.balance' | translate }}: {{ convertBigNumberToNumber(tokenBalance) }} {{ selectedToken.id }}</p>
+        </div>
+        <div class="input-container column align-start margin-top-30" *ngIf="selectedToken" [@fadeIn]>
+            <label class="label-dark">{{ 'stakeModal.application' | translate }}</label>
+            <mat-select class="select-fill-primary" disableOptionCentering [(ngModel)]="stakeSelected" (selectionChange)="changedDays()"
+                [placeholder]="'stakeModal.selectApplication' | translate" panelClass="select-fill-primary" [disabled]="loading">
+                <mat-option *ngFor="let config of stakeConfigs" [value]="config">
+                    <div class="inline gap-10">
+                        <span class="primary-dark fw-500">
+                            {{ config.name }} - {{ config.valueToApply || 0 }} 
+                            {{ config.method === 'P' ? '%' : '' }} {{ config.periodType === "M" ? 'a.m.' : '' }}
+                            {{ config.exit_fee ? ('(' + ('stakeModal.penaltyFee' | translate) + config.exit_fee + '%)' ) : '' }}
+                        </span>
+                    </div>
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="input-container margin-top-30" *ngIf="selectedToken && stakeSelected" [@fadeIn]>
+            <div class="column align-start wth-100 gap-3">
+                <label class="label-dark">{{ 'stakeModal.value' | translate }} {{ selectedToken?.id }}</label>
+                <input class="input-fill-default medium-border" placeholder="0,000000" [(ngModel)]="stakeValue" [readOnly]="loading"
+                    (keypress)="allowOnlyNumbers($event)" appMaskToken (input)="changedAmount()"
+                >
+                <p class="primary-dark fw-500 margin-top-20">{{ 'stakeModal.inCash' | translate }}: {{ stakeValueFiat | currency: fiatCurrency.symbol: '': '1.2-2' }}</p>
+                <p class="primary-dark fw-500">{{ 'stakeModal.reward' | translate }}: {{ convertBigNumberToNumber(total) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="inline gap-8 margin-top-30 to-point" *ngIf="stakeSelected" [@fadeIn]>
+        <mat-icon class="svg-icon primary-blue-700" svgIcon="file-text" (click)="openTerms()"></mat-icon>
+        <span class="primary-blue-700 underline-text" (click)="openTerms()">
+            {{ 'stakeModal.terms' | translate }}
+        </span>
+    </div>
+
+    <p *ngIf="thresholdToApply > 0" class="primary-dark fw-500 margin-top-30">{{ 'stakeModal.minValue' | translate }} {{ thresholdToApply }} {{ selectedToken.id }}</p>
+
+    <div class="container-buttons centered gap-20 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'button.cancel' | translate }}</button>
+        <div class="flex column gap-8 wth-100">
+            <button class="btn dark-shade wth-100" *ngIf="(!isStakingSignmentEnabled) || (isStakingSignmentEnabled && signed)"
+                [disabled]="loading || errorMessage || !hasValidStakeValue() || !stakeSelected || (!accepted && stakeSelected.terms && !isStakingSignmentEnabled)"
+                (click)="askToExecuteStaking()">
+                    {{ 'stakeModal.continue' | translate }}
+            </button>
+
+            <span class="error-hint primary-red" *ngIf="!checkEnoughBalance()">
+                {{ 'errorHint.insufficientBalance' | translate }}
+            </span>
+        </div>
+
+        <button class="btn dark-shade wth-100" *ngIf="isStakingSignmentEnabled && !signed && !document_sign_key"
+            [disabled]="loading || errorMessage || !hasValidStakeValue() || !stakeSelected"
+            (click)="sendToSign()">
+                {{ 'stakeModal.sendToSign' | translate }}
+        </button>
+
+        <button class="btn dark-shade wth-100" *ngIf="isStakingSignmentEnabled && !signed && document_sign_key"
+            [disabled]="true">
+            {{ 'stakeModal.waitingToSign' | translate }}
+        </button>
+
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

@@ -1,0 +1,613 @@
+<app-menu-button-mobile
+    class="resp-menu-mobile"
+    [colorIcon]="
+        showErrorPage ? 'svg-icon primary-dark' : 'svg-icon primary-light'
+    "
+></app-menu-button-mobile>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<ng-template [ngIf]="!showErrorPage">
+    <div class="product-banner-container" *ngIf="!loadingRequest">
+        <img
+            *ngIf="collectionDetails.cover_photo"
+            [src]="collectionDetails.cover_photo"
+            alt=""
+        />
+    </div>
+    <div
+        class="header-page inline between wth-100 wrap gap-30"
+        *ngIf="!loadingRequest"
+    >
+        <div class="content-container between wth-100">
+            <div class="inline gap-16">
+                <div class="inline to-point gap-16" (click)="backPage()">
+                    <strong class="fs-16 fw-600 primary-700">{{
+                        "marketplace.title" | translate
+                    }}</strong>
+                    <strong class="fs-16 fw-600 primary-700">></strong>
+                </div>
+                <span class="primary-light fs-16 fw-600">{{
+                    collectionDetails.name
+                }}</span>
+            </div>
+            <button class="btn primary" (click)="goToWallet()">
+                <mat-icon class="svg-icon primary-dark" svgIcon="wallet"></mat-icon>
+                <span class="primary-dark">{{ "button.wallet" | translate }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="marketplace-product-container content-container wth-100" *ngIf="!loadingRequest">
+        <div class="marketplace-product-content inline align-start gap-40">
+            <img class="asset-img" [src]="collectionDetails.photo" alt="" />
+            <div class="column gap-20 margin-top-50 wrap wth-100">
+                <div class="between wth-100 wrap gap-20">
+                    <div class="column gap-8">
+                        <span class="primary-dark fs-31 fw-700">{{
+                            collectionDetails.name
+                        }}</span>
+                        <span class="primary-off-white-darker fs-16 fw-400">{{
+                            collectionDetails.creator_institution
+                        }}</span>
+                    </div>
+                    <div class="detailing inline gap-30 wrap">
+                        <div class="inline gap-8">
+                            <span
+                                class="primary-off-white-darker fs-16 fw-400"
+                                >{{
+                                    "marketplace.productDetails.items"
+                                        | translate
+                                }}</span
+                            >
+                            <span class="primary-dark fs-16 fw-700">{{
+                                collectionStatistics.collectionDetails?.items
+                            }}</span>
+                        </div>
+                        <div class="inline gap-8">
+                            <span
+                                class="primary-off-white-darker fs-16 fw-400"
+                                >{{
+                                    "marketplace.productDetails.owners"
+                                        | translate
+                                }}</span
+                            >
+                            <span class="primary-dark fs-16 fw-700">{{
+                                collectionStatistics.owners
+                            }}</span>
+                        </div>
+                        <div class="inline gap-8">
+                            <span
+                                class="primary-off-white-darker fs-16 fw-400"
+                                >{{
+                                    "marketplace.collectionTotalValue"
+                                        | translate
+                                }}</span
+                            >
+                            <span class="primary-dark fs-16 fw-700"
+                                >{{ currencySymbol }}
+                                {{
+                                    (currency === "USD"
+                                        ? collectionStatistics.circulating_value
+                                        : collectionStatistics.circulating_valueBRL
+                                    ) | number : "1.2-2"
+                                }}</span
+                            >
+                        </div>
+                        <div class="inline gap-8">
+                            <span
+                                class="primary-off-white-darker fs-16 fw-400"
+                                >{{
+                                    "marketplace.productDetails.sales"
+                                        | translate
+                                }}</span
+                            >
+                            <span class="primary-dark fs-16 fw-700">{{
+                                collectionStatistics.boughts
+                            }}</span>
+                        </div>
+                    </div>
+                </div>
+                <span
+                    class="primary-dark fs-16 fw-400"
+                    *ngIf="collectionStatistics.collectionDetails?.description"
+                    >{{
+                        collectionStatistics.collectionDetails?.description
+                    }}</span
+                >
+                <div class="responsive-column between wth-100 wrap gap-20">
+                    <div
+                        class="column gap-4 content-ellipsis to-point"
+                        *ngIf="
+                            collectionStatistics.collectionDetails?.document_url
+                        "
+                        (click)="openDocument()"
+                    >
+                        <span class="primary-dark fs-16 fw-700">{{
+                            "marketplace.productDetails.document" | translate
+                        }}</span>
+                        <span class="primary-dark fs-16 fw-400 underline-text">
+                            {{
+                                collectionStatistics.collectionDetails
+                                    ?.document_url
+                            }}
+                        </span>
+                    </div>
+
+                    <div class="column gap-4">
+                        <span class="primary-dark fs-16 fw-700">{{
+                            "marketplace.productDetails.creator" | translate
+                        }}</span>
+                        <span class="primary-dark fs-16 fw-400">
+                            {{
+                                collectionStatistics.collectionDetails
+                                    ?.creator_institution
+                            }}
+                        </span>
+                    </div>
+
+                    <div
+                        class="inline gap-8"
+                        *ngIf="collectionDetails?.contract_address"
+                    >
+                        <div class="column gap-4">
+                            <span class="primary-dark fs-16 fw-700">{{
+                                "marketplace.productDetails.contract"
+                                    | translate
+                            }}</span>
+                            <span class="primary-dark fs-16 fw-400">
+                                {{
+                                    getEllipsis(
+                                        collectionStatistics.collectionDetails
+                                            ?.contract_address
+                                    )
+                                }}
+                            </span>
+                        </div>
+                        <div
+                            class="hover-icon primary-light to-point"
+                            (click)="
+                                copy(
+                                    collectionStatistics.collectionDetails
+                                        ?.contract_address
+                                )
+                            "
+                        >
+                            <mat-icon
+                                class="svg-icon primary-dark"
+                                svgIcon="copy"
+                            ></mat-icon>
+                        </div>
+                    </div>
+
+                    <div
+                        class="column gap-4 content-ellipsis to-point"
+                        *ngIf="collectionStatistics?.networkDetails?.scan_url"
+                        (click)="openScan(getScan_url())"
+                    >
+                        <span class="primary-dark fs-16 fw-700">{{
+                            "marketplace.productDetails.explorer" | translate
+                        }}</span>
+                        <span class="primary-dark fs-16 fw-400 underline-text">
+                            {{ getScan_url() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters between margin-top-50 wrap gap-30">
+            <div class="input-container icon-prefix">
+                <mat-icon
+                    class="prefix primary-gray to-point"
+                    svgIcon="search"
+                ></mat-icon>
+                <input
+                    class="input-fill-default"
+                    maxlength="100"
+                    [placeholder]="'placeholder.searchNFT' | translate"
+                    [(ngModel)]="searchValue"
+                    (input)="filterData()"
+                    (keydown.enter)="filterData(true)"
+                    autocomplete="false"
+                />
+            </div>
+            <div class="inline gap-20">
+                <div
+                    class="inline exibition-container"
+                    [ngClass]="
+                        {
+                            'list-active': selectedNftViewMode === eViewMode.LIST,
+                            'grid-active': selectedNftViewMode === eViewMode.GRID,
+                        }"
+                >
+                    <mat-icon
+                        svgIcon="list"
+                        (click)="selectNftViewMode(eViewMode.LIST)"
+                        [ngClass]="{
+                            'svg-icon primary':
+                                selectedNftViewMode === eViewMode.LIST
+                        }"
+                    >
+                    </mat-icon>
+                    <mat-icon
+                        svgIcon="grid"
+                        (click)="selectNftViewMode(eViewMode.GRID)"
+                        [ngClass]="{
+                            'svg-icon primary':
+                                selectedNftViewMode === eViewMode.GRID
+                        }"
+                    >
+                    </mat-icon>
+                    <div class="selection-indicator"></div>
+                </div>
+                <button
+                    [matMenuTriggerFor]="menu"
+                    class="btn dark-shade"
+                    (mouseenter)="hoverIconClassService.onMouseEnter('filter')"
+                    (mouseleave)="hoverIconClassService.onMouseLeave('filter')"
+                >
+                    {{ "button.filters" | translate }}
+                    <mat-icon
+                        svgIcon="filters-lines"
+                        [ngClass]="
+                            hoverIconClassService.getSvgClass(
+                                'filter',
+                                'svg-icon primary-dark',
+                                'svg-icon primary-light'
+                            )
+                        "
+                    ></mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <div class="mat-menu-container column gap-10">
+                        <span class="primary-dark fs-16 fw-600">{{
+                            "marketplace.category" | translate
+                        }}</span>
+                        <mat-checkbox
+                            *ngFor="let categorie of categories"
+                            [checked]="
+                                selectedCategories.includes(categorie.id)
+                            "
+                            (click)="
+                                selectCategorie(categorie.id);
+                                $event.stopPropagation()
+                            "
+                            class="radio-button-checkbox"
+                        >
+                            <span class="primary-dark fw-500">{{
+                                categorie.name
+                            }}</span>
+                        </mat-checkbox>
+                        <span class="primary-dark fs-16 fw-600">{{
+                            "marketplace.price" | translate
+                        }}</span>
+                        <mat-radio-group
+                            class="radio-group"
+                            [(ngModel)]="sortFilterSelected"
+                        >
+                            <mat-radio-button
+                                *ngFor="let filter of sortFilterList"
+                                [value]="filter"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <span class="primary-dark fw-500">{{
+                                    translateSortFilter(filter) | translate
+                                }}</span>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                        <div class="centered gap-10">
+                            <button
+                                class="btn doutline"
+                                (click)="clearFilters()"
+                            >
+                                {{ "button.clear" | translate }}
+                                <mat-icon svgIcon="close"></mat-icon>
+                            </button>
+                            <button
+                                class="btn dark-shade"
+                                (click)="applyFilter()"
+                                (mouseenter)="
+                                    hoverIconClassService.onMouseEnter('apply')
+                                "
+                                (mouseleave)="
+                                    hoverIconClassService.onMouseLeave('apply')
+                                "
+                            >
+                                {{ "button.apply" | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </mat-menu>
+            </div>
+        </div>
+
+        <div
+            class="table margin-top-30"
+            *ngIf="selectedNftViewMode === eViewMode.LIST"
+            [@fadeIn]
+        >
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                class="table hover-rows"
+                matSort
+                #dataSourceNFT="matSort"
+            >
+                <!-- Asset -->
+                <ng-container matColumnDef="asset">
+                    <th mat-header-cell *matHeaderCellDef class="first-column">
+                        <span
+                            >NFT -
+                            {{
+                                collectionStatistics.collectionDetails?.name
+                            }}</span
+                        >
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="first-column">
+                        <div class="inline gap-8 custom-margin">
+                            <img
+                                class="circular-min-img"
+                                [src]="getMainPhoto(element)"
+                                alt=""
+                            />
+                            <div class="column gap-3">
+                                <span class="primary-dark-shade fw-600 fs-13">{{
+                                    element?.name
+                                }}</span>
+                                <span
+                                    class="primary-off-white-darker fw-400 fs-13"
+                                    *ngIf="element?.blockchainId"
+                                    >ID: {{ element?.blockchainId }}</span
+                                >
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Original Price -->
+                <ng-container matColumnDef="originalPrice">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <span>{{
+                            "marketplace.productDetails.originalPrice"
+                                | translate
+                        }}</span>
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline gap-8">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{
+                                    getAssetOriginalPrice(element)
+                                        | currency
+                                            : usefulSettings.fiatCurrency
+                                                  .currency
+                                }}
+                            </span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Price offered -->
+                <ng-container matColumnDef="priceOffered">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <span>{{
+                            "marketplace.productDetails.priceOffered"
+                                | translate
+                        }}</span>
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline gap-8">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{
+                                    element?.resale?.resale_value
+                                        ? (element?.resale?.resale_value
+                                          | currency
+                                              : usefulSettings.fiatCurrency
+                                                    .currency)
+                                        : "-"
+                                }}
+                            </span>
+                            <div
+                                class="low-high-container centered gap-4"
+                                *ngIf="
+                                    getVariation(element) !== 0 &&
+                                    getAssetOriginalPrice(element) > 0
+                                "
+                                [ngClass]="{
+                                    'bg-primary-p-50':
+                                        getVariation(element) > 0,
+                                    'bg-red-r-50': getVariation(element) < 0
+                                }"
+                            >
+                                <mat-icon
+                                    class="low-high-icon svg-icon"
+                                    [ngClass]="{
+                                        'primary-700':
+                                            getVariation(element) > 0,
+                                        'primary-red-600':
+                                            getVariation(element) < 0
+                                    }"
+                                    [svgIcon]="
+                                        getVariation(element) > 0
+                                            ? 'arrow-up-mini'
+                                            : 'arrow-down-mini'
+                                    "
+                                >
+                                </mat-icon>
+                                <span
+                                    *ngIf="
+                                        getAssetOriginalPrice(element) &&
+                                        element?.resale?.onResale
+                                    "
+                                    class="fs-13 fw-600"
+                                    [ngClass]="{
+                                        'primary-700':
+                                            getVariation(element) > 0,
+                                        'primary-red': getVariation(element) < 0
+                                    }"
+                                >
+                                    {{ getVariation(element) }}%
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Deadline -->
+                <ng-container matColumnDef="deadline">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <span>{{
+                            "marketplace.productDetails.deadline" | translate
+                        }}</span>
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{
+                                    (element?.auction?.deadline
+                                        | date
+                                            : (usefulSettings.selectedLanguage ===
+                                              eLanguage.PORTUGUESE
+                                                  ? "dd/MM/yyyy"
+                                                  : "M/d/yy")) || "-"
+                                }}
+                            </span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Actions -->
+                <ng-container matColumnDef="actions3column">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="last-column"
+                    ></th>
+                    <td mat-cell *matCellDef="let element" class="last-column">
+                        <div class="content-end gap-20">
+                            <mat-icon
+                                class="svg-icon primary-gray to-point"
+                                [matTooltip]="'tooltip.details' | translate"
+                                (click)="
+                                    goToCheckout(element);
+                                    $event.stopPropagation()
+                                "
+                                matTooltipClass="dark-tooltip"
+                                matTooltipPosition="above"
+                                svgIcon="eye"
+                            >
+                            </mat-icon>
+                            <mat-icon
+                                class="svg-icon primary-gray to-point"
+                                [matTooltip]="'tooltip.buy' | translate"
+                                (click)="
+                                    checkoutHere(element);
+                                    $event.stopPropagation()
+                                "
+                                matTooltipClass="dark-tooltip"
+                                matTooltipPosition="above"
+                                svgIcon="shopping-cart"
+                            >
+                            </mat-icon>
+                            <mat-icon
+                                class="svg-icon primary-gray to-point"
+                                [matTooltip]="'tooltip.share' | translate"
+                                (click)="
+                                    shareWhatsapp(element);
+                                    $event.stopPropagation()
+                                "
+                                matTooltipClass="dark-tooltip"
+                                matTooltipPosition="above"
+                                svgIcon="share-2"
+                            >
+                            </mat-icon>
+                        </div>
+                        <div
+                            class="content-end gap-8 to-point"
+                            *ngIf="element?.auction"
+                            (click)="
+                                goToCheckout(element); $event.stopPropagation()
+                            "
+                        >
+                            <div
+                                class="inline gap-8 auction-status"
+                                [matTooltip]="
+                                    translateAuctionTooltip(element) | translate
+                                "
+                                matTooltipClass="dark-tooltip"
+                                matTooltipPosition="above"
+                            >
+                                <mat-icon
+                                    class="svg-icon primary-red-600 to-point"
+                                    svgIcon="auction"
+                                ></mat-icon>
+                                <span>{{
+                                    "marketplace.productDetails.auctionOngoing"
+                                        | translate
+                                }}</span>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    (click)="goToCheckout(row)"
+                ></tr>
+
+                <!-- No Data -->
+                <tr *matNoDataRow>
+                    <td [attr.colspan]="displayedColumns.length">
+                        <p
+                            class="no-data-text"
+                            [innerHTML]="'noFoundText' | translate"
+                        ></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <app-card-list
+            *ngIf="selectedNftViewMode === eViewMode.GRID"
+            [assetList]="NFTs"
+            [@fadeIn]
+        >
+        </app-card-list>
+        <div class="centered margin-top-30" *ngIf="NFTs.length === 0">
+            <p
+                class="primary-dark no-data-text fw-700"
+                [innerHTML]="'noFoundText' | translate"
+            ></p>
+        </div>
+        <div
+            class="load-more-container margin-top-30"
+            *ngIf="dataSource.data.length > 0"
+        >
+            <div class="inline centered">
+                <button
+                    class="btn dark-shade see-more"
+                    *ngIf="showLoadMoreButton && NFTs.length > 0"
+                    (click)="filterData(true, false)"
+                    [attr.disabled]="loadingMoreCards ? true : null"
+                    (mouseenter)="
+                        hoverIconClassService.onMouseEnter('see-more')
+                    "
+                    (mouseleave)="
+                        hoverIconClassService.onMouseLeave('see-more')
+                    "
+                >
+                    <span *ngIf="!loadingMoreCards">Ver mais</span>
+                    <mat-progress-spinner
+                        *ngIf="loadingMoreCards"
+                        class="spinner-small-big secondary"
+                        [mode]="'indeterminate'"
+                    ></mat-progress-spinner>
+                </button>
+                <strong
+                    *ngIf="allItemsLoaded"
+                    class="primary-dark fs-16 fw-600"
+                    >{{ "allItemsLoaded" | translate }}</strong
+                >
+            </div>
+        </div>
+    </div>
+</ng-template>
+<mat-progress-spinner
+    *ngIf="loading || loadingCollections || loadingRequest"
+    class="spinner"
+    [mode]="'indeterminate'"
+></mat-progress-spinner>
