@@ -1,0 +1,9 @@
+@use '../../../assets/styles/variables.scss' as v;
+@use '../../../assets/styles/mixins.scss' as mix;
+@use '../../../assets/styles/material-component.scss';
+
+.account-left-container {
+    height: 100% !important;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,106 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .external-deposit-container {
+        padding: 32px;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 30px 10px;
+        }
+
+        .external-deposit {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+    
+            @include mix.mq("tablet", max) {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+        
+            .left-side,
+            .right-side {
+                background: var(--bg-secondary);
+                width: 100%;
+                border-radius: 10px;
+        
+                .input-container {
+                    margin-bottom: 20px;
+                }
+            }
+        
+            .left-side {
+                .identification-container {
+                    margin-bottom: 50px;
+                }
+        
+                .payment-method-container {
+                    .payment-radio {
+                        display: flex;
+                        width: 100%;
+                        gap: 50px;
+                        margin-bottom: 50px;
+        
+                        mat-radio-button:not(:last-child) {
+                            margin-right: 10px;
+                        }
+        
+                        @include mix.mq("phone-wide", max) {
+                            flex-direction: column;
+                            width: 100%;
+                            gap: 20px;
+                        }
+                    }
+                }
+            }
+        
+            .right-side {
+                .checkout {
+                    .checkout-details {
+                        padding: 20px;
+                        background: var(--bg-secondary);
+                        border-radius: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+        
+                        p {
+                            text-align: center;
+                            font-size: 18px;
+                            font-weight: bold;
+                            margin-bottom: 20px;
+                        }
+                    }
+                }
+        
+                button {
+                    width: 100%;
+                    display: block;
+                    margin: 20px auto 0 auto;
+                }
+            }
+        }
+        
+        .select-fill-primary {
+            background-color: v.$light-text !important;
+        }
+    }
+}
+
+::ng-deep.img-token-small {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    object-fit: scale-down;
+}

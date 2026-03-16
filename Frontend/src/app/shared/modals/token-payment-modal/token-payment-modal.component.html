@@ -1,0 +1,68 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="modal-full-content">
+        <div class="between">
+            <span class="primary-dark fw-700 fs-20">{{ 'buy-token.paymentModal.title' | translate }}</span>
+            <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+        </div>
+        <div class="content inline gap-20" *ngIf="!loading">
+            <div class="tokens-amount-container column flex-1 text-align-left">
+                <div class="input-container margin-top-20" [style.order]="useTokenToConvert ? 1 : 3">
+                    <label class="label-dark text-align-left">
+                        {{ ('buy-token.paymentModal.quantity' | translate) }}
+                        ({{ checkoutObject?.data?.id }})
+                    </label>
+                    <div class="column align-start wth-100 gap-3">
+                        <input class="input-fill-default medium-border" placeholder="0,000000" disabled (input)="convertTokenToFiduciary($event)"
+                            (keypress)="allowOnlyNumbers($event)" [(ngModel)]="tokensQuantity" appMaskToken [readonly]="loading"
+                        >
+                    </div>
+                </div>
+                <div class="centered gap-8 margin-top-20" [style.order]="2">
+                    <div class="divider-line wth-100"></div>
+                    <div class="double-chevron-container centered to-point" (click)="useTokenToConvert=!useTokenToConvert">
+                        <mat-icon class="svg-icon primary-dark double-chevron" svgIcon="double-chevron-down"></mat-icon>
+                    </div>
+                    <div class="divider-line wth-100"></div>
+                </div>
+                <div class="input-container margin-top-20" [style.order]="useTokenToConvert ? 3 : 1">
+                    <label class="label-dark text-align-left">
+                        {{ ('buy-token.paymentModal.amountToPay' | translate) + ' (' + usefulSettings.fiatCurrency?.symbol + ')'}}
+                    </label>
+                    <div class="column align-start wth-100 gap-3">
+                        <input class="input-fill-default medium-border" (keypress)="allowOnlyNumbers($event)" (ngModelChange)="convertFiduciaryToToken($event)" [readonly]="loading"
+                            [placeholder]="usefulSettings.fiatCurrency.symbol + ' 0,00'" [(ngModel)]="amountToPay" currencyMask [options]="{ prefix: usefulSettings.fiatCurrency.symbol + ' ', precision: 2 }"
+                        >
+                    </div>
+                </div>
+    
+                <p class="quotation-value primary-dark" [style.order]="4">
+                    {{ 'buy-token.paymentModal.currentQuotation' | translate }}
+                    {{ checkoutObject?.data?.id }} / {{ usefulSettings.fiatCurrency?.currency }}:
+                    <strong>{{ checkoutObject?.price | currency: usefulSettings.fiatCurrency?.symbol: true:
+                        tokenPriceDecimalsPlacesStrategy }}
+                    </strong>
+                </p>
+    
+                <p *ngIf="minToBuy" class="quotation-value primary-dark" [style.order]="5">
+                    {{ 'buy-token.paymentModal.minAmount' | translate }}:
+                    <strong>{{ minToBuy | number: '1.2-2' }}</strong>
+                    {{ checkoutObject?.data?.id }}
+                </p>
+    
+                <p *ngIf="hasLock" class="quotation-value primary-dark" [style.order]="6">
+                    {{ 'buy-token.paymentModal.exchangeLock' | translate }}
+                </p>
+                <div class="info-balance centered" [style.order]="7">
+                    <p class="info-about-balance">{{ 'buy-token.paymentModal.balanceUpdateInfo' | translate }}</p>
+                </div>
+            </div>
+            <div class="checkout-container flex-1">
+                <app-payment-checkout [listenChanges]="listenChanges" [checkoutObject]="checkoutObject"
+                    [brlaBuyLimit]="brlaBuyLimit" [brlaAccountApproved]="brlaAccountApproved"
+                    (finishOperation)="close(true)">
+                </app-payment-checkout>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

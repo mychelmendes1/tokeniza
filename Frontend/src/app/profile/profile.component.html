@@ -1,0 +1,225 @@
+<div class="dark-container" *ngIf="isMobile || (!showErrorPage && !isMobile)">
+    <app-menu-button-mobile></app-menu-button-mobile>
+</div>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<div class="profile-container column" *ngIf="!showErrorPage">
+    <div class="between profile wrap">
+        <div class="inline gap-24 responsive-avatar">
+            <div class="avatar-container" (mouseenter)="isHovered = true" (mouseleave)="isHovered = false">
+                <div class="avatar">
+                    <img *ngIf="avatarUrl" (load)="loadImage = true" (error)="loadImage = false" class="big-avatar"
+                        [src]="avatarUrl" alt="avatar">
+                    <mat-icon *ngIf="!avatarUrl && !userDetails.selfieImage" class="svg-icon primary-light simple-user"
+                        svgIcon="simple-user"></mat-icon>
+                    <mat-progress-spinner *ngIf="!loadImage" class="spinner-medium"
+                        [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </div>
+                <div class="edit-avatar" [ngClass]="{ 'visible': editMode && isHovered }"
+                    (click)="editMode ? avatarInput.click() : false">
+                    <mat-icon class="svg-icon primary-light camera" svgIcon="camera"></mat-icon>
+                </div>
+            </div>
+            <div class="column gap-5">
+                <div class="inline gap-10 align-center">
+                    <span class="fw-600 primary-dark fs-30">{{ userDetails.name }}</span>
+                    <span class="kyc-badge" [ngClass]="{'kyc-approved': isKycApproved(), 'kyc-pending': !isKycApproved()}">
+                        {{ (isKycApproved() ? 'kyc.verified' : 'kyc.notVerified') | translate }}
+                    </span>
+                </div>
+                <span class="fw-400 primary-dark fs-16">{{ userDetails.externalSourceId }}</span>
+            </div>
+        </div>
+        <input type="file" accept="image/png, image/jpeg, image/jpg" (change)="inputImg($event)" hidden #avatarInput>
+        <div class="inline gap-30 wrap" *ngIf="!loading">
+            <div class="rounded inline" [ngClass]="{ 'to-point' : !verifyMFAStatus }" (click)="openMfaConfigModal()">
+                <mat-icon class="svg-icon" [svgIcon]="verifyMFAStatus ? 'primary-check' : 'close-circle-fill'"
+                    [ngClass]="verifyMFAStatus ? 'primary-fill' : 'primary-red-fill-600'">
+                </mat-icon>
+                <span class="light">
+                    {{ (verifyMFAStatus ? 'mfa.success' : 'mfa.config') | translate }}
+                </span>
+            </div>
+            <div class="inline gap-8 to-point white-box" (click)="editProfile()" *ngIf="!editMode">
+                <mat-icon class="svg-icon primary-off-white-darker" svgIcon="edit-3"></mat-icon>
+                <span class="primary-off-white-darker fw-600 fs-14">{{ 'button.edit' | translate }}</span>
+            </div>
+            <div class="inline gap-8 to-point white-box" (click)="cancelEdit()" *ngIf="editMode">
+                <span class="primary-red fw-600">{{ 'button.cancel' | translate }}</span>
+            </div>
+            <div class="inline gap-8 to-point white-box" *ngIf="!editMode" (click)="openRemoveAccountModal()">
+                <mat-icon class="svg-icon primary-off-white-darker" svgIcon="user-x"></mat-icon>
+                <span class="primary-off-white-darker fw-600 fs-14">{{ 'button.removeAccount' | translate }}</span>
+            </div>
+            <div class="inline gap-8 to-point white-box" *ngIf="!editMode" (click)="openPasswordModal()">
+                <mat-icon class="svg-icon primary-off-white-darker" svgIcon="lock"></mat-icon>
+                <span class="primary-off-white-darker fw-600 fs-14">{{ 'button.changePassword' | translate }}</span>
+            </div>
+            <button class="btn primary" (click)="editMode ? updateProfile() : goToWallet()" [disabled]="editMode ? selfieNotChanged() && !formProfile.valid : false">
+                <mat-icon *ngIf="!editMode" class="svg-icon primary-dark" svgIcon="wallet"></mat-icon>
+                <span class="primary-dark">{{ (editMode ? 'button.save' : 'button.wallet') | translate }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="column" *ngIf="!loading">
+        <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30" mat-stretch-tabs="false"
+            mat-align-tabs="start">
+            <mat-tab [label]="'profile.data' | translate">
+                <form [formGroup]="formProfile" class="column gap-20 margin-top-30">
+                    <div class="inline gap-20 wrap">
+                        <div class="input-container flex-1" *ngIf="editMode" [@fadeIn]>
+                            <label class="label-dark">{{ 'label.fullName' | translate }}<span class="primary-red">*</span></label>
+                            <input class="input-fill-default" formControlName="fullName"
+                                [placeholder]="'placeholder.fullName' | translate" required maxlength="150"
+                                onlyLettersAndSpace>
+                            <span class="error-hint">
+                                <ng-container
+                                    *ngIf="showError('fullName', formProfile) && formProfile.get('fullName')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="formProfile.get('fullName')?.hasError('completeFullNameError')">
+                                    {{ formProfile.get('fullName')?.getError('completeFullNameError') | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container flex-1" *ngIf="editMode" [@fadeIn]>
+                            <label class="label-dark">Username<span class="primary-red">*</span></label>
+                            <input class="input-fill-default" formControlName="userName" required
+                                [placeholder]="'placeholder.userName' | translate" maxlength="150">
+                            <span class="error-hint">
+                                <ng-container
+                                    *ngIf="formInputTouched('userName', formProfile) && formProfile.get('userName')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="inline gap-20 wrap">
+                        <div class="input-container flex-1">
+                            <label class="label-dark">Nickname</label>
+                            <input class="input-fill-default" formControlName="nickname"
+                                [placeholder]="'placeholder.nickName' | translate">
+                        </div>
+                        <div class="input-container flex-1">
+                            <label class="label-dark">ID</label>
+                            <input class="input-fill-default" formControlName="id">
+                        </div>
+                    </div>
+                    <div class="inline gap-20 wrap">
+                        <div class="input-container flex-1">
+                            <label class="label-dark">{{ 'label.email' | translate }}</label>
+                            <input class="input-fill-default" formControlName="email" maxlength="150"
+                                [placeholder]="'placeholder.email' | translate" type="email" required>
+                            <span class="error-hint">
+                                <ng-container
+                                    *ngIf="showError('email', formProfile) && formProfile.get('email')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="formProfile.get('email')?.invalid && formProfile.get('email')?.value">
+                                    {{ 'errorHint.email' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                        <div class="input-container icon-suffix flex-1">
+                            <label class="label-dark">{{ 'label.celphone' | translate }}</label>
+                            <input class="input-fill-default" formControlName="phoneNumber"
+                                [placeholder]="'placeholder.celphone' | translate"
+                                [mask]="!userDetails.externalDoc ? '+00 (00) 00000-0000' : '000000009999999999'"
+                                autocomplete="false" required>
+                            <span class="error-hint">
+                                <ng-container
+                                    *ngIf="showError('phoneNumber', formProfile) && formProfile.get('phoneNumber')?.hasError('required')">
+                                    {{ 'errorHint.mandatory' | translate }}
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="inline gap-20 wrap">
+                        <div class="input-container flex-1">
+                            <label class="label-dark">{{ 'label.indicationBy' | translate }}</label>
+                            <input class="input-fill-default" formControlName="indication"
+                                [placeholder]="(!userDetails.externalSourceIndication ? 'placeholder.notHasIndication' : '') | translate">
+                        </div>
+                        <div class="input-container flex-1">
+                            <label class="label-dark">{{ userDetails.cpf ? 'CPF' : (userDetails.cnpj ? 'CNPJ' : 'label.document') | translate }}</label>
+                            <input class="input-fill-default" formControlName="document"
+                                [placeholder]="'placeholder.document' | translate" required>
+                        </div>
+                    </div>
+                    <div class="inline gap-20 wrap">
+                        <div class="input-container icon-suffix">
+                            <label class="label-dark">{{ 'label.birthday' | translate }}</label>
+                            <input class="input-fill-default" [matDatepicker]="pickerDateOfBirth" formControlName="dateOfBirth" [disabled]="true"
+                                [placeholder]="'placeholder.birthDateFormat' | translate" [matDatepickerFilter]="dateFilter" (input)="onDateInput($event, 'dateOfBirth')"
+                            >
+                            <mat-datepicker-toggle matSuffix [for]="pickerDateOfBirth" class="calendar-icon input-with-label" [disabled]="!editMode">
+                                <mat-icon matDatepickerToggleIcon svgIcon="calendar" class="svg-icon primary-dark"></mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker startView="multi-year" class="calendar-primary" #pickerDateOfBirth disabled="false"></mat-datepicker>
+                        </div>
+                    </div>
+                </form>
+            </mat-tab>
+            <mat-tab [label]="'profile.documents' | translate">
+                <div class="column gap-20 margin-top-30">
+                    <form class="column gap-20">
+                        <div class="upload-file-container column gap-10">
+                            <div class="upload-file-content" [ngClass]="{'done': documentFront }">
+                                <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentFront')" />
+                                <div class="section-thumbnail inline">
+                                    <img class="document-icon" *ngIf="!documentFront" src="assets/images/document-front-model.svg">
+                                    <img class="real-document" *ngIf="documentFront" [src]="documentFront" alt="">
+                                    <div class="content-document">
+                                        <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="documentFront">verified</mat-icon>
+                                        <p class="column middle-gap">
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.documentFront' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-file-content" [ngClass]="{'done': documentBack }">
+                                <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentBack')" />
+                                <div class="section-thumbnail inline">
+                                    <img class="document-icon" *ngIf="!documentBack" src="assets/images/document-back-model.svg">
+                                    <img class="real-document" *ngIf="documentBack" [src]="documentBack" alt="">
+                                    <div class="content-document">
+                                        <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="documentBack">verified</mat-icon>
+                                        <p class="column middle-gap">
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.documentBack' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-file-content" [ngClass]="{'done': documentSelfie }">
+                                <input type="file" [accept]="getFileTypes()" (change)="addNewFile($event, 'documentSelfie')" />
+                                <div class="section-thumbnail selfie-with-document inline">
+                                    <img class="document-icon" *ngIf="!documentSelfie" src="assets/images/selfie-with-document.svg">
+                                    <img class="real-document" *ngIf="documentSelfie" [src]="documentSelfie" alt="">
+                                    <div class="content-document">
+                                        <mat-icon fontSet="material-icons-outlined" class="verified-icon" *ngIf="documentSelfie">verified</mat-icon>
+                                        <p class="column middle-gap">
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.selfieWithDocument' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.documents' | translate }}</span>
+                                            <span class="label-dark" style="color: #141414;">{{ 'completeYourRegistration.upImage' | translate }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inline gap-30 wrap margin-top-20">
+                            <button class="btn primary" (click)="updateDocuments()" [disabled]="loadingRequest || loadingDocuments">
+                                <span class="primary-dark">{{ 'button.save' | translate }}</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading || loadingRequest" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

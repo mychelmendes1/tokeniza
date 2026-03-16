@@ -1,0 +1,58 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .crowdfunding-container {
+        padding: 32px;
+        position: relative;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 30px 10px;
+            margin-top: 30px;
+        }
+    }
+
+    .input-container {
+        max-width: 400px;
+    }
+
+    .custom-margin {
+        margin: 15px 0;
+    }
+
+    .circular-min-img {
+        width: 40px;
+        height: 40px;
+        max-width: 40px;
+        min-width: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .progress-bar {
+        background-color: v.$light-shade;
+        max-width: 600px !important;
+    }
+
+    .img-wrapper {
+        margin-bottom: 30px;
+
+        .banner-img {
+            border-radius: 16px;
+        }
+    }
+
+    .no-found-data-text {
+        padding: 40px 0 0;
+        color: v.$off-white-darker;
+        font-weight: 600;
+        font-size: 15px;
+    }
+}

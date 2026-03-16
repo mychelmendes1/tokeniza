@@ -1,0 +1,119 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    max-height: 700px;
+    overflow: hidden;
+    padding: 8px !important;
+
+    .modal-full-content {
+        overflow: auto;
+        padding: 22px;
+    }
+
+    .alert-circle {
+        @include mix.iconSize(10px, true);
+        margin-top: -5px;
+    }
+}
+
+.payment-card {
+    background: #f6f6f6;
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    word-wrap: break-word;  
+    overflow-wrap: break-word;
+    overflow: hidden;
+  }
+
+  .row{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+::ng-deep .custom-modal.crowdfunding-checkout-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    min-width: 450px;
+    max-width: 600px;
+}
+
+// Força a fonte Inter no select e suas opções
+::ng-deep .custom-modal.crowdfunding-checkout-modal {
+    .mat-mdc-form-field {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .mat-mdc-select {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .mat-mdc-select-value {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .mat-mdc-select-value-text {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .mat-mdc-option {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .mdc-list-item__primary-text {
+        font-family: 'Inter', sans-serif !important;
+    }
+}
+
+// Estilos para o painel do dropdown que é renderizado no body (fora do modal)
+::ng-deep .cdk-overlay-pane {
+    .mat-mdc-select-panel {
+        font-family: 'Inter', sans-serif !important;
+        
+        * {
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        .mat-mdc-option {
+            font-family: 'Inter', sans-serif !important;
+            
+            * {
+                font-family: 'Inter', sans-serif !important;
+            }
+            
+            .mdc-list-item__primary-text {
+                font-family: 'Inter', sans-serif !important;
+            }
+        }
+        
+        .mdc-list-item__primary-text {
+            font-family: 'Inter', sans-serif !important;
+        }
+    }
+    
+    .mdc-menu-surface {
+        font-family: 'Inter', sans-serif !important;
+        
+        * {
+            font-family: 'Inter', sans-serif !important;
+        }
+    }
+}
+
+// Estilos globais para garantir que todos os elementos do select usem Inter
+::ng-deep .mat-mdc-select-panel {
+    font-family: 'Inter', sans-serif !important;
+    
+    .mat-mdc-option,
+    .mdc-list-item,
+    .mdc-list-item__primary-text,
+    span,
+    div {
+        font-family: 'Inter', sans-serif !important;
+    }
+}

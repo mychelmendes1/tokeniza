@@ -1,0 +1,14 @@
+<div class="error-page">
+    <div class="centered column">
+        <img class="error-img" src="/assets/images/error.png" alt="Error image">
+        <h1 class="error-title">{{ 'errorPage.title' | translate }}</h1>
+        <p class="error-text">{{ 'errorPage.dontWorry' | translate }}</p>
+        <p class="error-text">{{ 'errorPage.tryAgain' | translate }}</p>
+        <div class="error-links">
+            <button class="btn primary" (click)="navigate(lastRoute)" *ngIf="!hideBackButton">
+                <mat-icon class="svg-icon primary-dark" svgIcon="arrow-left"></mat-icon>
+                <span class="primary-dark">{{ 'button.back' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</div>

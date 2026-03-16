@@ -1,0 +1,21 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'authCode.modal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <span class="primary-off-white-darker fw-400 fs-16" *ngIf="!email">{{ 'authCode.modal.insertCodeApp' | translate }}</span>
+    <span class="primary-off-white-darker fw-400 fs-16" *ngIf="email">{{ 'authCode.modal.insertCode' | translate }}</span>
+    <div class="centered gap-10 margin-top-20">
+        <ng-container *ngFor="let i of numberAuthCodeInput; let index = index">
+            <input #inputValue maxlength="1" class="auth-code-input" placeholder="0" OnlyNumbers
+                (input)="filledInput(inputValue.value, index)"
+                [(ngModel)]="inputCode[index]" [disabled]="index > filledInputsCount"
+            >
+        </ng-container>
+    </div>
+    <div class="centered gap-10 margin-top-30">
+        <button class="btn dark-shade" (click)="reset()">
+            {{ 'button.clear' | translate }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.container-buttons {
+    @include mix.mq("phone-wide", max) {
+        flex-wrap: wrap-reverse;
+    }
+}
+
+::ng-deep.img-token-small {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    object-fit: scale-down;
+}
+
+::ng-deep .custom-modal.deposit-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

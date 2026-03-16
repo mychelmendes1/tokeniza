@@ -1,0 +1,216 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+
+:host {
+    .cards-list.component {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, 300px);
+        grid-auto-rows: auto;
+        gap: 20px;
+        color: black;
+        margin: 30px auto;
+
+        @include mix.maxCardListWidth();
+
+        @include mix.mq("tablet", max) {
+            max-width: 564px;
+        }
+
+        .card-buy-category {
+            @include mix.mq("tablet", max) {
+                min-height: 514px;
+            }
+
+            .content {
+                height: 100%;
+                background-color: v.$primary-500;
+                border-radius: 10px;
+                padding: 30px;
+                text-align: center;
+
+                .light-icon {
+                    color: v.$light-text;
+                    font-size: 100px;
+                    width: 100px;
+                    height: 100px;
+                    font-weight: 900;
+                }
+            }
+        }
+
+        .card {
+            margin: 0;
+            cursor: default;
+            background-color: v.$dark;
+            color: v.$light-text;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            height: 100%;
+            min-height: 400px;
+            width: 300px;
+
+            .card-info {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            .bottom {
+                margin-top: auto;
+            }
+
+            .info-content {
+                width: 100%;
+                height: 100%;
+                gap: 5px;
+                padding: 20px;
+            }
+
+            .collection-name {
+                font-size: 12px;
+                color: v.$primary-500;
+                margin-bottom: 3px;
+            }
+
+            .asset-image {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                cursor: pointer;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+                overflow: hidden;
+                height: 200px;
+
+                img {
+                    width: 100%;
+                    border-top-left-radius: 12px;
+                    border-top-right-radius: 12px;
+                    transition: transform 0.3s ease-in-out;
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: cover;
+                }
+            }
+
+            .resale {
+                z-index: 10;
+            }
+
+            .bottom {
+                justify-content: flex-end;
+                padding: 20px;
+
+                mat-icon {
+                    font-size: 22px;
+
+                    &.send-asset {
+                        font-size: 20px;
+                    }
+
+                    &.disabled {
+                        color: v.$red-600;
+                        cursor: default;
+                    }
+                }
+            }
+
+            .my-assets {
+                padding: 0 !important;
+                z-index: 99999;
+            }
+        }
+
+        .card {
+            &:hover {
+                @include mix.cardBottomEffect('primary');
+            }
+
+            &:hover img {
+                transform: scale(1.15);
+            }
+        }
+
+        .card-red {
+            &:hover {
+                @include mix.cardBottomEffect('red');
+            }
+        }
+
+        .card-blue {
+            &:hover {
+                @include mix.cardBottomEffect('blue');
+            }
+        }
+
+        .card-mobile-blue {
+            @include mix.cardBottomEffect('blue', true);
+        }
+
+        .card-mobile-red {
+            @include mix.cardBottomEffect('red', true);
+        }
+
+        .card-mobile-primary {
+            @include mix.cardBottomEffect('primary', true);
+        }
+    }
+
+    .hovered {
+        display: inline-flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 10px;
+        margin: 0 auto;
+
+        &.primary:hover {
+            background-color: v.$primary-500;
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 9999;
+        }
+
+        mat-icon {
+            @include mix.iconSize(16px, true);
+        }
+    }
+
+    .hovered-auction {
+        display: inline-flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 5px 10px;
+        margin: 0 auto;
+        background-color: v.$red-600;
+        color: v.$light-text;
+        border-radius: 100px;
+        font-size: 13px;
+
+        &.blue {
+            background-color: v.$blue-700 !important;
+        }
+
+        mat-icon {
+            @include mix.iconSize(16px, true);
+        }
+    }
+
+    .big-text {
+        font-size: 20px;
+        line-height: 30px;
+        font-weight: 800;
+        color: v.$light-text;
+    }
+}
+
+// "phone"
+@media only screen and (max-width: 400px) {
+    .cards-list.component {
+        justify-content: center;
+    }
+}

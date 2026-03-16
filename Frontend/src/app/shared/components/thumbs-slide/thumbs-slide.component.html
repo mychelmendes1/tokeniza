@@ -1,0 +1,18 @@
+<div class="thumbs-slide">
+    <mat-icon fontSet="material-icons-round" (click)="showPrevious()">expand_less</mat-icon>
+    <ng-container *ngFor="let midia of midias; let i = index">
+        <div *ngIf="canShowImage(i) && midia?.type !== midiaType.VIDEO" 
+            class="thumbs-slide-image" 
+            (click)="setPic(i)"
+            [style.background-image]="'url(' + midia?.url + ')'"
+            [ngClass]="{selected:  selectedPic === i}"
+        ></div>
+        <div *ngIf="canShowImage(i) && midia?.type === midiaType.VIDEO && getSafeUrl(midia)"
+            class="thumbs-slide-image"
+            (click)="setPic(i)"
+            [style.background-image]="getSafeUrl(midia)"
+            [ngClass]="{selected:  selectedPic === i}"
+        ></div>
+    </ng-container>
+    <mat-icon fontSet="material-icons-round" (click)="showNext()" >expand_more</mat-icon>
+</div>

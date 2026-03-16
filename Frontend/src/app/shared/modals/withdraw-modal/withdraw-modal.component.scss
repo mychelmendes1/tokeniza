@@ -1,0 +1,48 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    max-height: 700px;
+    overflow: hidden;
+    padding: 8px !important;
+
+    @include mix.mq("tablet", max) {
+        max-height: none !important;
+    }
+
+    .modal-full-content {
+        overflow: auto;
+        padding: 22px;
+    }
+
+    .container-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+        align-items: baseline;
+    }
+
+    .underline-text {
+        margin: 0 auto;
+    }
+}
+
+::ng-deep .custom-modal.withdraw-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}
+
+.skeleton-class.withdraw {
+    width: 100%;
+    max-width: 150px;
+
+    ::ng-deep {
+        .skeleton-loader {
+            width: 100px;
+            background: v.$medium !important;
+        }
+    }
+}

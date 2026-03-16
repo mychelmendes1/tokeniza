@@ -1,0 +1,116 @@
+<div class="external-deposit-container column">
+    <app-menu-button-mobile [colorIcon]="'svg-icon primary-dark'"></app-menu-button-mobile>
+    <div class="external-deposit">
+        <div class="left-side">
+            <div class="identification-container">
+                <h1 class="primary-dark-shade fw-700">{{ 'externalDeposit.identification' | translate }}</h1>
+                <div class="divider-line margin-top-30"></div>
+                <div class="input-container margin-top-30">
+                    <label class="label-dark">{{ 'externalDeposit.fullName' | translate }}</label>
+                    <input class="input-fill-default medium-border" maxlength="200"
+                        [(ngModel)]="externalDepositData.name" [placeholder]="'placeholder.insert' | translate"
+                        (input)="validateFullName(fullName)" onlyLettersAndSpace #fullName="ngModel"
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="validateFullName(fullName)">
+                            {{ 'validators.completeFullName' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="input-container">
+                    <label class="label-dark">{{ 'externalDeposit.email' | translate }}</label>
+                    <input class="input-fill-default medium-border" maxlength="200"
+                        [(ngModel)]="externalDepositData.email" [placeholder]="'externalDeposit.emailPlaceholder' | translate"
+                        (input)="validateEmail(email)" #email="ngModel"
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="validateEmail(email)">
+                            {{ 'errorHint.email' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+                <div class="input-container">
+                    <label class="label-dark">{{ 'externalDeposit.document' | translate }}</label>
+                    <input class="input-fill-default medium-border" mask="000.000.000-00" [placeholder]="'000.000.000-00'" maxlength="14"
+                        [(ngModel)]="externalDepositData.identify" (input)="validateCpf(cpf)" #cpf="ngModel">
+                    <span class="error-hint">
+                        <ng-container *ngIf="isIdentifyInvalid && externalDepositData.identify">
+                            {{ 'errorHint.cpf' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+            </div>
+            <div class="payment-method-container">
+                <h1 class="page-title primary-dark-shade fw-700">{{ 'externalDeposit.depositMethod' | translate }}</h1>
+                <mat-radio-group class="radio-group inline gap-100" [(ngModel)]="depositMethodSelected" (change)="changedDepositMethod($event.value)">
+                    <mat-radio-button *ngFor="let method of depositMethods"
+                        [value]="method">
+                        <span class="primary-dark fw-500">{{ 'externalDeposit.depositMethod.' + method | translate }}</span>
+                    </mat-radio-button>
+                </mat-radio-group>
+                <ng-container *ngIf="depositMethodSelected === depositMethodsEnum.TOKEN">
+                    <div class="input-container column align-start margin-top-30" [@fadeIn]>
+                        <label class="label-dark">{{ 'stakeModal.token' | translate }}</label>
+                        <mat-select class="select-fill-primary"
+                            disableOptionCentering
+                            [(ngModel)]="externalDepositData.depositMethod"
+                            (ngModelChange)="selectedToken = $event"
+                            (selectionChange)="tokenChanged($event.value)"
+                            [placeholder]="'stakeModal.selectToken' | translate"
+                            panelClass="select-fill-primary"
+                            [disabled]="loading">
+                            <mat-select-trigger *ngIf="selectedToken">
+                                <div class="inline gap-10">
+                                    <img alt="token" class="img-token-small" [src]="selectedToken?.image_symbol">
+                                    <span class="primary-dark fw-500">{{ selectedToken.id }} ({{ selectedToken.network_id }})</span>
+                                </div>
+                            </mat-select-trigger>
+                    
+                            <mat-option *ngFor="let token of tokens" [value]="token">
+                                <div class="inline gap-10">
+                                    <img alt="token" class="img-token-small" [src]="token?.image_symbol">
+                                    <span class="primary-dark fw-500">{{ token.id }} ({{ token.network_id }})</span>
+                                </div>
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <div class="right-side">
+            <div class="checkout">
+                <h1 class="page-title primary-dark-shade fw-700">{{ 'externalDeposit.checkout' | translate }}</h1>
+                <div class="divider-line margin-top-30"></div>
+                <div class="input-container margin-top-30">
+                    <label class="label-dark">{{ 'externalDeposit.value' | translate }} ({{ fiatCurrency.symbol }})</label>
+                    <input class="input-fill-default medium-border" [(ngModel)]="fiatValue" appMaskCurrency [withCurrency]="false" (keypress)="allowOnlyNumbers($event)" (input)="getValue($event)" [disabled]="disableAllOptions">
+                </div>
+    
+                <button class="btn dark-shade" [disabled]="shouldDisableGenerateButton()" *ngIf="!externalDepositResp" (click)="generateQrcode()">{{ 'externalDeposit.button.generateQrcode' | translate }}</button>
+    
+                <div class="input-container" *ngIf="externalDepositResp && externalDepositResp.depositAddress && externalDepositResp.depositMethod !== 'PIX'">
+                    <label class="label-dark">{{ 'externalDeposit.value' | translate }} ({{ externalDepositResp.depositMethod }})</label>
+                    <input class="input-fill-default medium-border" [(ngModel)]="externalDepositResp.tokensAmount" [disabled]="true">
+                </div>
+    
+                <div class="checkout-details" *ngIf="externalDepositResp && externalDepositResp.depositAddress">
+                    <p class="primary-dark-shade fw-700">{{ 'externalDeposit.disclaimer' | translate }}</p>
+                    <qrcode
+                        [qrdata]="externalDepositResp.depositAddress || ''"
+                        [allowEmptyString]="true"
+                        [elementType]="'url'"
+                        [errorCorrectionLevel]="'M'"
+                        [margin]="4"
+                        [scale]="1"
+                        [width]="qrCodeWith"
+                        #qrcodeimage
+                    ></qrcode>
+                </div>
+    
+                <button class="btn dark-shade" *ngIf="externalDepositResp?.depositAddress" [disabled]="!externalDepositResp.depositAddress" (click)="copyQrcodeUrl()">{{ 'externalDeposit.button.copyPix' | translate }}</button>
+                <button class="btn dark-shade" *ngIf="externalDepositResp" (click)="confirmDeposit()">{{ 'button.confirm' | translate }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

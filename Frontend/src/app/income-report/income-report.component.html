@@ -1,0 +1,128 @@
+<div class="ir-container column">
+    <app-menu-button-mobile></app-menu-button-mobile>
+    <div class="inline between wrap gap-20">
+        <div class="column gap-2">
+            <p class="inline">
+                <span class="fs-31 primary-600 fw-700">{{ 'incomeReport.title' | translate }}</span>&nbsp;&nbsp;
+            </p>
+            <span class="fs-16 fw-600 primary-medium">{{ 'incomeReport.descriptions' | translate }}</span>
+        </div>
+        <button class="btn primary" (click)="goToWallet()">
+            <mat-icon class="svg-icon primary-dark" svgIcon="wallet"></mat-icon>
+            <span class="primary-dark">{{ 'button.wallet' | translate }}</span>
+        </button>
+    </div>
+</div>
+<div class="summary column gap-6 margin-top-30" *ngIf="!loadingRequest">
+    <div class="inline gap-10 margin-bottom-30">
+        <button class="btn primary" (click)="downloadPDF()" [disabled]="loading || loadingRequest">
+            <mat-icon class="svg-icon primary-dark" svgIcon="download"></mat-icon>
+            <span class="primary-dark">{{ 'button.download' | translate }}</span>
+        </button>
+        <button class="btn primary" (click)="printPDF()" [disabled]="loading || loadingRequest">
+            <mat-icon class="svg-icon primary-dark" svgIcon="printer"></mat-icon>
+            <span class="primary-dark">{{ 'button.print' | translate }}</span>
+        </button>
+    </div>
+    <div class="table-container" id="irpf">
+        <div class="margin-bottom-30" id="header">
+            <div  class="header">
+                <div class="logo-container">
+                    <img id="pdf-image" src="/assets/icons/logo.svg" alt="logo" class="logo">
+                </div>
+            </div>
+            <h1 class="report-title fw-700 margin-top-30">{{ 'incomeReport.title' | translate }}</h1>
+            <div class="user-details column margin-left-10 gap-3">
+                <p class="fw-700">{{ ('incomeReport.name' | translate) }} : {{ userDetails?.name }}</p>
+                <p>{{ ('incomeReport.cpfCnpj' | translate) }} : {{ (userDetails?.cpf || userDetails?.cnpj) }}</p>
+                <p>{{ ('incomeReport.email' | translate) }} : {{ userDetails?.email }}</p>
+            </div>
+            <h1 class="report-title fw-700 margin-top-30">{{ 'incomeReport.goodsAndRights' | translate }}</h1>
+        </div>
+        <div class="table">
+            <table mat-table [dataSource]="dataSource" class="table hover-rows" id="irTable">
+
+                <ng-container matColumnDef="group">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'irpf.group' | translate }}</th>
+                    <td mat-cell *matCellDef="let element">
+                        <span>{{ '8 - Criptoativos' }}</span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="code">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'irpf.code' | translate }}</th>
+                    <td mat-cell *matCellDef="let element">
+                        <span>{{ element?.isNft ? '10 – Criptoativos conhecidos como NFTs' : (element?.name?.includes('USDT') || element?.name?.includes('tBRL')) ? '03 - Stablecoins' : '99 - Outros Criptoativos' }}</span>
+                    </td>
+                </ng-container>
+                <!-- Name -->
+                <ng-container matColumnDef="unit">
+                    <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'incomeReport.name' | translate }}</span> </th>
+                    <td mat-cell *matCellDef="let element" class="first-column">
+                        <div class="inline gap-8 custom-margin">
+                            <span class="primary-off-white-darker fw-400 fs-13">{{ element?.unitOfMoney }}</span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Quantity last year -->
+                <ng-container matColumnDef="quantityBase">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'incomeReport.quantity' | translate }} {{ otherYearNumber }}</span> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline">
+                            <span class="primary-off-white-darker fw-400 fs-13">{{ element?.quantityBaseYear }}</span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Balance last year -->
+                <ng-container matColumnDef="balanceBase">
+                    <th mat-header-cell *matHeaderCellDef> <span>{{ 'incomeReport.balance' | translate }} {{ otherYearNumber }}</span> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{ element?.baseYear | currency:'BRL' }}
+                            </span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Quantity current year -->
+                <ng-container matColumnDef="quantityEnd">
+                    <th mat-header-cell *matHeaderCellDef> <span>{{ 'incomeReport.quantity' | translate }} {{ lastYearNumber }}</span> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline gap-8">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{ element?.quantityLastYear }}
+                            </span>
+                        </div>
+                    </td>
+                </ng-container>
+                <!-- Balance current year -->
+                <ng-container matColumnDef="balanceEnd">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'incomeReport.balance' | translate }} {{ lastYearNumber }}</span> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="inline">
+                            <span class="primary-off-white-darker fw-400 fs-13">
+                                {{ element?.endYear | currency:'BRL' }}
+                            </span>
+                        </div>
+                    </td>
+                </ng-container>
+        
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    (click)="goToCrowdfundfingDetails(row.id)">
+                </tr>
+        
+                <!-- No Data -->
+                <tr *matNoDataRow>
+                    <td [attr.colspan]="displayedColumns.length">
+                        <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                    </td>
+                </tr>
+            </table>    
+        </div>
+        <div class="company column gap-10 margin-top-30" id="footer-content">
+            <p class="fs-30">{{ config?.merchant?.name }}</p>
+            <p class="fs-25">{{ config?.merchant?.cnpj }}</p>    
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading || loadingRequest" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

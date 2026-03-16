@@ -1,0 +1,122 @@
+@use './../styles/variables.scss' as v;
+
+$breakpointsList: (
+    "phone-small": 360px,
+    "phone": 400px,
+    "phone-wide": 480px,
+    "phablet": 560px,
+    "tablet-small": 600px,
+    "tablet": 768px,
+    "tablet-wide": 1024px,
+    "desktop-wide": 1366px,
+    "desktop-wide-lg": 1920px,
+);
+
+@mixin mq($width, $type: min, $considerMax: null) {
+    @if map_has_key($breakpointsList, $width) {
+        $width: map_get($breakpointsList, $width);
+        @if ($type == max and $considerMax == null) {
+            $width: $width;
+        }
+        @media only screen and (#{$type}-width: $width) {
+            @content;
+        }
+    }
+}
+
+@mixin iconSize($size, $maxSize: null) {
+    font-size: $size;
+
+    @if ($maxSize) {
+        width: #{$size + 2px} !important;
+        height: #{$size + 2px} !important;
+        max-width: #{$size + 2px};
+        max-height: #{$size + 2px};
+        line-height: #{$size + 2px};
+    } @else {
+        width: auto !important;
+        height: auto !important;
+        line-height: $size;
+    }
+}
+
+@mixin cardBottomEffect($type: null, $mobile: false) {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: if($mobile, 20%, 0);
+        border-radius: 12px;
+        transition: height 0.3s ease-in-out;
+
+        @if $type == 'primary' {
+            background: linear-gradient(
+                to top,
+                rgba(142, 231, 24, 0.3) 0%,
+                rgba(142, 231, 24, 0.2) 40%,
+                rgba(142, 231, 24, 0.1) 80%,
+                rgba(79, 129, 13, 0) 100%
+            );
+        } @else if $type == 'red' {
+            background: linear-gradient(
+                to top,
+                rgba(255, 104, 94, 0.3) 0%,
+                rgba(255, 104, 94, 0.2) 40%,
+                rgba(255, 104, 94, 0.1) 80%,
+                rgba(255, 104, 94, 0) 100%
+            );
+        } @else if $type == 'blue' {
+            background: linear-gradient(
+                to top,
+                rgba(v.$blue-700, 0.3) 0%,
+                rgba(v.$blue-700, 0.2) 40%,
+                rgba(v.$blue-700, 0.1) 80%,
+                rgba(v.$blue-700, 0) 100%
+            );
+        }
+    }
+
+    &:hover::after {
+        height: 20%;
+    }
+
+    .bottom-content {
+        filter: blur(5px);
+    }
+}
+
+$max-cards-per-line: 8;
+$padding: 32px;
+$main-card-width: 300px;
+$main-card-gap: 30px;
+
+/**
+ * Used to restrict a width for content like in the card list
+ */
+ @mixin maxCardListWidth() {
+    @for $i from 1 through $max-cards-per-line {
+        $width: (($main-card-width + $main-card-gap) * $i) - $main-card-gap;
+        $screen-width: $width + (2 * $padding); // We need consider the default horizontal padding
+
+        @media screen and (min-width: $screen-width) {
+            max-width: $width - 1 !important;
+        }
+
+        @include mq("tablet", max) {
+            @media screen and (min-width: $screen-width) {
+                max-width: $width + 1 !important;
+            }
+        }
+    }
+}
+
+@mixin square($size) {
+    width: $size;
+    height: $size;
+}

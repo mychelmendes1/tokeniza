@@ -1,0 +1,103 @@
+{
+    "faq": {
+		"title": "Frequently Asked Questions",
+		"sections": [
+			{
+				"title": "ACCOUNT AND SECURITY",
+				"content": [
+					{ "quest": "How to create an account?", "answer": "Access the application and fill out the account opening form." },
+					{ "quest": "How to recover a forgotten password?", "answer": "Click on FORGOT MY PASSWORD to reset your access password." },
+					{ "quest": "What are the security requirements for my account?", "answer": "The application has the most advanced security system available, and you can contribute by using strong passwords and enabling 2FA to enhance protection and security." },
+					{ "quest": "How to enable Two-Factor Authentication (2FA)?", "answer": "Within the application, when performing an operation, the system will request the activation of 2FA via Email or Auth. Choose an option and complete the 2FA registration process. Done, 2FA will be enabled to validate all your access with SECURITY." },
+					{ "quest": "How to protect my account from unauthorized access?", "answer": "Enable and authenticate the 2FA factor and keep your passwords secure, avoiding sharing them with third parties." }
+				]
+			},
+			{
+				"title": "DEPOSITS AND WITHDRAWALS",
+				"content": [
+					{ "quest": "Which Cryptocurrencies are supported?", "answer": "The 100 largest and best Cryptocurrencies in the world. TOP 100. (e.g.: Bitcoin, Ethereum, USDT, USDC, MATIC, Aave, XRP, etc.)" },
+					{ "quest": "How to deposit Cryptocurrencies?", "answer": "Click on DEPOSIT CRYPTO, share your key or QR Code, and receive the desired crypto." },
+					{ "quest": "How to withdraw Cryptocurrencies?", "answer": "Enter your WALLET, click on WITHDRAW, choose the desired transfer type, enter the destination key, and click CONTINUE." },
+					{ "quest": "What are the limits for deposits and withdrawals in Cryptocurrencies?", "answer": "Deposits and withdrawals in Cryptocurrencies are unlimited." },
+					{ "quest": "What are the limits for deposits and withdrawals in Reais?", "answer": "The limits for deposits and withdrawals in Reais follow the criteria set by the Central Bank of Brazil. Typically, the limits match the account balance. YOUR BALANCE WILL BE YOUR LIMIT." },
+					{ "quest": "What are the processing times for deposits and withdrawals?", "answer": "Processing is instant, but it follows the network flow, which may, in theory, take up to 30 minutes for Cryptocurrencies. In the case of Reais, it varies from 30 seconds to 30 minutes for PIX and up to 1 hour for TED." }
+				]
+			},
+			{
+				"title": "BUYING AND SELLING",
+				"content": [
+					{ "quest": "How to Buy Cryptocurrencies?", "answer": "Click on LOAD ACCOUNT, transfer money to your account. Once you have a balance in your account, CLICK on the desired cryptocurrency. Then, click on QUICK TRADE and BUY." },
+					{ "quest": "How to Sell Cryptocurrencies?", "answer": "Click on the desired cryptocurrency, go to QUICK TRADE, and click on SELL." },
+					{ "quest": "What are the available payment methods?", "answer": "Payments can be made in Cryptocurrencies, PIX, or TED." },
+					{ "quest": "How to Cancel an Order?", "answer": "Cancellation options are available on the action pages. Once the possibility of cancellation is verified and you choose to proceed, this final order is irrevocable in the case of cryptocurrency transfers." },
+					{ "quest": "ESCROW Order Cancellation?", "answer": "YES, the ESCROW order can be canceled during the Pending period." },
+					{ "quest": "PIX or TED Cancellation.", "answer": "In the case of PIX or TED, cancellation due to justifiable error, mistake, or fraud is possible, as provided by the regulations of the Central Bank of Brazil." }
+				]
+			},
+			{
+				"title": "FEES AND LIMITS",
+				"content": [
+					{ "quest": "What are the transaction fees?", "answer": "Transaction fees are described in the operation statement. They range from 1% to 2%, depending on the network, time, and days." },
+					{ "quest": "What are the deposit and withdrawal fees?", "answer": "The fees for cryptocurrency transactions are not fixed; their minimum value is 1% and the maximum is 2%. The fees for transactions in Reais follow the rules established by the Brazilian banking system. Please check the system." },
+					{ "quest": "How to calculate the fee?", "answer": "1 real fee for every 100 reais for regular transactions during normal business days and hours. And 2 reais for every 100 reais for extraordinary transactions on holidays and weekends after 12:00 AM." }
+				]
+			},
+			{
+				"title": "NFT",
+				"content": [
+					{ "quest": "How to buy an NFT?", "answer": "Go to the TOKENIZER icon, choose the NFT, click BUY, and complete your purchase." },
+					{ "quest": "How to sell an NFT?", "answer": "Go to your NFT, select the SELL or AUCTION icon, and make your direct sale or auction at any time." },
+					{ "quest": "Can I redeem my NFT?", "answer": "Yes, the NFT can be sold, auctioned, and redeemed." }
+				]
+			},
+			{
+				"title": "ESCROW",
+				"content": [
+					{ "quest": "How does Escrow work?", "answer": "It is a tool that guarantees and provides security for a crypto transaction between two unknown individuals. Payment is only released to the seller when the buyer receives their asset." },
+					{ "quest": "What is the guarantee of Escrow?", "answer": "It guarantees that the buyer RECEIVES and ensures that the seller RECEIVES." },
+					{ "quest": "What is the benefit of Escrow?", "answer": "The benefit of SECURITY, as you can buy, sell, exchange, and negotiate with people from anywhere in the world through ESCROW, without the risk of scams or losses." }
+				]
+			},
+			{
+				"title": "COMMUNITY CYCLE",
+				"content": [
+					{ "quest": "What is the Community Cycle?", "answer": "It is a revolutionary tool that allows you to earn money for life." },
+					{ "quest": "How to make money in the Community Cycle?", "answer": "By REFERRING your friends, acquaintances, and family, you will build your community. The platform will return 10% of all the profit generated by your community to you, monthly, for life." },
+					{ "quest": "How do I receive the 10% profit from my community?", "answer": "The 10% profit from your community will be paid to your wallet, in cryptocurrencies or available fiat currency, monthly, according to your preference." }
+				]
+			},
+			{
+				"title": "TECHNICAL SUPPORT",
+				"content": [
+					{ "quest": "How to contact support?", "answer": "Click on CONTACT US and you will be directed to our Technical Support." },
+					{ "quest": "What are the support hours?", "answer": "24 hours a day, 7 days a week, and 365 days a year. Personalized support is available from Monday to Friday, from 08:00 AM to 06:00 PM." }
+				]
+			},
+			{
+				"title": "REGULATION AND COMPLIANCE",
+				"content": [
+					{ "quest": "Is the Exchange regulated?", "answer": "YES, it is regulated and complies with all government regulations and control body rules." },
+					{ "quest": "What are the Compliance Policies?", "answer": "KYC and AML/CFT." },
+					{ "quest": "How to report any doubts or suspicions?", "answer": "Use Technical Support to report your doubts and complaints." }
+				]
+			},
+			{
+				"title": "OTHERS",
+				"content": [
+					{ "quest": "How do I update my personal data?", "answer": "Click on MY PROFILE and update your registration data." },
+					{ "quest": "How do I close my account?", "answer": "Click on REMOVE ACCOUNT, fill out the form and submit. Your account will be closed within 72 hours." },
+					{ "quest": "What are the Privacy Policies?", "answer": "The Privacy Policy and Terms of Use are available in the app for reading and acceptance. When opening your account, you need to accept the Terms of Use and the Privacy Policy, which regulate the usage and legal security for both the customer and the company." },
+					{ "quest": "How do I receive updates about the Exchange?", "answer": "System updates will be automatically made available to the customer when necessary. When accessing the app, the update will be available to execute." }
+				]
+			},
+			{
+				"title": "ADDITIONAL INFORMATION",
+				"content": [
+					{ "quest": "What are the risks associated with cryptocurrency trading?", "answer": "There are various risks, but we work tirelessly to minimize system-related risks. However, risks related to choices and personal evaluation remain. Today, cryptocurrency trading is quite secure, but there are still risks associated with asset selection, rushed evaluations, handling, and storage of assets. That is why we ensure the safety of your cryptocurrency storage and transactions, providing a robust and secure system for you to manage and operate your assets without risks of loss or damage." },
+					{ "quest": "How can I protect my Digital Assets?", "answer": "You can store them in your DIGITAL WALLET or in a Cold Wallet. Both methods rely on responsible use and the security of passwords and 2FA." },
+					{ "quest": "What are the best practices for online security?", "answer": "Never share your passwords. Use strong passwords with uppercase letters, numbers, and symbols. Enable Two-Factor Authentication (2FA) and use systems responsibly. These actions will ensure security and provide an extra layer of protection for your digital assets." }
+				]
+			}
+		]
+	}
+}

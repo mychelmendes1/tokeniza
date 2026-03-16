@@ -1,0 +1,827 @@
+<app-menu-button-mobile class="resp-menu-mobile" [colorIcon]="showErrorPage ? 'svg-icon primary-dark' : 'svg-icon primary-light'"></app-menu-button-mobile>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<ng-template [ngIf]="!showErrorPage">
+    <div class="crowdfunding-details-container">
+        <div class="content-container wth-100">
+            <div class="header-page inline wth-100 wrap gap-30">
+                <div class="project-name inline to-point gap-16" (click)="backPage()">
+                    <strong class="fs-16 fw-600 primary-700">{{ 'crowdfunding.title' | translate }}</strong>
+                    <strong class="fs-16 fw-600 primary-700">></strong>
+                </div>
+                <span *ngIf="!loading" class="primary-light fs-16 fw-600">{{ project.name }}</span>
+                <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                <button class="btn primary wallet" (click)="goToWallet()">
+                    <mat-icon class="svg-icon primary-dark" svgIcon="wallet"></mat-icon>
+                    <span class="primary-dark">{{ 'button.wallet' | translate }}</span>
+                </button>
+            </div>
+            <div class="crowdfunding-product inline gap-20 margin-top-30 wrap">
+                <div class="carousel inline flex-1" *ngIf="(project?.midias?.length ?? 0) > 0">
+                    <app-thumbs-slide class="thumbs-slide" [midias]="project.midias" [selectedPic]="selectedPic" (changePic)="changeSelectedPic($event)" [showPicValue]="showPicValue"></app-thumbs-slide>
+                    <app-photos-slide class="photos-slide" [midias]="project.midias" [selectedPic]="selectedPic" (changePic)="changeSelectedPic($event)"></app-photos-slide>
+                </div>
+                <div class="column gap-20 flex-1 wth-100">
+                    <div class="inline gap-20">
+                        <div class="inline gap-8 to-point" (click)="opentechnicalBlade()" *ngIf="project.documents"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('technical')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('technical')">
+                            <mat-icon class="svg-icon" svgIcon="external-link"
+                                [ngClass]="hoverIconClassService.getSvgClass('technical', 'svg-icon primary-600', 'svg-icon primary-700')">
+                            </mat-icon>
+                            <strong class="fs-16 fw-600 primary-700 hovered-primary">{{ 'crowdfunding.details.blade' | translate }}</strong>
+                        </div>
+                        <div class="inline gap-8 to-point" (click)="aboutUs()"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('originator')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('originator')">
+                            <mat-icon class="svg-icon" svgIcon="external-link"
+                                [ngClass]="hoverIconClassService.getSvgClass('originator', 'svg-icon primary-600', 'svg-icon primary-700')">
+                            </mat-icon>
+                            <strong class="fs-16 fw-600 primary-700 hovered-primary">{{ 'crowdfunding.details.aboutOriginator' | translate }}</strong>
+                        </div>
+                    </div>
+                    <div class="inline between wth-100 wrap gap-20">
+                        <div class="column gap-8">
+                            <h1 class="primary-light fw-600" *ngIf="!loading">{{ project.name }}</h1>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                            <div class="inline gap-8 wrap gap-20">
+                                <div class="container-product-info" *ngIf="project.typeOfRisk">
+                                    {{ 'Risco' }} {{ translateRisk(project.typeOfRisk) | translate }}
+                                </div>
+                                <div class="container-product-info" *ngIf="project?.acceptedCurrency">
+                                    {{ 'Moeda' }} {{ project.acceptedCurrency }}
+                                </div>
+                                <div class="container-product-info" *ngIf="project.daysRemaining && (project.daysRemaining ?? 0) >= 0">
+                                    {{ project.daysRemaining }} {{ (project.daysRemaining === 1 ? 'home.remainingDay' : 'home.remainingDays') | translate }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inline gap-10">
+                            <button class="btn primary outline" (click)="openWhatsContact()"
+                                (mouseenter)="hoverIconClassService.onMouseEnter('ceo')"
+                                (mouseleave)="hoverIconClassService.onMouseLeave('ceo')">
+                                <mat-icon class="svg-icon" svgIcon="whatsapp"
+                                    [ngClass]="hoverIconClassService.getSvgClass('ceo', 'svg-icon primary-dark', 'svg-icon primary')">
+                                </mat-icon>
+                                {{ (hasCeoContact ? 'crowdfunding.details.talkToCeo' : 'crowdfunding.details.talkToUs') | translate }}
+                            </button>
+                            <div class="container-icon to-point" (click)="shareCrowdfunding()"
+                                (mouseenter)="hoverIconClassService.onMouseEnter('share-2')"
+                                (mouseleave)="hoverIconClassService.onMouseLeave('share-2')">
+                                <mat-icon class="svg-icon" svgIcon="share-2"
+                                    [ngClass]="hoverIconClassService.getSvgClass('share-2', 'svg-icon primary-dark', 'svg-icon primary')">
+                                </mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column margin-top-30 gap-8">
+                        <p class="fs-25" *ngIf="project?.quantityOfUser > 0">{{ project?.quantityOfUser }} {{ 'crowdfunding.details.peopleAlredyInvested' | translate }}</p>
+                        <div class="progress-bar">
+                            <div class="progress-bar__value" [ngClass]="getCardColorClass((project.daysRemaining ?? 0)).progressBarClass"
+                                [ngStyle]="{'width.%' : percentageProgressBar(project.moneyReceived, project.targetCapture) || 0}">
+                            </div>
+                        </div>
+                        <div class="between wth-100">
+                            <span *ngIf="!loading">
+                                {{ project.moneyReceived | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }} {{ 'home.captured' | translate }}
+                            </span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                            <span *ngIf="!loading">
+                                {{ 'home.goal' | translate }}: {{ project.targetCapture | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}
+                            </span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                    </div>
+                    <div class="offers-cards gap-30 margin-top-30">
+                        <div class="card column gap-10 to-point">
+                            <span class="primary-gray">{{ 'crowdfunding.details.initialDate' | translate }}</span>
+                            <span *ngIf="project.startDate">
+                                {{ startDate }}
+                            </span>
+                            <ngx-skeleton-loader class="skeleton-class infinite dark long" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="card column gap-10 to-point">
+                            <span class="primary-gray">{{ 'crowdfunding.details.finalDate' | translate }}</span>
+                            <span *ngIf="project.finalDate">
+                                {{ finalDate }}
+                            </span>
+                            <ngx-skeleton-loader class="skeleton-class infinite dark long" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                    </div>
+                    <div class="column gap-10 offers-cards inline-flex">
+                        <div class="between custom-pad">
+                            <span class="primary-gray">{{ 'crowdfunding.deadline' | translate }}</span>
+                            <span *ngIf="project.deadline">{{ project.deadline }} {{ (project.deadline === 1 ? 'crowdfunding.details.month' : 'crowdfunding.details.months') | translate }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="card inline-flex gap-10 to-point">
+                            <span class="primary-gray">{{ 'crowdfunding.details.moneyReceived' | translate }}</span>
+                            <span *ngIf="project.moneyReceived">{{ project.moneyReceived | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite dark" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="between custom-pad">
+                            <span class="primary-gray">{{ 'crowdfunding.checkout.minimumCapture' | translate }}</span>
+                            <span *ngIf="project.minimumCapture">{{ project.minimumCapture | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="card inline-flex gap-10 to-point">
+                            <span class="primary-gray">{{ 'crowdfunding.details.minimumContribution' | translate }}</span>
+                            <span *ngIf="project.minimumContribution">{{ project.minimumContribution | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite dark" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="between custom-pad">
+                            <span class="primary-gray">{{ 'crowdfunding.checkout.profitability' | translate }}</span>
+                            <span *ngIf="project.profitability">{{ project.profitability }}% {{ 'crowdfunding.checkout.perYear' | translate }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="card inline-flex gap-10 to-point">
+                            <span class="primary-gray">{{ 'crowdfunding.category' | translate }}</span>
+                            <span *ngIf="!loading">{{ !project.user_responsible ? ( 'crowdfunding.public' | translate) : ( 'crowdfunding.private' | translate) }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite dark" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                        <div class="between custom-pad">
+                            <span class="primary-gray">{{ 'crowdfunding.type' | translate }}</span>
+                            <span *ngIf="project.type">{{ project.type }}</span>
+                            <ngx-skeleton-loader class="skeleton-class infinite" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                        </div>
+                    </div>
+                    <button class="btn primary margin-top-30" (click)="openCheckoutModal()"
+                        *ngIf="!loading" [disabled]="project.status !== eStatus.ACTIVE">
+                        <span class="primary-dark">{{ project.status !== eStatus.ACTIVE ? 'Encerrada' : 'Investir' }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tabs-container column content-container wth-100">
+        <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30"
+            mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+            <mat-tab [label]="'crowdfunding.details.description' | translate">
+                <div class="crowdfunding-description margin-top-30 column gap-20" id="description">
+                    <span class="primary-dark fs-16 fw-400">
+                        {{ project.description }}
+                    </span>
+                    <div class="description-box column gap-12" *ngIf="project.benefits?.length > 0">
+                        <span class="primary-dark fs-20 fw-700">
+                            {{ 'crowdfunding.details.benefits.title' | translate }}
+                        </span>
+                        <div class="box-card column gap-20">
+                            <div class="inline resp-column gap-20" *ngFor="let benefit of project.benefits">
+                                <div class="flex-1 wrap gap-20">
+                                    <span class="primary-off-white-darker fs-16 fw-700">
+                                        {{ benefit.name }}
+                                    </span>
+                                </div>
+                                <div class="flex-1 wrap gap-20">
+                                    <span class="primary-off-white-darker fs-16 fw-400">
+                                        {{ benefit.description }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'crowdfunding.details.scenarios' | translate">
+                <table class="simple-table margin-top-30" id="scenarios">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.details.base' | translate }}</span></th>
+                            <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.details.optimistic' | translate }}</span></th>
+                            <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.details.pessimistic' | translate }}</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ 'crowdfunding.details.maximumExposure' | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.base?.maximumExposure | currency: project.isDolar ? 'USD' : 'BRL' }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.optmistic?.maximumExposure | currency: project.isDolar ? 'USD' : 'BRL' }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.pessimistic?.maximumExposure | currency: project.isDolar ? 'USD' : 'BRL' }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ 'crowdfunding.checkout.profitability' | translate }} (%CDI)</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.base?.profitabilityCDI }}%</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.optmistic?.profitabilityCDI }}%</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.pessimistic?.profitabilityCDI }}%</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ 'crowdfunding.deadline' | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.base?.deadline }} {{ (project.scenarioInfo?.base?.deadline === 1 ? 'crowdfunding.details.month' : 'crowdfunding.details.months') | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.optmistic?.deadline }} {{ (project.scenarioInfo?.optmistic?.deadline === 1 ? 'crowdfunding.details.month' : 'crowdfunding.details.months') | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.pessimistic?.deadline }} {{ (project.scenarioInfo?.pessimistic?.deadline === 1 ? 'crowdfunding.details.month' : 'crowdfunding.details.months') | translate }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ 'crowdfunding.checkout.profitability' | translate }} (%TIR)</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.base?.profitabilityTIR }}% {{ 'crowdfunding.checkout.perYear' | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.optmistic?.profitabilityTIR }}% {{ 'crowdfunding.checkout.perYear' | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.pessimistic?.profitabilityTIR }}% {{ 'crowdfunding.checkout.perYear' | translate }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ 'crowdfunding.details.multiple' | translate }}</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.base?.multiple }}x</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.optmistic?.multiple }}x</span></td>
+                            <td><span class="primary-off-white-darker fs-16 fw-400">{{ project.scenarioInfo?.pessimistic?.multiple }}x</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-tab>
+            <mat-tab [label]="'Pacote de documentos jurídicos'" *ngIf="(project.documents?.length ?? 0) > 0">
+                <div class="box-card margin-top-30" id="documents">
+                    <div class="description-box column gap-40">
+                        <div class="between" *ngFor="let document of project.documents">
+                            <span class="primary-off-white-darker fs-16 fw-400">
+                                {{ document.name | translate }}
+                            </span>
+                            <div class="inline gap-20">
+                                <mat-icon class="svg-icon primary-off-white-darker to-point"
+                                    [matTooltip]="'tooltip.view' | translate" (click)="openDocument(document.url)"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    svgIcon="eye">
+                                </mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'Dúvidas'">
+                <div class="crowdfunding-faq margin-top-30" id="doubts">
+                    <div class="crowdfunding-faq__container">
+                        <mat-accordion multi>
+                            <mat-expansion-panel *ngFor="let faq of faqList" hideToggle="true" #panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-description>
+                                        <mat-icon class="svg-icon primary-dark plus-icon" [ngClass]="{ 'rotate-plus' : panel.expanded }"
+                                            svgIcon="plus">
+                                        </mat-icon>
+                                    </mat-panel-description>
+                                    <mat-panel-title>
+                                        <span class="fs-16 fw-400" [ngClass]="{ 'primary-dark-shade fs-16 fw-600' : panel.expanded }">
+                                            {{ 'crowdfunding.faq.' + faq + '.title' | translate }}
+                                        </span>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <p class="fs-16 fw-400 primary-off-white-darker">{{ 'crowdfunding.faq.' + faq + '.description' | translate }}</p>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'Informações essenciais'" *ngIf="showPublicButton">
+                <div class="column margin-top-30 gap-20" id="infos">
+                    <span class="primary-dark fs-25 fw-700">
+                        {{ 'crowdfunding.publicOffer.text' | translate }}
+                    </span>
+                    <span class="primary-dark fs-16 fw-400">
+                        {{ 'crowdfunding.berofeInvesting' | translate }}
+                    </span>
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section1' | translate }}
+                    </span>
+                </div>
+                <div class="box-card margin-top-30" id="documents">
+                    <div class="description-box column gap-40">
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.details.name' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.name }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.corporateForm' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.social_type }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.address' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.companyAddress }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.cnpj' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.cnpj | cpfCnpjMask }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.sectorActivity' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.region }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.developedActivities' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.area }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.companyHistory' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.history }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.numberOfEmployees' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.employees }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.companyPatrimony' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.patrimony | currency: project.isDolar ? 'USD' : 'BRL' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.companyShareSocial' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.social_capital | currency: project.isDolar ? 'USD' : 'BRL' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="inline">
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-700">
+                                    {{ 'crowdfunding.companyGrossIncome' | translate }}
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="primary-off-white-darker fs-16 fw-400">
+                                    {{ crowdfundingCompany.last_year_result | currency: project.isDolar ? 'USD' : 'BRL' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-400">
+                        {{ 'crowdfunding.topExecutives' | translate }}
+                    </span>
+                    <table class="simple-table margin-top-10">
+                        <thead>
+                            <tr>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.fullName' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.cpf' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.office' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.curriculum' | translate }}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let executive of crowdfundingCompany.executives">
+                            <tr>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ executive?.name }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ executive?.cpf | cpfCnpjMask }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ executive?.position | cpfCnpjMask }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ executive?.description }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-400">
+                        {{ 'crowdfunding.controllers' | translate }}
+                    </span>
+                    <table class="simple-table margin-top-10">
+                        <thead>
+                            <tr>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.fullName' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.cpf' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.capitalVoting' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.capitalTotal' | translate }}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let controller of crowdfundingCompany.controllers">
+                            <tr>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ controller?.name }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ controller?.cpf | cpfCnpjMask }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ controller?.percentage_capital }}%</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ controller?.percentage_total }}%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section2' | translate }}
+                    </span>
+                    <div class="column gap-8 margin-top-10">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ 'crowdfunding.bussinessObjective1' | translate }}:
+                            <span>{{ crowdfundingCompany.goals }}</span>
+                        </span>
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ 'crowdfunding.bussinessObjective2' | translate }}:
+                            <span>{{ crowdfundingCompany.main_products_and_services }}</span>
+                        </span>
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ 'crowdfunding.bussinessObjective3' | translate }}:
+                            <span>{{ crowdfundingCompany.target }}</span>
+                        </span>
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ 'crowdfunding.bussinessObjective4' | translate }}:
+                            <span>{{ crowdfundingCompany.region }}</span>
+                        </span>
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ 'crowdfunding.bussinessObjective5' | translate }}:
+                            <span>{{ crowdfundingCompany.purpose_of_offer }}</span>
+                        </span>
+                    </div>
+                    <div class="margin-top-30" *ngIf="(crowdfundingCompany.destination_matrix?.length ?? 0) > 0">
+                        <span class="primary-dark fs-20 fw-400">
+                             {{ 'crowdfunding.destination' | translate }}
+                        </span>
+                        <table class="simple-table margin-top-10">
+                            <thead>
+                                <tr>
+                                    <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.category' | translate }}</span></th>
+                                    <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.minimumAllocation' | translate }}</span></th>
+                                    <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.maximumAllocation' | translate }}</span></th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let matrix of crowdfundingCompany.destination_matrix">
+                                <tr>
+                                    <td><span class="primary-off-white-darker fs-16 fw-400">{{ matrix?.category }}</span></td>
+                                    <td><span class="primary-off-white-darker fs-16 fw-400">{{ matrix?.minimum }}</span></td>
+                                    <td><span class="primary-off-white-darker fs-16 fw-400">{{ matrix?.maximum }}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="column gap-20 margin-top-20">
+                            <span class="primary-dark fs-20 fw-400">
+                                {{ 'crowdfunding.allocationOfResourcesText1' | translate }}
+                            </span>
+                            <span class="primary-dark fs-16 fw-400">
+                                {{ crowdfundingCompany.destination }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section3' | translate }}
+                    </span>
+                    <div class="margin-top-20">
+                        <span class="primary-dark fs-20 fw-400">
+                            {{ 'crowdfunding.assetCharacteristics' | translate }}
+                        </span>
+                        <div class="box-card margin-top-30">
+                            <div class="description-box column gap-40">
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.assetType' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ project.name }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.fundraisingDeadline' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ project.duration_days }} {{ 'crowdfunding.days' | translate }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.startOffer' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ startDate }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.maximumClosingDate' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ finalDate }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.totalValueOffer' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ project.targetCapture | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.minimumValuePartialDistribution' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ project.minimumCapture | currency: project.isDolar ? 'USD' : usefulSettings.fiatCurrency.currency }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-20 column gap-10">
+                            <span class="primary-dark fs-16 fw-400">
+                                {{ 'crowdfunding.batchDistribution' | translate }}
+                            </span>
+                            <span class="primary-dark fs-16 fw-400">
+                                {{ 'crowdfunding.subsequentTransactionsText1' | translate }}
+                            </span>
+                            <span class="primary-dark fs-16 fw-400">
+                                {{ (!project.secondary_transactions ? 'crowdfunding.thereIsNot' : 'crowdfunding.subsequentTransactionsText2') | translate }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="margin-top-20" *ngIf="(crowdfundingCompany?.avaliation_method?.length ?? 0) > 0">
+                        <span class="primary-dark fs-20 fw-400">
+                            {{ 'crowdfunding.broadcasterRating' | translate }}
+                        </span>
+                        <div class="box-card margin-top-30">
+                            <div class="description-box column gap-40">
+                                <div class="inline" *ngFor="let info of crowdfundingCompany?.avaliation_method">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ info.name }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ info.value }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="margin-top-20">
+                        <span class="primary-dark fs-20 fw-400">
+                            {{ 'crowdfunding.rights' | translate }}
+                        </span>
+                        <div class="box-card margin-top-30">
+                            <div class="description-box column gap-40">
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.contractCharacteristics' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ crowdfundingCompany.rights.contract }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            {{ 'crowdfunding.subjectFreeTerminationTitle' | translate }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ crowdfundingCompany.rights.free }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            Tag along
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ crowdfundingCompany.rights.tagAlong }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="inline">
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-700">
+                                            Drag Along
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="primary-off-white-darker fs-16 fw-400">
+                                            {{ crowdfundingCompany.rights.dragAlong }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section4' | translate }}
+                    </span>
+                    <span class="primary-dark fs-20 fw-400">
+                        {{ crowdfundingCompany.sindicate }}
+                    </span>
+                </div>
+                <div class="column gap-10 margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section5' | translate }}
+                    </span>
+                    <span class="primary-dark fs-20 fw-400">
+                        {{ crowdfundingCompany.name }} {{ 'se compromete a divulgar as seguintes informações (indicadores de performance) por meio da Plataforma' | translate }} {{ getCompanyName() }}.
+                    </span>
+                    <table class="simple-table margin-top-10">
+                        <thead>
+                            <tr>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.indicator' | translate }}</span></th>
+                                <th><span class="primary-off-white-darker fs-16 fw-700">{{ 'crowdfunding.frequency' | translate }}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let progress of crowdfundingCompany.information_after_period">
+                            <tr>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ progress.name }}</span></td>
+                                <td><span class="primary-off-white-darker fs-16 fw-400">{{ progress.frequency }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section6' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <ul class="risk-list">
+                            <li *ngFor="let risk of crowdfundingCompany?.risks">
+                                <span class="primary-dark fs-16 fw-400">
+                                    {{ risk?.name  + ' - ' + risk?.description }}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section7' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ crowdfundingCompany.court_lawsuits }}
+                        </span>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section8' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ crowdfundingCompany.conflicts }}
+                        </span>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section9' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ crowdfundingCompany.platform_rewards }}
+                        </span>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section10' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ crowdfundingCompany.taxes_applieds }}
+                        </span>
+                    </div>
+                </div>
+                <div class="margin-top-30">
+                    <span class="primary-dark fs-20 fw-700">
+                        {{ 'crowdfunding.section11' | translate }}
+                    </span>
+                    <div class="column margin-top-20">
+                        <span class="primary-dark fs-16 fw-400">
+                            {{ crowdfundingCompany.warning }}
+                        </span>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'commentList.title' | translate">
+                <div class="box-card margin-top-30" id="forum">
+                    <form 
+                    *ngIf="isAllowedUser()"
+                    [formGroup]="formForum">
+                        <div class="input-container column align-start">
+                            <label class="label-dark">{{ 'crowdfunding.dialogComment.comment' | translate }}</label>
+                            <textarea #doubtText class="custom-text-area medium-border textarea min-height-150"
+                                formControlName="doubt" maxlength="250" [placeholder]="'placeholder.doubt' | translate" required>
+                            </textarea>
+                            <span class="error-hint" *ngIf="showError('doubt', formForum) && formForum?.controls?.['doubt']?.errors?.['minlength']">
+                                {{ 'errorHint.minTwentyChars' | translate }}
+                            </span>
+                            <span class="length-hint">
+                                {{ doubtText?.value?.length || 0 }} / 250
+                            </span>
+                        </div>
+                        <div class="inline send-btn">
+                            <button class="btn dark-shade" (click)="comment()" [disabled]="!formForum.valid || loadingRequest">
+                                {{ 'button.send' | translate }}
+                            </button>
+                        </div>
+                    </form>
+                    <app-comment-list [projectId]="project.id" [comments]="project.comments" (reloadCommentsList)="reloadCommentsList($event)"></app-comment-list>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'crowdfunding.disclaimer' | translate" *ngIf="project.show_disclaimer">
+                <div class="crowdfunding-disclaimer margin-top-30" id="disclaimer">
+                    <span class="primary-dark fs-16 fw-400">
+                        {{ 'crowdfunding.disclaimer.one' | translate }}
+                        {{ 'crowdfunding.disclaimer.two' | translate }}
+                        {{ 'crowdfunding.disclaimer.three' | translate }}
+                    </span>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</ng-template>
+<mat-progress-spinner *ngIf="loading || loadingRequest" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

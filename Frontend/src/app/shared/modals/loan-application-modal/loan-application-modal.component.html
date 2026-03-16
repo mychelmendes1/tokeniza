@@ -1,0 +1,75 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">Aplicação de Empréstimo</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <div class="input-container column margin-top-30 align-start">
+        <label class="label-dark">Escolhe se deseja emprestar ou tomar emprestado</label>
+        <div class="radio-container inline">
+            <mat-radio-group (change)="onRadioGroupChange($event)" class="radio-group inline gap-100">
+                <mat-radio-button value="loan">
+                    <span class="primary-dark fw-500">Emprestar</span>
+                </mat-radio-button>
+                <mat-radio-button value="borrow">
+                    <span class="primary-dark fw-500">Tomar Emprestado</span>
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+    <div class="column" *ngIf="selectedLoan === eLoanType.LOAN || selectedLoan === eLoanType.BORROW" [@fadeIn]>
+        <div class="input-container column align-start margin-top-30">
+            <label class="label-dark">Selecione a moeda para o empréstimo</label>
+            <mat-select class="select-fill-primary" disableOptionCentering [(ngModel)]="selectedCoin"
+                [placeholder]="'Selecionar moeda...'" panelClass="select-fill-primary">
+                <mat-option *ngFor="let coin of allCoins" [value]="coin">
+                    <div class="inline gap-10">
+                        <span class="primary-dark fw-500">{{ coin }}</span>
+                    </div>
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="column">
+            <div class="input-container align-start wth-100 icon-suffix margin-top-30" *ngIf="selectedLoan === eLoanType.BORROW && selectedCoin">
+                <label class="label-dark">Selecionar garantia</label>
+                <mat-icon class="suffix svg-icon primary-dark to-point" svgIcon="search"></mat-icon>
+                <input #searchInput class="input-fill-default medium-border" [matAutocomplete]="auto" [(ngModel)]="selectedGuarantee"
+                    [placeholder]="'Buscar garantia...'" required>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option class="input amount-input" *ngFor="let guarantee of allLoanGuarantee" [value]="guarantee">
+                        <span class="input amount-input">{{ guarantee }}</span>
+                    </mat-option>
+                </mat-autocomplete>
+            </div>
+            <div class="column gap-8 align-start margin-top-30" *ngIf="selectedLoan === eLoanType.BORROW && selectedCoin" [@fadeIn]>
+                <span class="primary-dark-medium-shade fw-700 fs-16">Limite de empréstimo</span>
+                <span class="primary-gray fw-400 fs-16 text-align-left">Seu limite de empréstimo será baseado em 60% do valor do ativo selecionado.</span>
+                <strong class="fs-31 fw-700 primary-800">{{ (selectedGuarantee ? loanLimit : 0) | currency: usefulSettings.fiatCurrency.currency }}</strong>
+            </div>
+        </div>
+        <div class="column gap-30" *ngIf="(selectedLoan === eLoanType.LOAN || selectedLoan === eLoanType.BORROW) && selectedCoin" [@fadeIn]>
+            <div class="input-container margin-top-30">
+                <div class="column align-start wth-100 gap-3">
+                    <label class="label-dark">Valor que deseja tomar emprestado</label>
+                    <input class="input-fill-default medium-border" [placeholder]="'R$ Digite o valor...'" [(ngModel)]="amountValue"
+                        currencyMask [options]="{ prefix: 'R$' + ' ', precision: 2 }" inputmode="numeric"
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="column gap-8 align-start margin-top-30" *ngIf="(selectedLoan === eLoanType.LOAN || selectedLoan === eLoanType.BORROW) && selectedCoin" [@fadeIn]>
+            <span class="primary-dark-medium-shade fw-700 fs-16">Juros sobre o valor solicitado</span>
+            <span class="primary-gray fw-400 fs-16">O juros estimado para a quantidade digitada é:</span>
+            <strong class="fs-31 fw-700 primary-800">{{ amountValue ? fee : 0 }}%</strong>
+        </div>
+        <div class="inline gap-8 margin-top-30 to-point">
+            <mat-icon class="svg-icon primary-blue-700" svgIcon="file-text"></mat-icon>
+            <span class="primary-blue-700 underline-text">Ler com os termos e condições das regras de negócio</span>
+        </div>
+    </div>
+    <div class="cotainer-buttons centered gap-20 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>Cancelar</button>
+        <button class="btn dark-shade wth-100" [disabled]="!enableButton()" (click)="openWarningModal()">
+            Continuar
+        </button>
+    </div>
+</div>

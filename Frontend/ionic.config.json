@@ -1,0 +1,7 @@
+{
+  "name": "Tokeniza",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

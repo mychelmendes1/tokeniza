@@ -1,0 +1,14 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+
+.modal-container {
+    .icon-img {
+        height: 100px;
+        margin-bottom: 7px;
+    }
+}
+
+::ng-deep .custom-modal.simple-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

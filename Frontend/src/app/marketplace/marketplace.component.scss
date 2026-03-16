@@ -1,0 +1,230 @@
+@use './../../assets/styles/common-classes.scss';
+@use './../../assets/styles/variables.scss' as v;
+@use './../../assets/styles/material-component.scss';
+@use './../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .marketplace-container {
+        padding: 32px;
+        position: relative;
+
+        @include mix.mq("phone-wide", max) {
+            padding: 32px 10px;
+            margin-top: 30px;
+        }
+
+        .input-container {
+            max-width: 400px;
+        }
+    }
+
+    .offer-card-grid {
+        &.vertical {
+            border-radius: 12px;
+            overflow: hidden;
+
+            .help-icon {
+                @include mix.iconSize(13px, true);
+            }
+
+            .card {
+                border-radius: 0 !important;
+
+                &.content {
+                    padding: 20px 0 !important;
+                }
+            }
+
+            .card:not(:last-child) {
+                border-bottom: 1px solid v.$medium-active;
+            }
+        }
+    }
+
+    .offer-card-grid.asset {
+        .card.asset {
+            background-color: v.$light-text;
+            border-radius: 12px;
+            padding: 16px 24px;
+            min-height: 136px;
+
+            .asset-img {
+                object-fit: cover;
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+                min-height: 40px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .qty-container {
+                background-color: v.$color-background-hover-row-table;
+                padding: 2px 8px;
+                border-radius: 16px;
+                height: fit-content !important;
+            }
+
+            .low-high-container {
+                padding: 2px 8px;
+                border-radius: 16px;
+                height: fit-content !important;
+                min-width: 50px;
+                align-items: flex-start !important;
+
+                .low-high-icon {
+                    @include mix.iconSize(12px, true);
+                }
+            }
+
+            .card-asset-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: nowrap;
+            
+                .inline {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    min-width: 0;
+                }
+
+                .column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    min-width: 0;
+                }
+
+                .primary-dark,
+                .primary-gray {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    min-width: 100px;
+
+                    @include mix.mq("phone-wide", max) {
+                        max-width: 120px;
+                    }
+                }
+
+                .qty-container {
+                    flex-shrink: 0;
+                    white-space: nowrap;
+                }
+            }
+        }
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        }
+    }
+
+    .btn {
+        &.see-more {
+            width: 150px;
+        }
+    }
+
+    .chevron-icon {
+        @include mix.iconSize(18px, true);
+    }
+
+    .left-margin {
+        margin-left: auto;
+    }
+
+    .offers-cards {
+        swiper-slide {
+            display: flex;
+            height: auto;
+            min-width: 600px;
+
+            @include mix.mq("phone-wide", max) {
+                min-width: 0 !important;
+            }
+
+            .card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;
+                min-height: 230px;
+                width: 100%;
+                background-color: v.$dark !important;
+            }
+
+            .top-banner {
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+                min-height: 100px;
+                max-height: 100px;
+                object-fit: cover;
+            }
+
+            .negative-margin {
+                margin-top: -50px;
+            }
+
+            .card-bottom {
+                padding: 0 20px 20px;
+                align-items: flex-end !important;
+
+                @include mix.mq("phone-wide", max) {
+                    flex-direction: column;
+                    align-items: flex-start !important;
+                    gap: 10px;
+                }
+            }
+        }
+    }
+}
+
+::ng-deep.mat-mdc-select-panel.collections-panel {
+    padding: 8px 0;
+    margin-top: 15px !important;
+    background: v.$light-text;
+    position: relative;
+    left: -15px;
+
+    .mat-mdc-option.mat-selected:not(.mat-option-multiple) {
+        background: v.$light-text;
+        color: v.$primary-500;
+    }
+
+    .mat-mdc-option {
+        color: v.$dark !important;
+    }
+
+    .mat-mdc-option.collection-filter-select {
+        color: var(--color-main);
+        line-height: 46px !important;
+        height: 46px !important;
+
+        span {
+            font-size: 14px !important;
+            white-space: nowrap !important;
+            font-weight: 500;
+
+            .collection-filter-img {
+                width: 30px;
+                height: 30px;
+                border-radius: 5px;
+                margin-right: 10px;
+                object-fit: contain;
+            }
+        }
+    }
+}
+
+::ng-deep {
+    .mat-mdc-select-value-text, .mat-mdc-select-min-line, span {
+        white-space: nowrap !important;
+    }
+}

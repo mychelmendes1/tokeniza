@@ -1,0 +1,175 @@
+export const RestEndpoint = {
+    account: {
+        getUserAddress: '/api/v1/location/getAll',
+        getFiatCurrency: '/api/v1/fiatCurrency/getEniatoFiatCurrency',
+        authenticateUser: '/api/v1/authentication/authenticateUser',
+        getAllUserAdditional: '/api/v1/user-additional/getAll',
+        publicRsa: '/api/v1/authentication/getPublicKeyRsa',
+        isAuthenticated: '/api/v1/authentication/isAuthenticated',
+        destroySession: '/api/v1/authentication/destroySession',
+        lostpassword: '/api/v1/authentication/lostpassword',
+        changelostpassword: '/api/v1/authentication/changelostpassword',
+        validateUsername: '/api/v1/authentication/validateUsername',
+        verifyDocument: '/api/v1/authentication/validateDocument',
+        checkDiditSessionStatus: '/api/v1/authentication/didit-session-status',
+        createUser: '/api/v1/authentication/createuser',
+        antifraudApprovalUser: '/api/v1/antifraud/approval/user',
+        resendConfirmationCode: '/api/v1/authentication/resendConfirmationCode',
+        verifyMFAStatus: '/api/v1/authentication/verifymfastatus',
+        files: '/api/v1/files',
+        changeNewsLetter: '/api/v1/authentication/changeNewsLetter',
+        quotations: '/api/v1/authentication/quotations',
+        allQuotations: '/api/v1/authentication/allQuotations',
+        reprocessBlock: '/api/v1/authentication/reprocessBlock',
+        balance: '/api/v1/financial/plataformbalance',
+        getBRLAKYCStatus: '/api/v1/brla/kycStatus',
+        createDepositRequest: '/api/v1/balance/createDepositRequest',
+        checkClearLedgerPaymentStatus:
+            '/api/v1/orders/CheckClearLedgerPaymentStatus/',
+        checkCelcoinIntegrationPaymentStatus:
+            '/api/v1/orders/CheckCelcoinIntegrationPaymentStatus/',
+        getMyCommunity: '/api/v1/authentication/getMyCommunity',
+        getAllUserCommissionRequest:
+            'api/v1/authentication/getAllUserCommissionRequest',
+        getDecimalPlaces: '/api/v1/fiatCurrency/getDecimalPlaces',
+        startMFAProcess: '/api/v1/authentication/startmfaprocess',
+        finalizeMFAProcess: '/api/v1/authentication/finalizemfaprocess',
+        getUserByEmailWallet: '/api/v1/authentication/getUserByEmailWallet',
+        createInvoice: '/api/v1/invoices/create',
+        updateInvoice: '/api/v1/invoices/update',
+        getListOfBanks: '/api/v1/balance/getListOfBanks',
+        createWithdrawRequest: '/api/v1/balance/createWithdrawRequest',
+        getUserWithdrawalFavorites:
+            '/api/v1/balance/getUserWithdrawalFavorites',
+        createUserAddress: '/api/v1/location/createUserAddress',
+        createUserAdditional: '/api/v1/user-additional/createUserAdditional',
+        updateMyGenericKYCDocuments:
+            '/api/v1/authentication/UpdateMyGenericKYCDocuments',
+        getMyGenericKYCDocuments:
+            '/api/v1/authentication/GetMyGenericKYCDocuments',
+        getMyDocuments: '/api/v1/authentication/getMyDocuments',
+        getMyKYCDocumentsStatus: '/api/v1/authentication/getMyKYCDocumentsStatus',
+        updateDocuments: '/api/v1/authentication/updateDocuments',
+        checkDocumentStatus: '/api/v1/staking/checkDocumentStatus',
+        createSignRequest: '/api/v1/staking/createSignRequest',
+        createUserStake: '/api/v1/staking/createUserStake',
+        verify: '/api/v1/financial/verify',
+        sendMFACode: '/api/v1/authentication/sendMFACode',
+        transfer: '/api/v1/financial/transfer',
+        subscribeNewsLetter: '/api/v1/authentication/subscribeNewsLetter',
+        sendContactEmail: '/api/v1/authentication/sendContactEmail',
+        getIRPF: '/api/v1/financial-internal/getIRPF',
+        createDiditSession: '/api/v1/authentication/create-didit-session',
+    },
+    banking: {
+        getAllDigitalBankingBanners:
+            '/api/v1/banners/getAllDigitalBankingBanners',
+        account: {
+            getAccountInfoNaturalPerson:
+                '/api/v1/bank-accounts/getAccountInfoNaturalPerson',
+            getAccountInfoLegalPerson:
+                '/api/v1/bank-accounts/getAccountInfoLegalPerson',
+        },
+    },
+    config: {
+        getExternalLinks: '/api/v1/external-links/readAll',
+        getEniatoConfig: '/api/v1/eniato-config/readAll',
+        getDigitalBankingConfigs:
+            '/api/v1/external-links/getDigitalBankingConfigs',
+        getTransferDetails: '/api/v1/external-links/getTransferDetails',
+        getContactDetails: '/api/v1/external-links/getContactDetails',
+    },
+    crowdfunding: {
+        getCrowdfundings: '/api/v1/crowdfunding/getCrowdfundingList',
+        getAllCrowdfundingCategories:
+            '/api/v1/crowdfunding/getCrowdfundingCategoriesList',
+        getAllCrowdfundingBanners: '/api/v1/banners/getAllCrowdfundingBanners',
+        getCrowdfunding: '/api/v1/crowdfunding/getCrowdfunding',
+        getCrowdfundingCompanyDetails:
+            '/api/v1/crowdfunding-details/getCrowdfundingCompanyDetails',
+        createComment: '/api/v1/crowdfunding/comments',
+        getAllUserOders: '/api/v1/crowdfunding/getAllUserOders',
+        getAllCrowdfundingBanking: '/api/v1/crowdfunding-banking/getAll',
+        performPaymentWithCrypto:
+            '/api/v1/crowdfunding/performPaymentWithCrypto',
+        createCrowdfundingCheckoutOrder:
+            '/api/v1/crowdfunding/createCrowdfundingCheckoutOrder',
+        updateUserAcceptedTerms: '/api/v1/crowdfunding/updateUserAcceptedTerms',
+    },
+    collections: {
+        getAllCollectionsStatistics:
+            'api/v1/collections/getAllCollectionsStatistics',
+        getCollection: '/api/v1/collections/getCollection',
+        getNetworks: '/api/v1/networks/getNetworks',
+        getCollectionStatistics: 'api/v1/collections/getCollectionStatistics',
+        getMinToBuy: '/api/v1/collections/getMinToBuy',
+        getSumUsedByCollection: '/api/v1/collections/getSumUsedByCollection',
+        getSumUsedByAsset: '/api/v1/collections/getSumUsedByAsset',
+        getAllCollections: '/api/v1/collections/getAllCollections',
+    },
+    assets: {
+        getAssets: '/api/v1/assets/getAssets',
+        getCategories: '/api/v1/eniato-market/categories',
+        getDetails: '/api/v1/assets/getAsset',
+        getCountForAssets: '/api/v1/balance/getDepositsForNFTs',
+        cancelMyBid: '/api/v1/assets/cancelMyBid',
+        cancelAuction: '/api/v1/assets/finishAuction',
+        createAuction: '/api/v1/assets/createAuction',
+        createBid: '/api/v1/assets/createBid',
+        getEniatoBalance: '/api/v1/eniato-market/balance',
+        resellAsset: '/api/v1/assets/resellAsset',
+        splitNFTs: '/api/v1/eniato-market/splitNFTs',
+        changeDistributionType: '/api/v1/assets/changeDistributionType',
+        sendNFTs: '/api/v1/eniato-market/sendNFTs',
+        buyNFT: '/api/v1/eniato-market/buyNFT',
+        buyPackage: '/api/v1/eniato-market/buyPackage',
+        redeemReward: '/api/v1/reward/redeemReward',
+    },
+    features: {
+        getFeatureStatus: '/api/v1/features/getFeatureStatus',
+        getAllFeatureStatus: '/api/v1/features/getAllFeatureStatus',
+    },
+    profile: {
+        updateUserBasicInfos: '/api/v1/authentication/updateBasicInfos',
+    },
+    financial: {
+        getDistributionsByAssetId:
+            '/api/v1/financial-internal/getDistributionsByAssetId',
+        getMyTransactionHistory:
+            '/api/v1/financial-internal/my-transaction-history-admin',
+        getStakingConfig: '/api/v1/staking/getStakingConfig',
+        getUserStakes: '/api/v1/staking/getUserStakes',
+        cancelUserStake: '/api/v1/staking/cancelUserStake',
+        balance: '/api/v1/financial/plataformbalance',
+        getInvoices: '/api/v1/invoices/getInvoices',
+        getExternalDeposits: '/api/v1/external-deposits',
+        externalDeposit: '/api/v1/external-deposits',
+        getAllSwapCriptoToken: '/api/v1/tokens/getAllSwapCriptoToken',
+        getBridgeQuotes: '/api/v1/bridge/quote',
+        getAllBridgeTokens: '/api/v1/tokens/getAllBridgeCriptoToken',
+        getBridgeTokens: '/api/v1/bridge/tokens',
+        getBridgeChains: '/api/v1/bridge/chains',
+        getBridgeLimits: '/api/v1/bridge/limits',
+        executeBridgeTransfer: '/api/v1/bridge/execute',
+        performSwap: '/api/v1/swap',
+        createCheckout: '/api/v1/checkout',
+    },
+    tokens: {
+        getToken: '/api/v1/tokens/getToken',
+        getAllTokens: '/api/v1/tokens/getAllTokens',
+        getDataForExchange: '/api/v1/authentication/getDataForExchange',
+    },
+    checkout: {
+        createExternalCheckout: '/api/v1/checkout/external',
+        createCheckout: '/api/v1/checkout',
+        pixToTokenBRLA: '/api/v1/brla/pixToTokenBRLA',
+        tokenToPixBRLA: '/api/v1/brla/tokenToPixBRLA',
+    },
+    transak: {
+        getCountries: '/api/v1/transak/getCountries',
+        getCryptoCurrencies: '/api/v1/transak/getCryptoCurrencies',
+        getFiatCurrencies: '/api/v1/transak/getFiatCurrencies',
+        getTransakParameters: '/api/v1/transak/getTransakParameters',
+        storeOrderData: '/api/v1/transak/storeOrderData'
+    }
+};

@@ -1,0 +1,73 @@
+@use '../assets/styles/variables.scss' as v;
+@use '../assets/styles/mixins.scss' as mix;
+@use '../assets/styles/scrollbar.scss';
+
+::ng-deep app-root {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.mat-drawer-container.mat-sidenav-container {
+    background: v.$dark-shade;
+
+    .mat-drawer-side {
+        border: none;
+        z-index: 1;
+
+        ::ng-deep .mat-drawer-inner-container {
+            background-color: v.$dark-shade;
+            @extend .dark-scroll;
+        }
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        height: 100vh;
+        color: v.$light-text;
+        background: v.$light-grey;
+        cursor: default;
+
+        &.is-mobile {
+            height: 100vh;
+        }
+
+        &.with-bottom-nav {
+            padding-bottom: calc(64px + env(safe-area-inset-bottom));
+        }
+    }
+
+    mat-sidenav {
+        width: unset;
+    }
+
+    mat-sidenav.expanded {
+        width: 312px;
+
+        @include mix.mq("tablet", max) {
+            width: 100%;
+        }
+    }
+
+    mat-sidenav-content {
+        overflow-x: hidden !important;
+        margin-left: 0 !important;
+
+        &.is-menu {
+            margin-left: 82px !important;
+            transition-duration: 1500ms !important;
+        }
+    }
+
+    mat-sidenav-content.expanded-content {
+        margin-left: 312px !important;
+        transition-duration: 1500ms !important;
+
+        &.is-mobile {
+            margin-left: 0 !important;
+            transition-duration: 450ms !important;
+        }
+    }
+}

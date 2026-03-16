@@ -1,0 +1,118 @@
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/material-component.scss';
+@use './../../../../assets/styles/mixins.scss' as mix;
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .resp-menu-mobile {
+        position: absolute;
+        margin-bottom: 30px;
+        top: 32px;
+        right: 32px;
+        z-index: 99999;
+    }
+
+    .checkout-product-container {
+        background: v.$dark;
+        padding: 32px;
+        position: relative;
+        height: 100%;
+
+        .checkout-product {
+            align-items: flex-start;
+
+            @include mix.mq("tablet-wide", max) {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 12px;
+                background-color: v.$primary-FG200;
+                border-radius: 8px;
+    
+                &:hover {
+                    background-color: v.$primary-500;
+                    z-index: 9999;
+                }
+            }
+
+            .stretch {
+                align-self: stretch;
+            }
+
+            .product-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 20px;
+            }
+        }
+    }
+
+    // Trying to remove any styling from the project so
+    // as not to interfere with the content.
+    .customHtmlContent {
+        all: unset;
+        font-size: 15px;
+        color: v.$dark;
+    }
+
+    .container-product-info {
+        padding: 4px 13px;
+        width: fit-content !important;
+    }
+
+    .offers-cards {
+        @extend .offer-card-grid;
+        column-gap: 32px !important;
+        row-gap: 32px !important;
+
+        &.no-margin {
+            margin-top: 0 !important;
+        }
+
+        @include mix.mq("phone-wide", max) {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        }
+
+        .card {
+            padding: 16px;
+            min-width: 0 !important;
+            background-color: v.$dark-shade !important;
+
+            &.inline-flex {
+                justify-content: space-between !important;
+                flex-direction: row !important;
+            }
+        }
+
+        &.inline-flex {
+            display: inline-flex !important;
+            justify-content: space-between !important;
+            row-gap: 10px !important;
+        }
+    }
+
+    .custom-pad {
+        padding: 0 16px;
+    }
+
+    .tabs-container {
+        padding: 0 32px 32px;
+    }
+
+    .box-card {
+        background-color: v.$light-text;
+        border-radius: 12px;
+        padding: 24px;
+    }
+}

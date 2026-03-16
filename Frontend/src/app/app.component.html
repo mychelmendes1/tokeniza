@@ -1,0 +1,17 @@
+<mat-sidenav-container #drawer>
+    <mat-sidenav [class.expanded]="menuExpanded" [mode]="isMobile ? 'over' : 'side'" [opened]="userDetails && !isMobile && !currentUrl" fixedInViewport [fixedTopGap]="0">
+        <app-menu [menuExpanded]="menuExpanded" (menuEmitter)="onToggleMenu($event)" (menuEmitterClose)="isMobile ? closeMenu() : ''"></app-menu>
+    </mat-sidenav>
+    <mat-sidenav-content class="main-container"
+        [ngClass]="
+        {
+            'is-mobile': isMobile || currentUrl,
+            'with-bottom-nav': isMobile && userDetails && !currentUrl,
+            'expanded-content': menuExpanded,
+            'is-menu': userDetails && !currentUrl && !isMobile
+        }">
+        <router-outlet></router-outlet>
+        <app-bottom-nav *ngIf="isMobile && userDetails && !currentUrl"></app-bottom-nav>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

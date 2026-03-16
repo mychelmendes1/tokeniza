@@ -1,0 +1,60 @@
+<div class="account-left-container column gap-12">
+    <form [formGroup]="formLogin">
+        <div class="form login">
+            <p class="text-align">
+                <span class="primary-600 fs-31 fw-600">{{ 'login.enter' | translate }}</span>
+                <span>{{ 'login.welcome' | translate }}</span>
+            </p>
+            <div class="input-container">
+                <label>{{ 'label.email' | translate }}</label>
+                <input class="input-fill-default" formControlName="userEmail"
+                    [placeholder]="'placeholder.email' | translate" type="email"
+                >
+                <span class="error-hint" *ngIf="showError('userEmail') && formLogin?.controls?.userEmail?.value">{{ 'errorHint.email' | translate }}</span>
+                <span class="error-hint" *ngIf="formInputTouched('userEmail') && !formLogin?.controls?.userEmail?.value">{{ 'errorHint.mandatory' | translate }}</span>
+            </div>
+            <div class="input-container icon-suffix">
+                <label>{{ 'label.password' | translate }}</label>
+                <mat-icon class="suffix primary-gray to-point" (click)="showPassword = !showPassword">
+                    {{ showPassword ? 'visibility' : 'visibility_off' }}
+                </mat-icon>
+                <input class="input-fill-default" maxlength="20" formControlName="password"
+                    [type]="showPassword ? 'text' : 'password'" [placeholder]="'placeholder.password' | translate"
+                    autocomplete="false" required
+                >
+                <span class="error-hint" *ngIf="showError('password') && formLogin?.controls?.password?.value">{{ 'errorHint.password' | translate }}</span>
+                <span class="error-hint" *ngIf="formInputTouched('password') && !formLogin?.controls?.password?.value">{{ 'errorHint.mandatory' | translate }}</span>
+            </div>
+            <div class="between inline margin-top-30">
+                <mat-checkbox formControlName="remindMe" color="primary" class="checkbox-v-mark">
+                    {{ 'login.remindMe' | translate }}
+                </mat-checkbox>
+                <span class="button-link underline" (click)="goToForgot()">
+                    {{ 'login.forgotPassword' | translate }}
+                </span>
+            </div>
+
+            <button class="btn primary margin-top-30 wth-100" [disabled]="!formLogin.valid || loading" (click)="login()">
+                <span class="primary-dark">{{ 'button.enter' | translate }}</span>
+            </button>
+
+            <div class="centered margin-top-16 text-align gap-5">
+                <span>
+                    {{ 'login.dontHaveAccount' | translate }}
+                </span>
+                <span class="button-link underline" (click)="goToSignUp()">
+                    {{ 'login.signup' | translate }}
+                </span>
+            </div>
+            <div class="centered margin-top-16 text-align gap-5" *ngIf="showResendCode">
+                <span>
+                    {{ 'login.haventReceived' | translate }}
+                </span>
+                <span class="button-link underline" (click)="resendCode()">
+                    {{ 'login.sendCode' | translate }}
+                </span>
+            </div>
+        </div>
+    </form>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

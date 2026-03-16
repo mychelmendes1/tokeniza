@@ -1,0 +1,531 @@
+<app-menu-button-mobile class="resp-menu-mobile" [colorIcon]="'svg-icon primary-dark'"></app-menu-button-mobile>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<div class="crowdfunding-container column content-container wth-100">
+    <div class="inline between wrap gap-20">
+        <div class="column gap-2">
+            <p class="inline">
+                <span class="fs-31 primary-dark fw-700">{{ 'crowdfunding.title' | translate }}</span>&nbsp;&nbsp;
+            </p>
+            <span class="fs-16 fw-400 primary-medium">{{ 'crowdfunding.subtitle' | translate }}</span>
+        </div>
+        <button class="btn primary" (click)="goToWallet()">
+            <mat-icon class="svg-icon primary-dark" svgIcon="wallet"></mat-icon>
+            <span class="primary-dark">{{ 'button.wallet' | translate }}</span>
+        </button>
+    </div>
+    <ng-template [ngIf]="!showErrorPage">
+        <div class="banners-carrousel" *ngIf="banners.length > 0">
+            <swiper-container class="banners-slides" #swiperBanners autoplay-delay="6000" [allowTouchMove]="true" centered-slides="true" [spaceBetween]="10" pagination="true">
+                <swiper-slide *ngFor="let banner of banners">
+                    <div class="img-wrapper wth-100 margin-top-30">
+                        <img class="banner-img wth-100" [src]="isMobile ? banner?.urlResponsive : banner?.url" alt="" />
+                    </div>
+                </swiper-slide>
+            </swiper-container>
+        </div>
+        <div class="column" *ngIf="!loading">
+            <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30" (selectedTabChange)="onSelectedTabProjectChange($event)" 
+                mat-stretch-tabs="false" mat-align-tabs="start">
+                <mat-tab [label]="'label.all' | translate">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowdfundingCard"
+                                (input)="searchProjectInCards()"
+                            >
+                        </div>
+                    </div>
+                    <div class="column margin-top-30" *ngIf="projectCards.length > 0; else noFoundProject;">
+                        <app-crowdfunding-card [projectsList]="projectCards" [cardClickable]="true"
+                            [hasTitleText]="false" [loading]="loading">
+                        </app-crowdfunding-card>
+                    </div>
+                    <ng-template #noFoundProject>
+                        <p class="no-found-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                    </ng-template>
+                </mat-tab>
+                <mat-tab [label]="'label.recents' | translate">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowdfundingCard"
+                                (input)="searchProjectInCards()"
+                            >
+                        </div>
+                    </div>
+                    <div class="column margin-top-30" *ngIf="projectCards.length > 0; else noFoundProject;">
+                        <app-crowdfunding-card [projectsList]="projectCards" [cardClickable]="true"
+                            [hasTitleText]="false" [loading]="loading">
+                        </app-crowdfunding-card>
+                    </div>
+                    <ng-template #noFoundProject>
+                        <p class="no-found-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                    </ng-template>
+                </mat-tab>
+                <mat-tab [label]="'label.finishing' | translate">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowdfundingCard"
+                                (input)="searchProjectInCards()"
+                            >
+                        </div>
+                    </div>
+                    <div class="column margin-top-30" *ngIf="projectCards.length > 0; else noFoundProject;">
+                        <app-crowdfunding-card [projectsList]="projectCards" [cardClickable]="true"
+                            [hasTitleText]="false" [loading]="loading">
+                        </app-crowdfunding-card>
+                    </div>
+                    <ng-template #noFoundProject>
+                        <p class="no-found-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+        <div class="column margin-top-30" *ngIf="!loading">
+            <mat-tab-group #tabGroup [disablePagination]="false" class="custom-tabs margin-top-30" (selectedTabChange)="onTabTableProjectChange($event)"
+                mat-stretch-tabs="false" mat-align-tabs="start">
+                <mat-tab [label]="translateTab(eTabName.ALL) | translate">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowndfundingTable"
+                                (input)="searchProjectInTable()"
+                            >
+                        </div>
+                        <div class="inline">
+                            <button [matMenuTriggerFor]="menu" class="btn dark-shade"
+                                (mouseenter)="hoverIconClassService.onMouseEnter('filter')"
+                                (mouseleave)="hoverIconClassService.onMouseLeave('filter')">
+                                {{ 'button.filters' | translate }}
+                                <mat-icon svgIcon="filters-lines" 
+                                    [ngClass]="hoverIconClassService.getSvgClass('filter', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                </mat-icon>
+                            </button>
+                        </div>
+    
+                        <mat-menu #menu="matMenu">
+                            <div class="mat-menu-container column gap-10">
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.duration' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedDuration">
+                                    <mat-radio-button *ngFor="let duration of filter.duration" [value]="duration"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterDuration(duration) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.profitability' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedProfitability">
+                                    <mat-radio-button *ngFor="let profitabilit of filter.profitabilit" [value]="profitabilit"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterProfitability(profitabilit) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <div class="centered gap-10">
+                                    <button class="btn doutline" (click)="clearFilters(); $event.stopPropagation()">
+                                        {{ 'button.clear' | translate }}
+                                        <mat-icon svgIcon="close"></mat-icon>
+                                    </button>
+                                    <button class="btn dark-shade" (click)="applyFilters()"
+                                        (mouseenter)="hoverIconClassService.onMouseEnter('apply')"
+                                        (mouseleave)="hoverIconClassService.onMouseLeave('apply')">
+                                        {{ 'button.apply' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-menu>
+                    </div>
+                    <div class="table margin-top-30">
+                        <table mat-table [dataSource]="dataSourceCrowdfunding" class="table hover-rows" matSort #sortCrowdfunding="matSort">
+                            <!-- Offer -->
+                            <ng-container matColumnDef="offer">
+                                <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'crowdfunding.offer' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element" class="first-column">
+                                    <div class="inline gap-8 custom-margin">
+                                        <img class="circular-min-img" [src]="element?.img" alt="">
+                                        <div class="column gap-3">
+                                            <span class="primary-dark-shade fw-600 fs-13">{{ element?.name }}</span>
+                                            <span class="primary-off-white-darker fw-400 fs-13">{{ element?.company }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Projected Profitability -->
+                            <ng-container matColumnDef="profitability">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.projectedProfitability' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">{{ element?.profitability }}% {{ 'home.perYear' | translate }}</span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Category -->
+                            <ng-container matColumnDef="category">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.category' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ !element?.user_responsible ? ( 'crowdfunding.public' | translate) : ( 'crowdfunding.private' | translate) }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Type -->
+                            <ng-container matColumnDef="type">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.type' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element.type }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Captured -->
+                            <ng-container matColumnDef="captured">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.captured' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <div class="progress-bar inline wth-100">
+                                            <div class="progress-bar__value" [ngClass]="getCardColorClass(element.daysRemaining).progressBarClass" 
+                                                [ngStyle]="{'width.%' : percentageProgressBar(element.moneyReceived, element.targetCapture)}" >
+                                            </div>
+                                        </div>
+                                        <span class="primary-dark-shade fw-600 fs-13">
+                                            {{ (element?.targetAmountPercentage | number:'1.2-2') || 0 }}%
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Deadline -->
+                            <ng-container matColumnDef="deadline">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.deadline' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element?.finalDate ? 
+                                                formatDateFromISOString(element?.finalDate) 
+                                                : 'crowdfunding.notDefined' | translate
+                                            }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+        
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsOffers"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsOffers;"
+                                (click)="goToCrowdfundfingDetails(row.id)">
+                            </tr>
+        
+                            <!-- No Data -->
+                            <tr *matNoDataRow>
+                                <td [attr.colspan]="displayedColumnsOffers.length">
+                                    <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </mat-tab>
+                <mat-tab *ngFor="let categorie of categories" [label]="categorie.name">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowndfundingTable"
+                                (input)="searchProjectInTable()"
+                            >
+                        </div>
+                        <div class="inline">
+                            <button [matMenuTriggerFor]="menuCategorie" class="btn dark-shade"
+                                (mouseenter)="hoverIconClassService.onMouseEnter('filter')"
+                                (mouseleave)="hoverIconClassService.onMouseLeave('filter')">
+                                {{ 'button.filters' | translate }}
+                                <mat-icon svgIcon="filters-lines" 
+                                    [ngClass]="hoverIconClassService.getSvgClass('filter', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                </mat-icon>
+                            </button>
+                        </div>
+    
+                        <mat-menu #menuCategorie="matMenu">
+                            <div class="mat-menu-container column gap-10">
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.duration' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedDurationCategorie">
+                                    <mat-radio-button *ngFor="let duration of filter.duration" [value]="duration"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterDuration(duration) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.profitability' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedProfitabilityCategorie">
+                                    <mat-radio-button *ngFor="let profitabilit of filter.profitabilit" [value]="profitabilit"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterProfitability(profitabilit) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <div class="centered gap-10">
+                                    <button class="btn doutline" (click)="clearFilters(); $event.stopPropagation()">
+                                        {{ 'button.clear' | translate }}
+                                        <mat-icon svgIcon="close"></mat-icon>
+                                    </button>
+                                    <button class="btn dark-shade" (click)="applyFilters()"
+                                        (mouseenter)="hoverIconClassService.onMouseEnter('apply')"
+                                        (mouseleave)="hoverIconClassService.onMouseLeave('apply')">
+                                        {{ 'button.apply' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-menu>
+                    </div>
+                    <div class="table margin-top-30">
+                        <table mat-table [dataSource]="dataSourceCrowdfunding" class="table hover-rows" matSort #sortCrowdfunding="matSort">
+                            <!-- Offer -->
+                            <ng-container matColumnDef="offer">
+                                <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'crowdfunding.offer' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element" class="first-column">
+                                    <div class="inline gap-8 custom-margin">
+                                        <img class="circular-min-img" [src]="element?.img" alt="">
+                                        <div class="column gap-3">
+                                            <span class="primary-dark-shade fw-600 fs-13">{{ element?.name }}</span>
+                                            <span class="primary-off-white-darker fw-400 fs-13">{{ element?.company }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Projected Profitability -->
+                            <ng-container matColumnDef="profitability">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.projectedProfitability' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">{{ element?.profitability }}% {{ 'home.perYear' | translate }}</span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Category -->
+                            <ng-container matColumnDef="category">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.category' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ !element?.user_responsible ? ( 'crowdfunding.public' | translate) : ( 'crowdfunding.private' | translate) }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Type -->
+                            <ng-container matColumnDef="type">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.type' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element.type }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Captured -->
+                            <ng-container matColumnDef="captured">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.captured' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <div class="progress-bar inline wth-100">
+                                            <div class="progress-bar__value" [ngClass]="getCardColorClass(element.daysRemaining).progressBarClass" 
+                                                [ngStyle]="{'width.%' : percentageProgressBar(element.moneyReceived, element.targetCapture)}" >
+                                            </div>
+                                        </div>
+                                        <span class="primary-dark-shade fw-600 fs-13">
+                                            {{ (element?.targetAmountPercentage | number:'1.2-2') || 0 }}%
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Deadline -->
+                            <ng-container matColumnDef="deadline">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.deadline' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element?.finalDate ? 
+                                                formatDateFromISOString(element?.finalDate)  
+                                                : 'crowdfunding.notDefined' | translate
+                                            }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+        
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsOffers"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsOffers;"
+                                (click)="goToCrowdfundfingDetails(row.id)">
+                            </tr>
+        
+                            <!-- No Data -->
+                            <tr *matNoDataRow>
+                                <td [attr.colspan]="displayedColumnsOffers.length">
+                                    <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </mat-tab>
+                <mat-tab [label]="translateTab(eTabName.FINISHED) | translate">
+                    <div class="between margin-top-30 wrap gap-30">
+                        <div class="input-container icon-prefix">
+                            <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                            <input class="input-fill-default" maxlength="100"
+                                [placeholder]="'placeholder.offers' | translate"
+                                autocomplete="false"
+                                [(ngModel)]="searchCrowndfundingTable"
+                                (input)="searchProjectInTable()"
+                            >
+                        </div>
+                        <div class="inline">
+                            <button [matMenuTriggerFor]="menuFinished" class="btn dark-shade"
+                                (mouseenter)="hoverIconClassService.onMouseEnter('filter')"
+                                (mouseleave)="hoverIconClassService.onMouseLeave('filter')">
+                                {{ 'button.filters' | translate }}
+                                <mat-icon svgIcon="filters-lines" 
+                                    [ngClass]="hoverIconClassService.getSvgClass('filter', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                </mat-icon>
+                            </button>
+                        </div>
+    
+                        <mat-menu #menuFinished="matMenu">
+                            <div class="mat-menu-container column gap-10">
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.duration' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedDurationFinished">
+                                    <mat-radio-button *ngFor="let duration of filter.duration" [value]="duration"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterDuration(duration) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <span class="primary-dark fs-16 fw-600">{{ 'crowdfunding.profitability' | translate }}</span>
+                                <mat-radio-group class="radio-group" [(ngModel)]="selectedProfitabilityFinished">
+                                    <mat-radio-button *ngFor="let profitabilit of filter.profitabilit" [value]="profitabilit"
+                                        (click)="$event.stopPropagation()">
+                                        <span class="primary-dark fw-500">{{ translateFilterProfitability(profitabilit) | translate }}</span>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                                <div class="centered gap-10">
+                                    <button class="btn doutline" (click)="clearFilters(); $event.stopPropagation()">
+                                        {{ 'button.clear' | translate }}
+                                        <mat-icon svgIcon="close"></mat-icon>
+                                    </button>
+                                    <button class="btn dark-shade" (click)="applyFiltersFinished()"
+                                        (mouseenter)="hoverIconClassService.onMouseEnter('apply')"
+                                        (mouseleave)="hoverIconClassService.onMouseLeave('apply')">
+                                        {{ 'button.apply' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-menu>
+                    </div>
+                    <div class="table margin-top-30">
+                        <table mat-table [dataSource]="dataSourceCrowdfundingFinished" class="table hover-rows" matSort #sortCrowdfundingFinished="matSort">
+                            <!-- Offer -->
+                            <ng-container matColumnDef="offer">
+                                <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'crowdfunding.offer' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element" class="first-column">
+                                    <div class="inline gap-8 custom-margin">
+                                        <img class="circular-min-img" [src]="element?.img" alt="">
+                                        <div class="column gap-3">
+                                            <span class="primary-dark-shade fw-600 fs-13">{{ element?.name }}</span>
+                                            <span class="primary-off-white-darker fw-400 fs-13">{{ element?.company }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Projected Profitability -->
+                            <ng-container matColumnDef="profitability">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.projectedProfitability' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">{{ element?.profitability }}% {{ 'home.perYear' | translate }}</span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Category -->
+                            <ng-container matColumnDef="category">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.category' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ !element?.user_responsible ? ( 'crowdfunding.public' | translate) : ( 'crowdfunding.private' | translate) }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Type -->
+                            <ng-container matColumnDef="type">
+                                <th mat-header-cell *matHeaderCellDef> <span>{{ 'crowdfunding.type' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element.type }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Captured -->
+                            <ng-container matColumnDef="captured">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.captured' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline gap-8">
+                                        <div class="progress-bar inline wth-100">
+                                            <div class="progress-bar__value" [ngClass]="getCardColorClass(element.daysRemaining).progressBarClass" 
+                                                [ngStyle]="{'width.%' : percentageProgressBar(element.moneyReceived, element.targetCapture)}" >
+                                            </div>
+                                        </div>
+                                        <span class="primary-dark-shade fw-600 fs-13">
+                                            {{ (element?.targetAmountPercentage | number:'1.2-2') || 0 }}%
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <!-- Deadline -->
+                            <ng-container matColumnDef="deadline">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> <span>{{ 'crowdfunding.deadline' | translate }}</span> </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="inline">
+                                        <span class="primary-off-white-darker fw-400 fs-13">
+                                            {{ element?.finalDate ? 
+                                                formatDateFromISOString(element?.finalDate)  
+                                                : 'crowdfunding.notDefined' | translate
+                                            }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+        
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsOffers"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsOffers;"
+                                (click)="goToCrowdfundfingDetails(row.id)">
+                            </tr>
+        
+                            <!-- No Data -->
+                            <tr *matNoDataRow>
+                                <td [attr.colspan]="displayedColumnsOffers.length">
+                                    <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+    </ng-template>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

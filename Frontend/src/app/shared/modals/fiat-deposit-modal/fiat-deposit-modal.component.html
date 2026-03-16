@@ -1,0 +1,102 @@
+<div class="fiat-deposit-modal modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'fiatModal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+
+    <div class="modal-label">
+        <label class="label-dark">{{ 'fiatModal.paragraph1' | translate }}</label>
+        <input class="input-fill-default medium-border" [placeholder]="'R$' + ' ' + amount" disabled>
+    </div>
+
+    <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30" (selectedTabChange)="onSelectedTabProjectChange($event)"
+        mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab [label]="'TED'">
+            <div class="modal-label margin-top-30">
+                <span class="primary-dark fw-700 fs-16 text-align-left">{{ 'fiatModal.paragraph2' | translate }}</span>
+                <div class="flex-text">
+                    <p class="primary-dark fw-700">{{ 'fiatModal.name' | translate }}</p> 
+                    <span *ngIf="!apiOffline" class="modal-label primary-dark fw-400">{{ transferDetails.name }}</span>
+                    <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>
+                </div>
+                <div class="flex-text">
+                    <p class="primary-dark fw-700">{{ 'fiatModal.document' | translate }}</p> 
+                    <span *ngIf="!apiOffline" class="modal-label primary-dark fw-400">{{ transferDetails.document }}</span>
+                    <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>
+                </div>
+                <div class="flex-text">
+                    <p class="primary-dark fw-700">{{ 'fiatModal.bank' | translate }}</p>
+                    <span *ngIf="!apiOffline" class="modal-label primary-dark fw-400">{{ transferDetails.bank }}</span>
+                    <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>
+                </div>
+                <div class="flex-text">
+                    <p class="primary-dark fw-700">{{ 'fiatModal.accountType' | translate }}</p>
+                    <span *ngIf="!apiOffline" class="modal-label primary-dark fw-400">{{ transferDetails.accountType }} - {{ 'fiatModal.agency' | translate }} {{ transferDetails.agency }} - {{ 'fiatModal.account' | translate }} {{ transferDetails.account }}</span>
+                    <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab [label]="'PIX'">
+            <div class="modal-label margin-top-30">
+                <div class="modal-label">
+                    <span class="primary-dark fw-700 fs-16 text-align-left">{{ 'fiatModal.paragraph3' | translate }}</span>
+                    <div class="flex-text">
+                        <p class="primary-dark fw-700">{{ 'fiatModal.name' | translate }}</p>
+                        <span *ngIf="!apiOffline" class="modal-label primary-dark fw-400">{{ transferDetails.name }}</span>
+                        <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>                
+                    </div>
+                </div>
+                <div class="modal-wallet text-align-left">
+                    <label class="modal-wallet-text primary-dark fw-400 fs-13">{{ 'fiatModal.key' | translate }}</label>
+                    <div class="inline gap-16">
+                        <p *ngIf="!apiOffline" class="modal-wallet-code primary-dark fw-400">{{ transferDetails.pix_key }}</p>
+                        <strong class="primary-dark fw-400" *ngIf="apiOffline"> {{ 'fiatModal.unavailable' | translate }}</strong>
+                        <div class="hover-icon primary-shade" (click)="copyPixKey()"
+                            [matTooltip]="'tooltip.copy' | translate"
+                            matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                            <mat-icon class="svg-icon primary-dark to-point" svgIcon="copy"></mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <div class="add-file" *ngIf="requestProof && !loading">
+        <div class="title-icon">
+            <span class="modal-label regular-label"
+                [matTooltip]="'fiatModal.tooltip' | translate"
+                matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                {{ 'fiatModal.transferProofFile' | translate }}
+            </span>
+        </div>
+        <div class="input-file">
+            <div class="wrapper-file">
+                <label class="underline-button underline-primary-text" [for]="paymentTypeSelected">
+                    {{ 'fiatModal.sendReceipt' | translate }}
+                </label>
+                <p class="primary-dark fw-400">{{ receiptDocumentName() | translate }}</p>
+                <!-- For receipt of TED -->
+                <input [(ngModel)]="transferProofFile" *ngIf="paymentTypeSelected === depositType.TED" [id]="depositType.TED" type="file"
+                    [accept]="getFileTypes()" (change)="addNewFile($event)"/>
+
+                <!-- For receipt of Pix -->
+                <input [(ngModel)]="transferProofFile" *ngIf="paymentTypeSelected === depositType.PIX" [id]="depositType.PIX" type="file"
+                    [accept]="getFileTypes()" (change)="addNewFile($event)"/>
+            </div>
+            <div class="not-match column" *ngIf="documentTypeError || filesSizeError">
+                <span *ngIf="documentTypeError">{{ 'fiatModal.documentTypeError' | translate }}</span>
+                <span *ngIf="filesSizeError">{{ 'snackbar.limitSmallFileSize' | translate }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-info">
+        <span class="primary-dark fw-400">{{ 'fiatModal.depositsWarningMessage' | translate }}</span>
+    </div>
+
+    <div class="buttons margin-top-20">
+        <button class="btn dark-shade wth-100" (click)="confirm()" [disabled]="verifyConfirm()">{{ ('fiatModal.transferMade' | translate) }}</button>
+    </div>
+    <mat-progress-spinner *ngIf="loading || loadingDocuments" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
+</div>

@@ -1,0 +1,47 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    text-align: start !important;
+
+    .btn {
+        height: 36px;
+        width: 100%;
+    }
+
+    .auth-code-input {
+        border: 1px solid v.$light-grey-hover;
+        height: 64px;
+        width: 82px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 48px;
+        color: v.$dark;
+
+        @include mix.mq("phone-wide", max) {
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    .auth-code-input:hover {
+        border: 1px solid v.$primary-500;
+    }
+
+    .auth-code-input::placeholder {
+        color: v.$light-grey-hover;
+        font-size: 48px;
+        font-weight: 500;
+    }
+
+    .auth-code-input:focus, .auth-code-input:focus::placeholder {
+        font-size: 30px;
+    }
+}
+
+::ng-deep .custom-modal.auth-code-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

@@ -1,0 +1,19 @@
+<div class="account-container">
+    <div class="content-container wth-100 between">
+        <div class="left column">
+            <div class="inline logo-container flex-1">
+                <mat-icon class="logo" svgIcon="logo" (click)="goHome()"></mat-icon>
+            </div>
+            <div class="left-content">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+        <div class="right column flex-1 back-shadow" *ngIf="!isMobile">
+            <img src="assets/images/account-image.svg" alt="">
+            <div class="text-img column gap-30">
+                <h1>{{ 'account.imageText' | translate }}</h1>
+                <span>{{ 'account.imageSubText' | translate }}</span>
+            </div>
+        </div>
+    </div>
+</div>

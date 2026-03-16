@@ -1,0 +1,152 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="form">
+        <div class="column gap-20">
+            <div class="between">
+                <span class="primary-dark fw-700 fs-20">{{ translateHeaderText().title | translate }}</span>
+                <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+            </div>
+            <span class="primary-off-white-darker fw-400 fs-16 text-align-left">{{ translateHeaderText().subtitle | translate }}</span>
+        </div>
+        <form [formGroup]="form">
+            <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+                <!-- Step Choice method config -->
+                <mat-step [editable]="true">
+                    <div class="cotainer-buttons centered gap-20 margin-top-20">
+                        <button class="btn dark-shade wth-100" (click)="startConfig(false)">
+                            {{ 'button.configApp' | translate }}
+                        </button>
+                        <button class="btn dark-shade wth-100" (click)="startConfig(true)">
+                            {{ 'button.configEmail' | translate }}
+                        </button>
+                    </div>
+                </mat-step>
+                <!-- Step Password -->
+                <mat-step>
+                    <div class="input-container icon-suffix margin-top-20">
+                        <label class="label-dark text-align-left">{{ 'label.password' | translate }}</label>
+                        <mat-icon class="suffix primary-gray to-point" (click)="showPassword = !showPassword">
+                            {{ showPassword ? 'visibility' : 'visibility_off' }}
+                        </mat-icon>
+                        <input class="input-fill-default medium-border" maxlength="20" formControlName="password"
+                            [type]="showPassword ? 'text' : 'password'" [placeholder]="'placeholder.password' | translate"
+                            autocomplete="false" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('password', form) && form.get('password')?.hasError('required') && !form.get('password')?.value">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                            <ng-container *ngIf="showError('password', form) && hasPasswordPrerequisiteError() && form.get('password')?.value">
+                                {{ 'errorHint.validPassword' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="inline gap-10 margin-top-30">
+                        <button class="btn dark-shade wth-100" (click)="previousStepper()" [disabled]="loading"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('previous')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('previous')">
+                            <mat-icon class="svg-icon" svgIcon="arrow-left"
+                                [ngClass]="hoverIconClassService.getSvgClass('previous', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                            ></mat-icon>
+                            <span>{{ 'button.back' | translate }}</span>
+                        </button>
+                        <button class="btn dark-shade wth-100" [disabled]="!form.valid || loading" (click)="startMFAProcess()"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('forward')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('forward')">
+                            <mat-icon class="svg-icon" svgIcon="arrow-right"
+                                [ngClass]="hoverIconClassService.getSvgClass('forward', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                            ></mat-icon>
+                            <span>{{ 'button.advance' | translate }}</span>
+                        </button>
+                    </div>
+                </mat-step>
+                <!-- Step Config using external App -->
+                <mat-step *ngIf="!internal">
+                    <div class="column gap-20">
+                        <div class="inline gap-20 margin-top-20">
+                            <button class="btn dark-shade" (click)="openAppInStore('Apple')">
+                                <img src="../../../assets/images/apple-store.svg" alt="Apple store">
+                                <p>{{ 'transferValue.authentication.downloadApple' | translate}}</p>
+                            </button>
+                            <button class="btn dark-shade" (click)="openAppInStore('Google')">
+                                <img src="../../../assets/images/google-store.svg" alt="Play store">
+                                <p>{{ 'transferValue.authentication.downloadGoogle' | translate}}</p>
+                            </button>
+                        </div>
+                        <span class="primary-off-white-darker fw-400 fs-16 text-align-left">
+                            {{ 'mfa.config.modal.afterInstallApp' | translate }}
+                        </span>
+                    </div>
+                    <div class="input-container margin-top-30">
+                        <div class="column align-start wth-100">
+                            <label class="label-dark">{{ 'label.validationAppKey' | translate }}</label>
+                            <div class="inline gap-16 wth-100 key-share">
+                                <input class="input-fill-default medium-border" maxlength="20" [value]="validationKey" disabled>
+                                <div class="hover-icon primary-shade" (click)="copyValidationKey()">
+                                    <mat-icon class="svg-icon primary-dark to-point" svgIcon="copy"></mat-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline gap-10 margin-top-30">
+                        <button class="btn dark-shade wth-100" (click)="previousStepper()" [disabled]="loading"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('previous')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('previous')">
+                            <mat-icon class="svg-icon" svgIcon="arrow-left"
+                                [ngClass]="hoverIconClassService.getSvgClass('previous', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                            ></mat-icon>
+                            <span>{{ 'button.back' | translate }}</span>
+                        </button>
+                        <button class="btn dark-shade wth-100" (click)="nextStepper()"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('forward')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('forward')">
+                            <mat-icon class="svg-icon" svgIcon="arrow-right"
+                                [ngClass]="hoverIconClassService.getSvgClass('forward', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                            ></mat-icon>
+                            <span>{{ 'button.advance' | translate }}</span>
+                        </button>
+                    </div>
+                </mat-step>
+                <!-- Step Password and MFA Code -->
+                <mat-step>
+                    <div class="input-container icon-suffix margin-top-20">
+                        <label class="label-dark text-align-left">{{ 'label.password' | translate }}</label>
+                        <mat-icon class="suffix primary-gray to-point" (click)="showPassword = !showPassword">
+                            {{ showPassword ? 'visibility' : 'visibility_off' }}
+                        </mat-icon>
+                        <input class="input-fill-default medium-border" maxlength="20" formControlName="password"
+                            [type]="showPassword ? 'text' : 'password'" [placeholder]="'placeholder.password' | translate"
+                            autocomplete="false" required
+                        >
+                        <span class="error-hint">
+                            <ng-container *ngIf="showError('password', form) && form.get('password')?.hasError('required') && !form.get('password')?.value">
+                                {{ 'errorHint.mandatory' | translate }}
+                            </ng-container>
+                            <ng-container *ngIf="showError('password', form) && hasPasswordPrerequisiteError() && form.get('password')?.value">
+                                {{ 'errorHint.validPassword' | translate }}
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="input-container margin-top-20" *ngIf="(!internal && this.currentStepperIndex === 3) || (internal && this.currentStepperIndex === 2)">
+                        <label class="label-dark text-align-left">{{ 'label.code' | translate }}</label>
+                        <input class="input-fill-default medium-border" formControlName="code" OnlyNumbers
+                            [placeholder]="'placeholder.code' | translate" type="numeric" maxlength="6">
+                        <span class="error-hint" *ngIf="showError('code', form) && form?.controls?.code?.value">
+                            {{ 'errorHint.code' | translate }}
+                        </span>
+                        <span class="error-hint" *ngIf="formInputTouched('code') && !form?.controls?.code?.value">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </span>
+                    </div>
+                    <div class="inline gap-10 margin-top-30">
+                        <button class="btn dark-shade wth-100" [disabled]="!form.valid || loading" (click)="finalizeMFAProcess()"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('config')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('config')">
+                            <span>{{ 'button.config' | translate }}</span>
+                        </button>
+                    </div>
+                </mat-step>
+            </mat-horizontal-stepper>
+        </form>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

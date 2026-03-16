@@ -1,0 +1,115 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="modal-full-content column">
+        <div class="between">
+            <span class="primary-dark fw-700 fs-20">{{ 'chargeModal.title' | translate }}</span>
+            <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+        </div>
+        <span class="primary-gray fw-400 fs-16 text-align-left margin-top-10">{{ 'chargeModal.description' | translate }}</span>
+        <div class="input-container column margin-top-30 align-start">
+            <label class="label-dark">{{ 'chargeModal.selectChargeType' | translate }}</label>
+            <div class="radio-container inline">
+                <mat-radio-group (change)="onRadioGroupChange($event)" class="radio-group inline">
+                    <mat-radio-button value="external">
+                        <span class="primary-dark fw-500">{{ 'chargeModal.chargeExternalUser' | translate }}</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="internal">
+                        <span class="primary-dark fw-500">{{ 'chargeModal.chargeInternalUser' | translate }}</span>
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+        <form *ngIf="selectedCharge === eChargeType.EXTERNAL" [@fadeIn] [formGroup]="formExternal">
+            <div class="input-container column align-start margin-top-30">
+                <div class="column align-start wth-100 gap-3">
+                    <label class="label-dark">{{ 'chargeModal.amountToBeReceived' | translate }}</label>
+                    <input class="input-fill-default medium-border" [placeholder]="'placeholder.value' | translate" formControlName="amountValue"
+                        currencyMask [options]="{ prefix: fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('amountValue', formExternal) && formExternal.get('amountValue')?.hasError('required')">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <form *ngIf="selectedCharge === eChargeType.INTERNAL" [@fadeIn] [formGroup]="formInternal">
+            <div class="input-container align-start margin-top-30">
+                <label class="label-dark">{{ 'chargeModal.writeEmail' | translate }}</label>
+                <input class="input-fill-default medium-border" formControlName="email" maxlength="150" (input)="verifyWalletExist()"
+                    [placeholder]="'placeholder.email' | translate" type="email" required
+                >
+                <span class="error-hint">
+                    <ng-container *ngIf="showError('email', formInternal) && formInternal.get('email')?.hasError('required')">
+                        {{ 'errorHint.mandatory' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="formInternal.get('email')?.invalid && formInternal.get('email')?.value">
+                        {{ 'chargeModal.insertValidEmail' | translate }}
+                    </ng-container>
+                </span>
+                <span class="error-hint" *ngIf="noUserFoundError">
+                    <ng-container>
+                        {{ 'chargeModal.userNotFound' | translate }}
+                    </ng-container>
+                </span>
+            </div>
+            <div class="input-container column align-start margin-top-30">
+                <div class="column align-start wth-100 gap-3">
+                    <label class="label-dark">{{ 'chargeModal.amountToBeReceived' | translate }}</label>
+                    <input class="input-fill-default medium-border" [placeholder]="'placeholder.value' | translate" formControlName="amountValue"
+                        (input)="calculateAmountValueSourceCurrency()"
+                        currencyMask [options]="{ prefix: fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric"
+                    >
+                    <span class="error-hint">
+                        <ng-container *ngIf="showError('amountValue', formInternal) && formInternal.get('amountValue')?.hasError('required')">
+                            {{ 'errorHint.mandatory' | translate }}
+                        </ng-container>
+                    </span>
+                </div>
+            </div>
+            <div class="input-container column align-start margin-top-30">
+                <label class="label-dark">{{ 'chargeModal.formOfReceipt' | translate }}</label>
+                <mat-select class="select-fill-primary" disableOptionCentering (selectionChange)="tokenSelectedChanged()"
+                    [placeholder]="'chargeModal.selectToken' | translate" panelClass="select-fill-primary" formControlName="methodReceipt">
+                    <mat-select-trigger *ngIf="formInternal.get('methodReceipt')?.value as selectedToken">
+                        <div class="inline gap-10">
+                            <img alt="token" class="img-token-small" [src]="selectedToken.image_symbol">
+                            <span class="primary-dark fw-500">{{ selectedToken?.name + ' (' + (calculateAmountValueReturnCoin(selectedToken?.rate) | number: '1.6-6') + ')' }}</span>
+                        </div>
+                    </mat-select-trigger>
+                    <mat-option *ngFor="let token of allTokens" [value]="token">
+                        <div class="inline gap-10">
+                            <img alt="token" class="img-token-small" [src]="token.image_symbol">
+                            <span class="primary-dark fw-500">{{ token.id }}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+                <span class="error-hint">
+                    <ng-container *ngIf="showError('methodReceipt', formInternal) && formInternal.get('methodReceipt')?.hasError('required')">
+                        {{ 'errorHint.mandatory' | translate }}
+                    </ng-container>
+                </span>
+            </div>
+            <div class="input-container column align-start margin-top-30">
+                <label class="label-dark">{{ 'chargeModal.writeMessage' | translate }}</label>
+                <textarea #descriptionText class="custom-text-area medium-border textarea min-height-150"
+                    formControlName="description" maxlength="140" [placeholder]="'chargeModal.writeHere' | translate">
+                </textarea>
+                <span class="error-hint" *ngIf="showError('description', formInternal) && formInternal?.controls?.['description']?.errors?.['minlength']">
+                    {{ 'chargeModal.minCharError' | translate }}
+                </span>
+                <span class="length-hint">
+                    {{ descriptionText?.value?.length || 0 }} / 140
+                </span>
+            </div>
+        </form>
+    
+        <div class="cotainer-buttons centered gap-20 margin-top-30" *ngIf="selectedCharge === eChargeType.INTERNAL || selectedCharge === eChargeType.EXTERNAL">
+            <button class="btn doutline wth-100" matDialogClose>{{ 'chargeModal.cancel' | translate }}</button>
+            <button class="btn dark-shade wth-100" [disabled]="!enableButton() || noUserFoundError || isValidWallet || loading" (click)="selectedCharge === eChargeType.EXTERNAL ? copy() : sendInvoice()">
+                {{ selectedCharge === eChargeType.EXTERNAL ? ('chargeModal.copyLink' | translate) : ('chargeModal.sendCharge' | translate) }}
+            </button>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

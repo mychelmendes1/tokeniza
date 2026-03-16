@@ -1,0 +1,32 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'receiveValue.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <div class="input-container margin-top-30">
+        <div class="column align-start wth-100">
+            <label class="label-dark">
+                {{ 'receiveValue.yourKey' | translate }}
+                ({{ data?.token?.network_id }})
+            </label>
+            <div class="inline gap-16 wth-100 key-share">
+                <input class="input-fill-default medium-border" [value]="publicWallet" disabled>
+                <div class="hover-icon primary-shade" (click)="copyPublicWallet()">
+                    <mat-icon class="svg-icon primary-dark to-point" svgIcon="copy"></mat-icon>
+                </div>
+                <div class="hover-icon primary-shade" (click)="sharePublicWalletWhatsapp()">
+                    <mat-icon class="svg-icon primary-dark to-point" svgIcon="share-2"></mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="centered column margin-top-30 gap-30">
+        <span class="primary-gray">
+            {{ 'receiveValue.instructions' | translate }}
+        </span>
+        <qrcode class="qr-code-link" elementType="img" [margin]="2" [qrdata]="publicWallet"
+            [width]="QRWidth" [allowEmptyString]="true">
+        </qrcode>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

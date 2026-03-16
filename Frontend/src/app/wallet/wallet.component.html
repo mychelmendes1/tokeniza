@@ -1,0 +1,859 @@
+<app-menu-button-mobile class="resp-menu-mobile" [colorIcon]="showErrorPage ? 'svg-icon primary-dark' : 'svg-icon primary-light'"></app-menu-button-mobile>
+<app-error-page *ngIf="showErrorPage"></app-error-page>
+<div id="transakMount"></div>
+<ng-template [ngIf]="!showErrorPage">
+    <div class="wallet-container column gap-30">
+        <div class="content-container wth-100">
+            <p class="inline gap-2">
+                <span class="fs-31 fw-600">{{ 'wallet.hi' | translate }},</span>
+                <ngx-skeleton-loader class="skeleton-class wallet" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                <span class="fs-31 primary-600 fw-700" *ngIf="!loading"> {{ userLogged.firstName }}</span>
+            </p>
+            <div class="first-cards" style="margin-top:20px;">
+                <div class="column gap-10" style="background-color: #1F201E; border-radius:10px; padding: 20px; width: 100%">
+                    <span style="color: #A5A6A4">{{ 'wallet.available' | translate }}</span>
+                    <div class="inline gap-20">
+                        <div class="masked-value">
+                            <ngx-skeleton-loader class="skeleton-class wallet" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                            <span *ngIf="showBalance && !loading"  style="font-size: 30px;">
+                                {{ totalBalance | floorCurrency: usefulSettings.fiatCurrency.currency }}
+                            </span>
+                            <span *ngIf="!showBalance && !loading">
+                                <span *ngFor="let dot of maskedAmountValue()">{{ dot }}</span>
+                            </span>
+                        </div>
+                        <mat-icon class="suffix primary-light to-point" (click)="toggleHideBalance()">
+                            {{ showBalance ? 'visibility' : 'visibility_off' }}
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="column gap-10 mt-mobile" style="background-color: #1F201E; border-radius:10px; padding: 20px; width: 100%">
+                    <span style="color: #A5A6A4">{{ 'wallet.totalAssets' | translate }}</span>
+                    <div class="inline gap-20">
+                        <div class="masked-value">
+                            <ngx-skeleton-loader class="skeleton-class wallet" *ngIf="loading" count="1" appearance="line" animation="pulse" />
+                            <span *ngIf="showAssetBalance && !loading" style="font-size: 30px;">
+                                {{ totalAssetBalance | floorCurrency: usefulSettings.fiatCurrency.currency }}
+                            </span>
+                            <span *ngIf="!showAssetBalance && !loading">
+                                <span *ngFor="let dot of maskedAmountValue()">{{ dot }}</span>
+                            </span>
+                        </div>
+                        <mat-icon class="suffix primary-light to-point" (click)="toggleHideBalance()">
+                            {{ showAssetBalance ? 'visibility' : 'visibility_off' }}
+                        </mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="detailing-amount column" *ngIf="filteredTokens.length > 0 && !loading" style="margin-top:30px">
+                <span>{{ 'wallet.balanceDetailing' | translate }}</span>
+                <div class="card offer-card-grid to-point margin-top-20 " style="width: 100%; gap: 20px">
+                    <div class="inline gap-8 card-border-primary-transparent" *ngFor="let token of filteredTokens">
+                        <div style="background-color: #1F201E; border-radius:10px; padding: 20px; width: 100%; ">
+                            <div style="justify-content: space-between; display: flex;">
+                                <div style="display: flex; align-items: center; gap: 10px">
+                                    <img class="img-token" [src]="token.image_symbol" alt="cripto-icon">
+                                    <div class="token-info">
+                                        <div class="token-id-row">
+                                            <span class="token-id">{{ token.id }}</span>
+                                    
+                                        </div>
+                                        <span class="fs-16">
+                                            {{ token?.statistics?.exchangeStatistics?.price | currency: usefulSettings.fiatCurrency.currency: undefined:'1.2-2' }}
+                                        </span>
+                                        <span class="primary-gray fs-16">
+                                            {{
+                                                token.name?.includes("(")
+                                                  ? token.name
+                                                  : token.name + " (" + token.network_id + ")"
+                                              }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid">
+                                    <span class="token-value ellipsis-in-text">
+                                        {{ getBalanceInTokens(token.id) | floorNumber: (token.id === 'BTC' ? 8 : token.id === 'ETH' ? 4 : 2) }}
+                                    </span>
+
+                                    <span class="fs-16 text-exchange-statistics">
+                                        {{ getBalanceInCurrency(token.id, token.statistics?.exchangeStatistics?.price) | floorCurrency: usefulSettings.fiatCurrency.currency: undefined:'1.2-2' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="inline" style="margin-top: 10px; display: flex; justify-content: space-between">
+                                <div class="hovered" *ngIf="token.id !== 'BRL' && token.id !== 'tBRL'" (click)="openTokenQrCodeModal(token)"
+                                    [matTooltip]="'tooltip.seeQrCode' | translate" matTooltipClass="dark-tooltip"
+                                    matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-eye')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-eye')">
+                                    <mat-icon class="svg-icon primary-light to-point" svgIcon="eye"
+                                        [ngClass]="hoverIconClassService.getSvgClass(token.id + '-eye', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                    </mat-icon>
+                                </div>
+                                <div class="hovered" *ngIf="token.id == 'BRL' || token.id == 'tBRL'" (click)="openWithdrawModal(token.id)"
+                                    [matTooltip]="'wallet.withdraw' | translate" matTooltipClass="dark-tooltip"
+                                    matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-eye')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-eye')">
+                                    <mat-icon class="svg-icon primary-light to-point" svgIcon="arrow-up-circle"
+                                        [ngClass]="hoverIconClassService.getSvgClass(token.id + '-eye', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                    </mat-icon>
+                                </div>
+                                <div class="hovered" *ngIf="token.id == 'tBRL'" (click)="buyToken(token.id)"
+                                    [matTooltip]="'tooltip.buy' | translate" matTooltipClass="dark-tooltip"
+                                    matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-shopping-cart')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-shopping-cart')">
+                                    <mat-icon class="svg-icon primary-light to-point" svgIcon="shopping-cart"
+                                        [ngClass]="hoverIconClassService.getSvgClass(token.id + '-shopping-cart', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                    </mat-icon>
+                                </div>
+                                <div class="hovered" *ngIf="token?.transakEnabled" (click)="buyTokenTransak(token)"
+                                    [matTooltip]="'tooltip.buyCrypto' | translate" matTooltipClass="dark-tooltip"
+                                    matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-shopping-cart')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-shopping-cart')">
+                                    <mat-icon class="svg-icon primary-light to-point" svgIcon="shopping-cart"
+                                        [ngClass]="hoverIconClassService.getSvgClass(token.id + '-shopping-cart', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                    </mat-icon>
+                                </div>
+                                <div class="hovered" (click)="copyPublicWallet(token.id)"
+                                    [matTooltip]="'tooltip.copyKey' | translate" matTooltipClass="dark-tooltip"
+                                    matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-copy')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-copy')">
+                                    <mat-icon class="svg-icon primary-light to-point"
+                                        [ngClass]="hoverIconClassService.getSvgClass(token.id + '-copy', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                                        svgIcon="copy">
+                                    </mat-icon>
+                                </div>
+                            </div>
+
+                            <!-- <div class="" style="width: 100%">
+   
+                                <div class="token-actions">
+                                    <span class="fs-16 text-exchange-statistics">
+                                        {{ getBalanceInCurrency(token.id, token.statistics?.exchangeStatistics?.price) | floorCurrency: usefulSettings.fiatCurrency.currency: undefined:'1.2-2' }}
+                                    </span>
+                                    <div class="inline">
+                                        <div class="hovered" *ngIf="token.id !== 'BRL' && token.id !== 'tBRL'" (click)="openTokenQrCodeModal(token.id)"
+                                            [matTooltip]="'tooltip.seeQrCode' | translate" matTooltipClass="dark-tooltip"
+                                            matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-eye')"
+                                            (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-eye')">
+                                            <mat-icon class="svg-icon primary-light to-point" svgIcon="eye"
+                                                [ngClass]="hoverIconClassService.getSvgClass(token.id + '-eye', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                            </mat-icon>
+                                        </div>
+                                        <div class="hovered" *ngIf="token.id == 'BRL' || token.id == 'tBRL'" (click)="openWithdrawModal(token.id)"
+                                            [matTooltip]="'wallet.withdraw' | translate" matTooltipClass="dark-tooltip"
+                                            matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-eye')"
+                                            (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-eye')">
+                                            <mat-icon class="svg-icon primary-light to-point" svgIcon="arrow-up-circle"
+                                                [ngClass]="hoverIconClassService.getSvgClass(token.id + '-eye', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                            </mat-icon>
+                                        </div>
+                                        <div class="hovered" *ngIf="token.id == 'tBRL'" (click)="buyToken(token.id)"
+                                            [matTooltip]="'tooltip.buy' | translate" matTooltipClass="dark-tooltip"
+                                            matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-shopping-cart')"
+                                            (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-shopping-cart')">
+                                            <mat-icon class="svg-icon primary-light to-point" svgIcon="shopping-cart"
+                                                [ngClass]="hoverIconClassService.getSvgClass(token.id + '-shopping-cart', 'svg-icon primary-dark', 'svg-icon primary-light')">
+                                            </mat-icon>
+                                        </div>
+                                        <div class="hovered" (click)="copyPublicWallet(token.id)"
+                                            [matTooltip]="'tooltip.copyKey' | translate" matTooltipClass="dark-tooltip"
+                                            matTooltipPosition="above" (mouseenter)="hoverIconClassService.onMouseEnter(token.id + '-copy')"
+                                            (mouseleave)="hoverIconClassService.onMouseLeave(token.id + '-copy')">
+                                            <mat-icon class="svg-icon primary-light to-point"
+                                                [ngClass]="hoverIconClassService.getSvgClass(token.id + '-copy', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                                                svgIcon="copy">
+                                            </mat-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="inline centered margin-top-20">
+                    <button class="btn dark-shade see-more" (click)="loadMoreTokens()"
+                        (mouseenter)="hoverIconClassService.onMouseEnter('see-more')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave('see-more')">
+                        <span>{{ (!showAllTokens ? 'button.seeMore' : 'button.seeLess') | translate }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="wallet-actions-wrapper">
+                <div class="wallet-actions">
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openDepositModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="arrow-down-circle">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.deposit' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openTransferModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="arrow-up-circle">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.transfer' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openWithdrawModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="arrow-up-circle">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.withdraw' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openSwapCryptoModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="refresh-cw">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.change' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openBridgeCryptoModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="refresh-cw">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.bridge' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openRedeemRewardModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="gift">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.redeemReward' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openStakingModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="3-layers">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">Staking</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="goToExtract()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="list">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.extract' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="card card-border-primary column gap-10 to-point wallet-actions__item"
+                        (click)="openChargeModal()">
+                        <div class="wallet-actions__card">
+                            <div class="container-icon">
+                                <mat-icon class="svg-icon to-point" style="color:#6ECF6F;"
+                                    svgIcon="charge">
+                                </mat-icon>
+                            </div>
+                            <span class="wallet-actions__label">{{ 'wallet.charge' | translate }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tabs-container content-container wth-100">
+        <mat-tab-group [disablePagination]="false" class="custom-tabs margin-top-30" mat-stretch-tabs="false"
+            mat-align-tabs="start" [(selectedIndex)]="selectedTab">
+            <mat-tab [label]="'label.offers' | translate">
+                <div class="between margin-top-30 wrap gap-30">
+                    <div class="input-container icon-prefix">
+                        <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                        <input class="input-fill-default" maxlength="100"
+                            [placeholder]="'placeholder.offers' | translate"
+                            autocomplete="false" [(ngModel)]="searchOrderName"
+                            (input)="filterOrdersName(searchInput.value)" #searchInput
+                        >
+                    </div>
+                    <div class="inline">
+                        <button class="btn dark-shade" [matMenuTriggerFor]="menuCategorie"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('filter')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('filter')">
+                            {{ 'button.filters' | translate }}
+                            <mat-icon svgIcon="filters-lines" [ngClass]="hoverIconClassService.getSvgClass('filter', 'svg-icon primary-dark', 'svg-icon primary-light')"></mat-icon>
+                        </button>
+                    </div>
+                    <mat-menu #menuCategorie="matMenu">
+                        <div class="mat-menu-container column gap-10">
+                            <span class="primary-dark fs-16 fw-600">{{ 'filter.duration' | translate }}</span>
+                            <mat-radio-group class="radio-group" [(ngModel)]="selectedDurationCategorie">
+                                <mat-radio-button *ngFor="let duration of filter.duration" [value]="duration"
+                                    (click)="$event.stopPropagation()">
+                                    <span class="primary-dark fw-500">{{ translateFilterDuration(duration) | translate }}</span>
+                                </mat-radio-button>
+                            </mat-radio-group>
+                            <div class="centered gap-10">
+                                <button class="btn doutline" (click)="clearFilters(); $event.stopPropagation()">
+                                    {{ 'button.clear' | translate }}
+                                    <mat-icon svgIcon="close"></mat-icon>
+                                </button>
+                                <button class="btn dark-shade" (click)="applyFilters()"
+                                    (mouseenter)="hoverIconClassService.onMouseEnter('apply')"
+                                    (mouseleave)="hoverIconClassService.onMouseLeave('apply')">
+                                    {{ 'button.apply' | translate }}
+                                </button>
+                            </div>
+                        </div>
+                    </mat-menu>
+                </div>
+                <div class="inline gap-20">
+                    <button class="btn rounded margin-top-30" *ngFor="let button of offersButtons"
+                        (click)="selectOfferButton(button)" [ngClass]="{ 'selected' : button === selectedOfferButton }">
+                        {{ translateOfferButton(button) | translate }}
+                    </button>
+                </div>
+                <div class="table margin-top-30">
+                    <table mat-table [dataSource]="dataSourceOffers" class="table" matSort #sortDataSourceOffers="matSort">
+                        <!-- Offer -->
+                        <ng-container matColumnDef="offer">
+                            <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'wallet.offer' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element" class="first-column">
+                                <div class="inline gap-8 custom-margin">
+                                    <img class="circular-min-img" [src]="element?.img" alt="">
+                                    <div class="column gap-3">
+                                        <span class="primary-dark-shade fw-600 fs-13">{{ element?.name }}</span>
+                                        <span class="primary-off-white-darker fw-400 fs-13">{{ element?.tag }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Buy date -->
+                        <ng-container matColumnDef="buy-date">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.buyDate' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">{{ element?.created_at | date: 'short': usefulSettings.selectedLanguage === eLanguage.PORTUGUESE ? 'dd/MM/yyyy' : 'M/d/yy' }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Amount invest -->
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.amountInvest' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ element?.amount | currency: element.isDolar ? 'USD' :  usefulSettings.fiatCurrency.currency }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Captured -->
+                        <ng-container matColumnDef="captured" *ngIf="selectedOfferButton == eTabButtons.CAPTURE">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.captured' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline gap-8">
+                                    <div class="progress-bar inline wth-100">
+                                        <div class="progress-bar__value" [ngClass]="getCardColorClass(element.daysRemaining).progressBarClass"
+                                            [ngStyle]="{'width.%' : percentageProgressBar(element.moneyReceived, element.targetCapture)}">
+                                        </div>
+                                    </div>
+                                    <span class="primary-dark-shade fw-600 fs-13">
+                                        {{ element?.targetAmountPercentage.toFixed(2) }}%
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- End Capture Value -->
+                        <ng-container matColumnDef="capturedFinal" *ngIf="selectedOfferButton === eTabButtons.NOT_DONE">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.capturedFinal' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline gap-8">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ element?.targetCapture | currency: element.isDolar ? 'USD' :  usefulSettings.fiatCurrency.currency }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Min Capture Value -->
+                        <ng-container matColumnDef="min">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.minCaptured' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ element?.minimumCapture | currency: element.isDolar ? 'USD' :  usefulSettings.fiatCurrency.currency }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- End Capture -->
+                        <ng-container matColumnDef="final" *ngIf="selectedOfferButton == eTabButtons.CAPTURE">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.endCaptured' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ formatCrowdfundingDate(element?.finalDate) }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Status -->
+                        <ng-container matColumnDef="status" *ngIf="selectedOfferButton == eTabButtons.CAPTURE">
+                            <th mat-header-cell *matHeaderCellDef> <span>Status</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline gap-8 status-container to-point" (click)="openCheckoutModal(element.id, element.order_id)"
+                                    [matTooltip]="'tooltip.finalizePayment' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                    [ngClass]="
+                                    {
+                                        'status-container-waiting' : element?.status === eStatusOrders.CREATED && !element.was_paid
+                                    }">
+                                    <span class="fw-500 fs-12" *ngIf="!element.was_paid">
+                                        {{ translateStatus(element?.status, 'offers') | translate }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Actions -->
+                        <ng-container matColumnDef="actions1column" *ngIf="selectedOfferButton == eTabButtons.CAPTURE">
+                            <th mat-header-cell *matHeaderCellDef class="last-column"></th>
+                            <td mat-cell *matCellDef="let element" class="last-column">
+                                <mat-icon class="svg-icon primary-gray to-point" (click)="goToCrowdfundfingDetails(element.id)"
+                                    [matTooltip]="'tooltip.details' | translate"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above" svgIcon="eye">
+                                </mat-icon>
+                            </td>
+                        </ng-container>
+    
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsOffers"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsOffers;"></tr>
+    
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td [attr.colspan]="displayedColumnsOffers.length">
+                                <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'NFTs'">
+                <div class="between margin-top-30 wrap gap-30">
+                    <div class="input-container icon-prefix">
+                        <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                        <input class="input-fill-default" maxlength="100"
+                            [placeholder]="'placeholder.searchNFT' | translate" (input)="filterAssets(searchInput.value)" #searchInput
+                            autocomplete="false"
+                        >
+                    </div>
+                </div>
+                <div class="between wth-100 gap-20 align-end responsive-column wrap">
+                    <div class="inline exibition-container margin-top-30"
+                        [ngClass]="
+                            {
+                                'list-active': selectedNftViewMode === eViewMode.LIST,
+                                'grid-active': selectedNftViewMode === eViewMode.GRID,
+                            }"
+                        >
+                        <mat-icon svgIcon="list" (click)="selectNftViewMode(eViewMode.LIST)"
+                            [ngClass]="{ 'svg-icon primary' : selectedNftViewMode === eViewMode.LIST }">
+                        </mat-icon>
+                        <mat-icon svgIcon="grid" (click)="selectNftViewMode(eViewMode.GRID)"
+                            [ngClass]="{ 'svg-icon primary' : selectedNftViewMode === eViewMode.GRID }">
+                        </mat-icon>
+                        <div class="selection-indicator"></div>
+                    </div>
+                </div>
+                <div class="table margin-top-30" *ngIf="selectedNftViewMode === eViewMode.LIST" [@fadeIn]>
+                    <table mat-table [dataSource]="dataSource" class="table" matSort #dataSourceNFT="matSort">
+                        <!-- NFT -->
+                        <ng-container matColumnDef="nft">
+                            <th mat-header-cell *matHeaderCellDef class="first-column"> <span>NFT</span> </th>
+                            <td mat-cell *matCellDef="let element" class="first-column">
+                                <div class="inline gap-8 custom-margin">
+                                    <img class="circular-min-img" [src]="getMainPhoto(element)" alt="">
+                                    <div class="column">
+                                        <span class="primary-dark-shade fw-600 fs-13">{{ element?.name }}</span>
+                                        <span class="primary-off-white-darker fw-400 fs-13">{{ element?.collection?.name }}</span>
+                                        <span class="primary-off-white-darker fw-400 fs-13" *ngIf="element?.blockchainId">ID: {{ element?.blockchainId }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Amount invest -->
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.amountInvest' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ getSymbom(element) }} {{ element?.price | number:'1.2-2' }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Current value -->
+                        <ng-container matColumnDef="current-value">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.currentValue' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ element?.resale?.onResale ? getSymbom(element) : '' }} {{ (element?.resale?.onResale ? (element?.resale?.resaleValue | number:'1.2-2') : '-') }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Deadline -->
+                        <ng-container matColumnDef="deadline">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.deadline' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ (element?.auction?.deadline | date: usefulSettings.selectedLanguage === eLanguage.PORTUGUESE ? 'dd/MM/yyyy' : 'M/d/yy') || '-' }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Actions -->
+                        <ng-container matColumnDef="actions3column">
+                            <th mat-header-cell *matHeaderCellDef class="last-column"></th>
+                            <td mat-cell *matCellDef="let element" class="last-column">
+                                <div class="content-end gap-20" *ngIf="!element?.auction && !element.resale.onResale">
+                                    <mat-icon class="svg-icon primary-gray to-point" (click)="goToCheckout(element)"
+                                        [matTooltip]="'tooltip.details' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above" svgIcon="eye">
+                                    </mat-icon>
+                                    <mat-icon class="svg-icon primary-gray to-point" (click)="resellAsset(element, element?.resale?.onResale)"
+                                        [matTooltip]="'tooltip.resell' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above" svgIcon="tag">
+                                    </mat-icon>
+                                    <mat-icon class="svg-icon primary-gray to-point" (click)="splitAsset(element, element?.resale?.onResale)"
+                                    *ngIf="isResellAllowed && !element?.block_resell && element.allow_split"
+                                        [matTooltip]="'tooltip.split' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above" >
+                                        call_split
+                                    </mat-icon>
+
+                                    <!--distribution asset-->
+                                    <mat-icon class="svg-icon primary-gray to-point" [matTooltipClass]="'tooltip-primary'" [matTooltip]="'myAssets.receiveToken' | translate"
+                                        [ngClass]="{'disabled': element?.on_staking || element?.resale?.onResale || element?.auction || element?.block_liquidity_option}"
+                                        *ngIf="distributeOnNFTs && element?.is_distribuition_fiat && element?.liquidity_token" (click)="changeDistributionType(asset, false)">
+                                        money_off
+                                    </mat-icon>
+                                    <mat-icon class="svg-icon primary-gray to-point" [matTooltipClass]="'tooltip-primary'" [matTooltip]="'myAssets.receiveFiat' | translate"
+                                        [ngClass]="{'disabled': element?.on_staking || element?.resale?.onResale || element?.auction || element?.block_liquidity_option}"
+                                        *ngIf="distributeOnNFTs && !element?.is_distribuition_fiat && element?.liquidity_token" (click)="changeDistributionType(asset, true)">
+                                        attach_money
+                                    </mat-icon>
+
+                                    <mat-icon class="svg-icon primary-gray to-point" (click)="sendAsset(element)"
+                                        [matTooltip]="'tooltip.send' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above" svgIcon="send">
+                                    </mat-icon>
+                                    <mat-icon class="svg-icon primary-gray to-point" (click)="auctionAsset(element)" *ngIf="isResellAllowed && !element?.block_resell"
+                                        [matTooltip]="'tooltip.auction' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above" svgIcon="auction">
+                                    </mat-icon>
+                                </div>
+                                <div class="content-end gap-8 to-point" *ngIf="element?.auction" (click)="goToCheckout(element)">
+                                    <div class="inline gap-8 auction-status"
+                                        [matTooltip]="'tooltip.seeAuctions' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                                        <mat-icon class="svg-icon primary-red-600 to-point" svgIcon="auction"></mat-icon>
+                                        <span>{{ 'wallet.auctionOngoing' | translate }}</span>
+                                    </div>
+                                </div>
+                                <div class="content-end gap-8 to-point" *ngIf="element?.resale.onResale" (click)="resellAsset(element, element?.resale?.onResale)">
+                                    <div class="inline gap-8 auction-status blue-50"
+                                        [matTooltip]="'tooltip.editResale' | translate"
+                                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                                        <mat-icon class="svg-icon primary-blue-700 to-point" svgIcon="tag"></mat-icon>
+                                        <span class="blue-700">{{ 'wallet.onResale' | translate }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+    
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td [attr.colspan]="displayedColumns.length">
+                                <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <app-card-list *ngIf="selectedNftViewMode === eViewMode.GRID && (allUserNfts?.length ?? 0) > 0"
+                    [assetList]="filteredUserNfts" (reloadData)="reloadData($event)" [@fadeIn]
+                    [autoScroll]="scrollCards">
+                </app-card-list>
+            </mat-tab>
+            <mat-tab [label]="'Staking'">
+                <div class="table margin-top-30">
+                    <table mat-table [dataSource]="dataSourceStaking" class="table" matSort #stakingSort="matSort">
+                        <!-- Token -->
+                        <ng-container matColumnDef="token">
+                            <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'wallet.stake.stake' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element" class="first-column">
+                                <div class="inline gap-8 custom-margin history-transaction-card">
+                                    <div class="stake-icon">
+                                        <mat-icon [ngClass]="checkTransactionStatus(element)" fontSet="material-icons-outlined">{{ checkTransactionIcon(element) }}</mat-icon>
+                                    </div>
+                                    <div class="column gap-3">
+                                        <span class="primary-dark-shade fw-400 fs-13">{{ 'wallet.stake.status.' + checkTransactionStatus(element) | translate }}</span>
+                                        <span class="primary-dark-shade fw-600 fs-13">{{ element?.config?.name }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Quantity -->
+                        <ng-container matColumnDef="quantity">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.stake.quantity' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ getNumberFromBigNumber(element?.amountStaked) | number:'1.6-6' }} {{ element?.config?.unit_of_money }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Initial date -->
+                        <ng-container matColumnDef="initial-date">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.stake.startDate' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ element?.startDate | date: usefulSettings.selectedLanguage === eLanguage.PORTUGUESE ? 'dd/MM/yyyy' : 'M/d/yy' }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Deadline -->
+                        <ng-container matColumnDef="deadline">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.stake.deadline' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ getStakeDeadline(element) }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Remaining Time -->
+                        <ng-container matColumnDef="remaining-time">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.stake.remaingTime' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ calculateRemainingStakeMonths(element) }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Income -->
+                        <ng-container matColumnDef="income">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.stake.expectedYield' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ getAmountToGain(element) | currency: usefulSettings.fiatCurrency.currency }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+    
+                        <!-- Actions -->
+                        <ng-container matColumnDef="actions1column">
+                            <th mat-header-cell *matHeaderCellDef class="last-column"></th>
+                            <td mat-cell *matCellDef="let element" class="last-column">
+                                <div class="content-end gap-20 cancel-token-icon" [matTooltip]="'tooltip.cancel' | translate" *ngIf="checkStakeTransactionStatus(element) === 'transaction-started'"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above" (click)="cancelStakingBottomSheet(element)">
+                                    <mat-icon class="svg-icon primary-red-600 to-point"
+                                        svgIcon="slash">
+                                    </mat-icon>
+                                </div>
+                            </td>
+                        </ng-container>
+    
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsStaking"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsStaking;"></tr>
+    
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td [attr.colspan]="displayedColumnsStaking.length">
+                                <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="'label.charge' | translate">
+                <div class="between margin-top-30 wrap gap-30">
+                    <div class="input-container icon-prefix">
+                        <mat-icon class="prefix primary-gray to-point" svgIcon="search"></mat-icon>
+                        <input class="input-fill-default" maxlength="100"
+                            [placeholder]="'placeholder.charge' | translate" [(ngModel)]="searchChargeByEmail"
+                            autocomplete="false"
+                            (input)="filterCharge()"
+                        >
+                    </div>
+                </div>
+                <div class="inline gap-10">
+                    <button class="btn rounded margin-top-30" *ngFor="let button of transactionButtons"
+                        (click)="selecTransactionButton(button)" [ngClass]="{ 'selected' : button === selectedTransactionButton }">
+                        {{ translateTransactionButton(button) | translate }}
+                    </button>
+                </div>
+                <div class="table margin-top-30">
+                    <table mat-table [dataSource]="dataSourceAllUserHistoryTransactions" class="table" matSort #sortCharge="matSort">
+                        <!-- Person -->
+                        <ng-container matColumnDef="person">
+                            <th mat-header-cell *matHeaderCellDef class="first-column"> <span>{{ 'wallet.invoice.table.email' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element" class="first-column">
+                                <div class="column gap-8 custom-margin">
+                                    <span class="primary-dark-shade fw-600 fs-13" *ngIf="!isInvoiceInternal(element)">{{ element?.name }}</span>
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ isInvoiceInternal(element) ? 
+                                            element?.userIdFrom === userLogged.id ? element.userEmailTo : element.userEmailFrom :
+                                            element?.email
+                                        }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Date -->
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.invoice.table.date' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ isInvoiceInternal(element) ? 
+                                            (element?.creationDate | date: usefulSettings.selectedLanguage === eLanguage.PORTUGUESE ? 'dd/MM/yyyy' : 'M/d/yy') :
+                                            (element?.when | date: usefulSettings.selectedLanguage === eLanguage.PORTUGUESE ? 'dd/MM/yyyy' : 'M/d/yy')
+                                        }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Value -->
+                        <ng-container matColumnDef="value">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> <span>{{ 'wallet.invoice.table.value' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ isInvoiceInternal(element) ?
+                                            (element?.fiduciaryAmount | currency: usefulSettings.fiatCurrency.currency) :
+                                            (element?.fiatAmount | currency: usefulSettings.fiatCurrency.currency)
+                                        }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Status -->
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef> <span>{{ 'wallet.invoice.table.status' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline gap-8 status-container"
+                                    [ngClass]="
+                                    {
+                                        'status-container-waiting' : element?.status === 'PENDING' || element?.status === 'CREATED',
+                                        'status-container-approved' : element?.status === 'APPROVED',
+                                        'status-container-disapproved': element?.status === 'DISAPPROVED'
+                                    }">
+                                    <span class="fw-500 fs-12">
+                                        {{ translateStatus(element?.status, 'transactions') | translate }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Type -->
+                        <ng-container matColumnDef="type">
+                            <th mat-header-cell *matHeaderCellDef> <span>{{ 'wallet.invoice.table.type' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="inline">
+                                    <span class="primary-off-white-darker fw-400 fs-13">
+                                        {{ translateType(element) }}
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <!-- Actions -->
+                        <ng-container matColumnDef="actions1column">
+                            <th mat-header-cell *matHeaderCellDef> <span>{{ 'wallet.details' | translate }}</span> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="content-end gap-20 link-icon" [matTooltip]="'wallet.invoice.view' | translate" (click)="openInvoiceDetails(element)"
+                                    matTooltipClass="dark-tooltip" matTooltipPosition="above" >
+                                    <mat-icon class="svg-icon primary-gray to-point"
+                                        svgIcon="eye">
+                                    </mat-icon>
+                                </div>
+                            </td>
+                        </ng-container>
+    
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsAllUserHistoryTransactions"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsAllUserHistoryTransactions;"></tr>
+    
+                        <!-- No Data -->
+                        <tr *matNoDataRow>
+                            <td [attr.colspan]="displayedColumnsAllUserHistoryTransactions.length">
+                                <p class="no-data-text" [innerHTML]="'noFoundText' | translate"></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</ng-template>
+<mat-progress-spinner *ngIf="loading || loadingRequest" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
+
+<style>
+    @media (min-width: 768px) {
+      .responsive {
+        display: flex !important;
+        justify-content: space-between;
+      }
+
+      .first-cards {
+        display: flex !important;
+        gap: 20px;
+      }
+
+      .mt-mobile {
+        margin-top: 0px !important;
+      }
+    }
+
+    .first-cards {
+        display: block;
+        gap: 20px;
+    }
+
+    .mt-mobile {
+        margin-top: 20px;
+    }
+</style>

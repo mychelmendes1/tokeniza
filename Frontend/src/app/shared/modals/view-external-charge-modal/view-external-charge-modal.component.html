@@ -1,0 +1,67 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.title' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.sourceUser' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.name }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.email' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.email }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.name' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.name }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.userToPayDocument' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.identity }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.fiatValue' | translate }}</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.fiatAmount | currency: usefulSettings.fiatCurrency.currency }}</span>
+    </div>
+
+    <div class="column align-start margin-top-20" *ngIf="!isOwner()">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.currencyToSend' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">
+            {{ charge?.tokensAmount + ' (' + (charge?.depositMethod) + ')' }}
+        </span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.status' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">
+            {{ 'viewExternalChargeModal.status.' + charge?.status | translate }}
+        </span>
+    </div>
+
+    <div class="column align-start margin-top-20">
+        <span class="primary-dark fw-700 fs-20">{{ 'viewInternalChargeModal.sendDate' | translate }}:</span>
+        <span class="primary-gray fw-400 fs-16">{{ charge?.when | date:'shortDate':' ': usefulSettings.selectedLanguage }}</span>
+    </div>
+
+    <div class="cotainer-buttons centered gap-20 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'button.back' | translate }}</button>
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('CANCELLED')"
+            *ngIf="charge?.status === 'PENDING' && isOwner()">
+            {{ 'button.cancel' | translate }}
+        </button>
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('DISAPPROVED')"
+            *ngIf="charge?.status === 'PENDING' && !isOwner()">
+            {{ 'button.decline' | translate }}
+        </button>
+        <button class="btn dark-shade wth-100" (click)="updateInvoice('APPROVED')"
+            *ngIf="charge?.status === 'PENDING' && !isOwner()">
+            {{ 'button.approve' | translate }}
+        </button>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

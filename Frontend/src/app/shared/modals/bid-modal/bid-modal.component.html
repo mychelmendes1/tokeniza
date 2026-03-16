@@ -1,0 +1,44 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'bid.modal.makeOffer' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <div class="asset-detail margin-top-30">
+        <img class="asset-img" [src]="getMainPhoto(asset)" [alt]="asset?.description">
+        <div class="asset-info column gap-2">
+            <span class="asset-name primary-off-white-darker fs-20 fw-700">{{ asset?.name }}</span>
+            <span class="asset-name primary-off-white-darker fs-16 fw-400">{{ asset?.collection?.name }}</span>
+            <span class="asset-identity primary-off-white-darker fs-13 fw-700">ID: {{ asset?.blockchainId }}</span>
+        </div>
+    </div>
+    <div class="tips margin-top-30">
+        <p class="primary-off-white-darker fs-16 fw-400">{{ 'productDetails.bidModal.tip1' | translate }} <strong class="fw-700">{{ currentValue }}</strong> {{ fiatCurrency.currency }} .</p>
+        <p class="primary-off-white-darker fs-16 fw-400">{{ 'productDetails.bidModal.tip2' | translate }}</p>
+    </div>
+    <div class="input-container margin-top-30">
+        <div class="column align-start wth-100 gap-3">
+            <label class="label-dark">{{ 'label.value' | translate }}</label>
+            <input class="input-fill-default medium-border" [placeholder]="'R$'" [(ngModel)]="price"
+                currencyMask [options]="{ prefix: fiatCurrency.symbol + ' ', precision: 2 }" inputmode="numeric" required
+            >
+        </div>
+    </div>
+    <div class="input-container column align-start margin-top-10">
+        <label class="label-dark">{{ 'label.chooseCurrency' | translate }}</label>
+        <mat-select class="select-fill-primary" disableOptionCentering
+            [placeholder]="'placeholder.selectCurrency' | translate" panelClass="select-fill-primary" [(ngModel)]="unitOfMoney">
+            <mat-option *ngFor="let coin of asset?.payment_types" [value]="coin?.unitOfMoney">
+                <div class="inline gap-10">
+                    <span class="primary-dark fw-500">{{ coin?.unitOfMoney }}</span>
+                </div>
+            </mat-option>
+        </mat-select>
+    </div>
+    <div class="cotainer-buttons centered gap-20 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'button.cancel' | translate }}</button>
+        <button class="btn dark-shade wth-100" [disabled]="checkValue()" (click)="performTransaction()">
+            {{ 'button.makeOffer' | translate }}
+        </button>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

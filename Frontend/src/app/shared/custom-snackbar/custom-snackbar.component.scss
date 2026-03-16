@@ -1,0 +1,40 @@
+@use '../../../assets/styles/variables.scss' as v;
+
+::ng-deep {
+    .mat-mdc-snack-bar-container.custom-snackbar {
+        padding: 0;
+        margin-top: 0;
+        min-width: unset;
+        background: transparent;
+    }
+
+    .mdc-snackbar__label {
+        padding: 0 !important;
+    }
+
+    .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+        background-color: v.$light-text !important;
+        border-radius: 0 0 10px 10px !important;
+    }
+
+    .mdc-snackbar__surface {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+}
+
+.snackbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 14px 30px;
+    background-color: v.$light-text;
+    color: v.$dark-medium-shade;
+    font-size: 13px;
+    font-weight: 500;
+
+    .fill-icon {
+        margin-right: 9px;
+    }
+}

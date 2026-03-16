@@ -1,0 +1,21 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+@use './../../../../assets/styles/material-component.scss';
+
+.modal-container {
+    .asset-info {
+        text-align: start;
+    }
+
+    .tips {
+        display: flex;
+        flex-direction: column;
+        @extend .asset-info;
+    }
+}
+
+::ng-deep .custom-modal.bid-modal mat-dialog-container div.mdc-dialog__container div.mdc-dialog__surface {
+    height: auto;
+    width: 580px;
+}

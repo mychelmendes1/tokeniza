@@ -1,0 +1,181 @@
+<div class="cards-list component margin-top-30" *ngIf="assetList.length > 0">
+    <div class="card-buy-category pointer" *ngIf="selectedCategory?.isSelected" (click)="buyAssets()">
+        <div class="content centered column">
+            <h1 class="big-text"> {{ 'cardList.buyNFTs' | translate }}</h1>
+            <p class="big-text"> ({{ selectedCategory?.name }})</p>
+            <mat-icon class="light-icon">add</mat-icon>
+        </div>
+    </div>
+    <div class="card card-border-primary"
+        [ngClass]="
+            {
+                'card-red': asset.auction,
+                'card-blue': asset.resale.onResale,
+                'card-mobile-blue': asset.resale.onResale && isMobile,
+                'card-mobile-red': asset.auction && isMobile,
+                'card-mobile-primary': !asset.resale.onResale && !asset.auction && isMobile
+            }
+        "
+        *ngFor="let asset of assetList; index as i;" (mouseenter)="cardHovered[asset.blockchainId || asset.id] = true" (mouseleave)="cardHovered[asset.blockchainId || asset.id] = false">
+        <div class="asset-image">
+            <img (click)="goToDetails(asset)" [src]="getMainPhoto(asset)" [alt]="asset?.description">
+        </div>
+
+        <div class="card-info between column to-point">
+            <div class="info">
+                <div class="info-content column">
+                    <strong class="fw-600 fs-25" *ngIf="asset?.name">
+                        {{ asset?.name }}
+                    </strong>
+                    <div class="inline between align-start">
+                        <span class="title-small lh-20"> {{ asset?.collection?.name }}</span>
+                        <span class="primary-gray" *ngIf="asset?.blockchainId">ID: {{ asset?.blockchainId }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom pointer column" *ngIf="!loading">
+                <div class="bottom-content column">
+                    <div class="align-center" *ngIf="getAssetOriginalPrice(asset) && asset?.resale?.onResale">
+                        <div class="token-price-content">
+                            <span class="token-price strikethrough-text">{{ getAssetOriginalPrice(asset) | currency: fiatCurrency.currency }}</span>
+                        </div>
+                    </div>
+                    <div class="inline between wth-100">
+                        <div class="align-center" *ngIf="getCorrectPrice(asset)">
+                            <div class="token-price-content">
+                                <span class="token-price fw-700 fs-26 primary-600">{{ getSymbom(asset) }} {{ getCorrectPrice(asset) | number:'1.2-2' }}</span>
+                            </div>
+                        </div>
+                        <div class="token-price-content" *ngIf="!getCorrectPrice(asset)">
+                            <span class="token-price fw-700 fs-26 primary-600">{{ 'myAssets.buyIt' | translate  }}</span>
+                        </div>
+                        <div class="variation-container inline gap-4" *ngIf="getVariation(asset) !== 0 && getAssetOriginalPrice(asset) > 0"
+                            [ngClass]="{'bg-red-r-3500': getVariation(asset) < 0, 'bg-primary-p-3500': getVariation(asset) > 0 }">
+                            <mat-icon class="low-high-icon svg-icon"
+                                [ngClass]="{'primary-50': getVariation(asset) > 0, 'primary-red-50': getVariation(asset) < 0 }"
+                                [svgIcon]="getVariation(asset) > 0 ? 'arrow-up-mini' : 'arrow-down-mini'">
+                            </mat-icon>
+                            <span class="token-small" [ngClass]="{'primary-50': getVariation(asset) > 0, 'primary-red-50': getVariation(asset) < 0 }"
+                                *ngIf="getAssetOriginalPrice(asset) && asset?.resale?.onResale">{{ getVariation(asset) }}%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="margin-top-10">
+                        <span *ngIf="asset?.auction?.bids">
+                            {{ asset?.auction?.bids?.length || '' }}
+                            {{ getAmountOfBidsText(asset?.auction?.bids?.length) }}
+                        </span>
+                    </div>
+                    <div class="align-center between wth-100" *ngIf="currentPage !== 'MY_ASSETS' && asset?.availableTokens && !asset?.auction && !asset.collection?.price">
+                        <span>
+                            {{ asset?.availableTokens | number }}
+                            {{ asset.availableTokens > 1 ? ('cardList.availablePlural' | translate) : ('cardList.availableSingular' | translate) }}
+                        </span>
+                        <mat-icon class="primary pointer" (click)="goToDetails(asset); $event.stopImmediatePropagation()">chevron_right</mat-icon>
+                    </div>
+                </div>
+                <div class="inline gap-20" *ngIf="currentPage !== 'MY_ASSETS' && !asset.auction && !asset.resale.onResale && (cardHovered[asset.blockchainId || asset.id] || isMobile)">
+                    <div class="hovered primary to-point" 
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-eye')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-eye')"
+                        [matTooltip]="'tooltip.details' | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="primary" (click)="goToDetails(asset)" svgIcon="eye"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-eye', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                    <div class="hovered primary to-point" 
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-shopping-cart')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-shopping-cart')"
+                        [matTooltip]="'tooltip.buy' | translate" (click)="goToDetails(asset)"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon"
+                            svgIcon="shopping-cart"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-shopping-cart', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                    <div class="hovered primary to-point" (click)="shareWhatsapp(asset); $event.stopPropagation()"
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-share-2')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-share-2')"
+                        [matTooltip]="'tooltip.share' | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon"
+                            svgIcon="share-2"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-share-2', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="inline gap-20" *ngIf="currentPage === 'MY_ASSETS' && !asset.auction && !asset.resale.onResale && (cardHovered[asset.blockchainId || asset.id] || isMobile)">
+                    <div class="hovered primary to-point" 
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-eye')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-eye')"
+                        [matTooltip]="'tooltip.details' | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="primary" (click)="goToDetails(asset)" svgIcon="eye"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-eye', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                    <div class="hovered primary to-point" *ngIf="isResellAllowed && !asset?.block_resell"
+                        (click)="resellAsset(asset, asset?.resale?.onResale)"
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-tag')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-tag')"
+                        [matTooltip]="setResaleTooltip(asset) | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon"
+                            svgIcon="tag"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-tag', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                    <div class="hovered primary to-point" *ngIf="isSendNFTAllowed" (click)="sendAsset(asset)"
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-send')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-send')"
+                        [matTooltip]="'tooltip.send' | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon"
+                            svgIcon="send"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-send', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                    <div class="hovered primary to-point" (click)="auctionAsset(asset)" *ngIf="isResellAllowed && !asset?.block_resell"
+                        (mouseenter)="hoverIconClassService.onMouseEnter(asset.blockchainId + '-auction')"
+                        (mouseleave)="hoverIconClassService.onMouseLeave(asset.blockchainId + '-auction')"
+                        [matTooltip]="setAutionTooltip(asset) | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon"
+                            svgIcon="auction"
+                            [ngClass]="hoverIconClassService.getSvgClass(asset.blockchainId + '-auction', 'svg-icon primary-dark', 'svg-icon primary')"
+                            >
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="inline gap-20" (click)="goToDetails(asset)"
+                    *ngIf="asset.auction && (cardHovered[asset.blockchainId || asset.id] || isMobile)">
+                    <div class="hovered-auction inline gap-8 to-point"
+                        [matTooltip]="translateAuctionTooltip(asset) | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon primary-light" svgIcon="auction"></mat-icon>
+                        <span class="fw-700">
+                            {{ 'cardList.auction' | translate }} {{ asset.auctionTimeExpiration ?? 'cardList.auctionOnGoing' | translate }}
+                        </span>
+                    </div>
+                </div>
+                <div class="inline gap-20" (click)="currentPage === 'MY_ASSETS' ? resellAsset(asset, asset?.resale?.onResale) : goToDetails(asset)"
+                    *ngIf="asset.resale.onResale && (cardHovered[asset.blockchainId || asset.id] || isMobile)">
+                    <div class="hovered-auction blue inline gap-8 to-point"
+                        [matTooltip]="(currentPage === 'MY_ASSETS' ? 'tooltip.editResale' : 'tooltip.seeOnResale') | translate"
+                        matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                        <mat-icon class="svg-icon primary-light" svgIcon="tag"></mat-icon>
+                        <span class="fw-700">{{ 'cardList.onResale' | translate }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

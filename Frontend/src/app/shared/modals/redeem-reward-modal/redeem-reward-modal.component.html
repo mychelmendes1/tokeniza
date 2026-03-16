@@ -1,0 +1,19 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{ 'redeem.reward.modal.rewardRedemption' | translate }}</span>
+        <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+    </div>
+    <div class="input-container align-start wth-100 margin-top-30">
+        <label class="label-dark">{{ 'label.redeemCode' | translate }}</label>
+        <input class="input-fill-default medium-border" [(ngModel)]="redeemCode"
+            [placeholder]="'placeholder.redeemCode' | translate" required maxlength="50"
+        >
+    </div>
+    <div class="cotainer-buttons centered gap-20 margin-top-30">
+        <button class="btn doutline wth-100" matDialogClose>{{ 'button.cancel' | translate }}</button>
+        <button class="btn dark-shade wth-100" (click)="redeem()" [disabled]="!redeemCode || loading">
+            {{ 'button.rescue' | translate }}
+        </button>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>

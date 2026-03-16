@@ -1,0 +1,147 @@
+@use '../../../assets/styles/variables.scss' as v;
+@use '../../../assets/styles/mixins.scss' as mix;
+@use '../../../assets/styles/material-component.scss';
+
+.account-left-container {
+    width: max-content !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    overflow-y: auto;
+    height: 100% !important;
+    padding-bottom: 20px;
+
+    @include mix.mq("tablet", max) {
+        width: unset !important;
+        padding: 20px !important;
+    }
+
+    .radio-group {
+        gap: 100px;
+
+        @include mix.mq("phone-wide", max) {
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    }
+
+    .responsive-column {
+        @include mix.mq("phone-wide", max) {
+            flex-direction: column;
+        }
+    }
+
+    .form {
+        padding: 0 !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .progress-bar {
+        background-color: v.$dark;
+        max-width: 600px !important;
+    }
+
+    .select-fill-primary {
+        background-color: v.$input !important;
+    }
+
+    .error-hint {
+        &.to-number {
+            right: 100px !important;
+        }
+    }
+
+    .checkbox-v-mark {
+        &.to-number {
+            height: 44px !important;
+        }
+    }
+
+    .alert-circle {
+        @include mix.iconSize(10px, true);
+        margin-top: -20px;
+    }
+
+    h2 {
+        @include mix.mq("phone-wide", max) {
+            font-size: 40px !important;
+        }
+    }
+
+    .upload-file-container {
+        @include mix.mq("phone-wide", max) {
+            gap: 10px;
+        }
+
+        .upload-file-content {
+            gap: 10px;
+            border: 3px dashed grey;
+            border-radius: 5px;
+            background-color: transparent;
+            height: 100%;
+            width: 100%;
+            padding: 30px 40px;
+            display: flex;
+            -ms-flex-pack: distribute;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-transition: all .2s ease-in;
+            transition: all .2s ease-in;
+            position: relative;
+
+            .section-thumbnail {
+                gap: 10px;
+                padding: 0px 1rem;
+                width: 100%;
+                justify-content: space-between;
+                flex-direction: row-reverse;
+
+                @include mix.mq("phone-wide", max) {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .content-document {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    gap: 10px;
+
+                    .verified-icon {
+                        color: v.$primary-700;
+                        margin-top: -10px;
+                    }
+                }
+
+                .real-document {
+                    height: 100px;
+                }
+            }
+
+            input {
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                cursor: pointer;
+            }
+
+            .icon-document {
+                display: block;
+            }
+
+            .document-icon {
+                height: 114px !important;
+                width: 114px !important;
+            }
+
+            &.done {
+                border: 3px solid v.$primary-700 !important;
+            }
+        }
+    }
+}

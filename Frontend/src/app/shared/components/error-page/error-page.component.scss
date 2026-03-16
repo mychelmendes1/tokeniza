@@ -1,0 +1,60 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+
+.error-page {
+    display: flex;
+    background-color: transparent;
+    padding: 50px 30px;
+    min-height: 100vh;
+
+    .centered {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 586px;
+    }
+
+    .error-img {
+        width: 100%;
+    }
+
+    .error-title {
+        font-size: 36px;
+        color: v.$primary-500;
+        margin: 40px 0 20px 0;
+        text-align: center;
+
+        @include mix.mq("tablet", max) {
+            font-size: 32px;
+        }
+
+        @include mix.mq("phone-wide", max) {
+            font-size: 28px;
+        }
+    }
+
+    .error-text {
+        font-size: 16px;
+        text-align: center;
+        line-height: 24px;
+        color: v.$dark;
+        font-weight: 400;
+    }
+
+    .error-links {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 23px;
+        justify-content: center;
+
+        strong {
+            color: v.$primary-700;
+            text-decoration: underline;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+}

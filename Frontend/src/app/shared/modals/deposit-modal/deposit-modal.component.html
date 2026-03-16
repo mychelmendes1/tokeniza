@@ -1,0 +1,231 @@
+<div class="modal-container modal-content column gap-8">
+    <div class="between">
+        <span class="primary-dark fw-700 fs-20">{{
+            "deposit.modal.title" | translate
+        }}</span>
+        <mat-icon
+            class="svg-icon primary-gray to-point"
+            svgIcon="close"
+            matDialogClose
+        ></mat-icon>
+    </div>
+    <div class="input-container column margin-top-30 align-start">
+        <label class="label-dark">{{
+            "label.selectDepositType" | translate
+        }}</label>
+        <div class="radio-container inline">
+            <mat-radio-group
+                (change)="onRadioGroupChange($event)"
+                class="radio-group inline gap-100"
+            >
+                <mat-radio-button value="crypto">
+                    <span class="primary-dark fw-500">Cripto</span>
+                </mat-radio-button>
+                <mat-radio-button value="brl">
+                    <span class="primary-dark fw-500">tBRL</span>
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+    <div
+        class="input-container column align-start margin-top-30"
+        *ngIf="selectedDeposit === eDepositType.CRYPTO"
+        [@fadeIn]
+    >
+        <label class="label-dark">{{
+            "label.chooseCurrency" | translate
+        }}</label>
+        <mat-select
+            class="select-fill-primary"
+            disableOptionCentering
+            (selectionChange)="onSelectedToken()"
+            [placeholder]="'Selecionar moeda...'"
+            panelClass="select-fill-primary"
+            [(value)]="selectedToken"
+        >
+            <mat-select-trigger *ngIf="selectedToken">
+                <div class="inline gap-10">
+                    <img
+                        alt="token"
+                        class="img-token-small"
+                        [src]="selectedToken.image_symbol"
+                    />
+                    <span class="primary-dark fw-500"
+                        >{{ selectedToken.name }} - {{ selectedToken.id }}</span
+                    >
+                </div>
+            </mat-select-trigger>
+            <mat-option *ngFor="let token of tokens" [value]="token">
+                <div class="inline gap-10">
+                    <img
+                        alt="crypto-token"
+                        class="img-token-small"
+                        [src]="token.image_symbol"
+                    />
+                    <span class="primary-dark fw-500"
+                        >{{ token.name }} - {{ token.id }}</span
+                    >
+                </div>
+            </mat-option>
+        </mat-select>
+    </div>
+    <div
+        class="column gap-30"
+        *ngIf="selectedDeposit === eDepositType.CRYPTO && selectedToken.id"
+        [@fadeIn]
+    >
+        <div class="input-container margin-top-30">
+            <div class="column align-start wth-100 gap-3">
+                <label class="label-dark">{{
+                    "label.walletAddress" | translate
+                }}</label>
+                <span class="primary-gray"
+                    >{{ "deposit.modal.sendCrypto" | translate }}:</span
+                >
+                <div class="inline gap-16 wth-100 key-share">
+                    <input
+                        class="input-fill-default medium-border"
+                        [value]="publicWallet"
+                        disabled
+                    />
+                    <div
+                        class="hover-icon primary-shade"
+                        (click)="copy('wallet')"
+                    >
+                        <mat-icon
+                            class="svg-icon primary-dark to-point"
+                            svgIcon="copy"
+                        ></mat-icon>
+                    </div>
+                    <div
+                        class="hover-icon primary-shade"
+                        (click)="sharePublicWalletWhatsapp()"
+                    >
+                        <mat-icon
+                            class="svg-icon primary-dark to-point"
+                            svgIcon="share-2"
+                        ></mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="centered column margin-top-30 gap-30">
+            <span class="primary-gray">
+                {{ "deposit.modal.transferByQrCode" | translate }}
+            </span>
+            <qrcode
+                class="qr-code-link"
+                elementType="img"
+                [margin]="2"
+                [qrdata]="publicWallet"
+                [width]="225"
+                [allowEmptyString]="true"
+            >
+            </qrcode>
+        </div>
+
+        <div class="input-container margin-top-30 margin-bottom-30">
+            <div class="column align-start wth-100 gap-3">
+                <label class="label-dark">{{
+                    "orientations.title" | translate
+                }}</label>
+                <div class="inline gap-16 wth-100 key-share">
+                    <input
+                        class="input-fill-default medium-border"
+                        [value]="'orientations.deposit' | translate"
+                        disabled
+                    />
+                    <div
+                        class="hover-icon primary-shade"
+                        (click)="selectAsHelp()"
+                    >
+                        <mat-icon
+                            class="svg-icon primary-dark to-point"
+                            svgIcon="arrow-right"
+                        ></mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column" *ngIf="selectedDeposit === eDepositType.BRL" [@fadeIn]>
+        <div class="input-container margin-top-30">
+            <div class="column align-start wth-100 gap-3">
+                <label class="label-dark">{{
+                    "label.value" | translate
+                }}</label>
+                <input
+                    class="input-fill-default medium-border"
+                    [placeholder]="usefulSettings.fiatCurrency.symbol"
+                    [(ngModel)]="amountValue"
+                    [readOnly]="loading"
+                    (ngModelChange)="convertFiduciaryToToken($event)"
+                    (keypress)="allowOnlyNumbers($event)"
+                    currencyMask
+                    [options]="{
+                        prefix: usefulSettings.fiatCurrency.symbol + ' ',
+                        precision: 2
+                    }"
+                />
+            </div>
+        </div>
+        <div class="between margin-top-10">
+            <span class="primary-gray fw-400 fs-16 text-align-left">{{
+                "deposit.modal.tax" | translate
+            }}</span>
+            <div class="inline gap-8">
+                <mat-icon class="svg-icon" svgIcon="wallet"></mat-icon>
+                <span class="primary-gray fw-400 fs-16 text-align-left">{{
+                    isMainFiatToken.tokens_buy_tax
+                        | currency : usefulSettings.fiatCurrency.currency
+                }}</span>
+            </div>
+        </div>
+        <div class="container-buttons centered gap-20 margin-top-30">
+            <button class="btn doutline wth-100" matDialogClose>
+                {{ "button.cancel" | translate }}
+            </button>
+            <button
+                class="btn dark-shade wth-100"
+                [disabled]="!amountValue || loading"
+                (click)="checkout()"
+            >
+                {{ "button.generatePaymentPix" | translate }}
+            </button>
+        </div>
+    </div>
+
+    <div class="column" *ngIf="selectedDeposit === eDepositType.HELP" [@fadeIn]>
+        <div class="input-container margin-top-30">
+            <span class="primary-gray">{{
+                "orientations.whatToDo" | translate
+            }}</span>
+            <div class="column align-start wth-100 gap-3 margin-top-10">
+                <label class="label-dark">{{
+                    "orientations.block" | translate
+                }}</label>
+                <input
+                    class="input-fill-default medium-border"
+                    [(ngModel)]="blockNumber"
+                />
+            </div>
+        </div>
+        <div class="container-buttons centered gap-20 margin-top-30">
+            <button class="btn doutline wth-100" matDialogClose>
+                {{ "button.cancel" | translate }}
+            </button>
+            <button
+                class="btn dark-shade wth-100"
+                [disabled]="!blockNumber || loading"
+                (click)="checkBlock()"
+            >
+                {{ "orientations.do" | translate }}
+            </button>
+        </div>
+    </div>
+</div>
+<mat-progress-spinner
+    *ngIf="loading"
+    class="spinner"
+    [mode]="'indeterminate'"
+></mat-progress-spinner>

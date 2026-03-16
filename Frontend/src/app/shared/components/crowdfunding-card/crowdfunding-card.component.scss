@@ -1,0 +1,93 @@
+@use './../../../../assets/styles/variables.scss' as v;
+@use './../../../../assets/styles/mixins.scss' as mix;
+@use './../../../../assets/styles/common-classes.scss';
+
+.offers {
+    @include mix.mq("tablet", max) {
+        flex-wrap: wrap;
+    }
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.card {
+    @include mix.mq("phone-wide", max) {
+        min-width: 0 !important;
+    }
+}
+
+.tag-name {
+    span {
+        @include mix.mq("phone-wide", max) {
+            font-size: 12px;
+        }
+    }
+}
+
+.goal-cap {
+    span {
+        @include mix.mq("phone-wide", max) {
+            font-size: 14px;
+        }
+    }
+}
+
+.offer-type-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.offer-type-label {
+    padding: 2px 10px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    width: fit-content;
+    letter-spacing: 0.3px;
+
+    &.offer-public {
+        background-color: v.$green-50;
+        color: v.$green-800;
+    }
+
+    &.offer-private {
+        background-color: v.$blue-50;
+        color: v.$blue-700;
+    }
+}
+
+.remaining-container {
+    background-color: v.$dark-medium-shade;
+    padding: 2px 8px;
+    border-radius: 16px;
+    width: max-content;
+    height: fit-content !important;
+}
+
+swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+swiper-slide {
+    height: auto !important;
+}
+
+swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.personalized-width {
+    width: calc(100% - 260px) !important;
+
+    @include mix.mq("tablet", max) {
+        width: 100% !important;
+    }
+}

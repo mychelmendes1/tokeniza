@@ -1,0 +1,75 @@
+<div class="menu-container" [class.expanded]="menuExpanded">
+    <div class="logo inline gap-10 to-point" (click)="isMobile ? closeMenu() : toggleMenu()">
+        <mat-icon class="svg-icon primary-light-fill" svgIcon="tokeniza-logo"></mat-icon>
+        <strong *ngIf="menuExpanded" [@fadeInOut] class="primary-light fs-31 fw-700">{{ companyName }}</strong>
+    </div>
+    <div class="divider-line-top" [ngClass]="{ 'collapsed': !menuExpanded }"></div>
+    <div class="avatar-profile to-point" (click)="currentUrl ? goToLogin() : goToProfile(); $event.stopPropagation(); closeMenu()">
+        <div class="inline gap-12">
+            <img [src]="userLogged.selfieImage ? userLogged.selfieImage : ''" alt="avatar" *ngIf="userLogged?.selfieImage">
+            <mat-icon *ngIf="!userLogged?.selfieImage" class="svg-icon primary-light simple-user" svgIcon="simple-user"></mat-icon>
+            <div class="column content-user gap-2" *ngIf="menuExpanded && isAuthenticated" [@fadeInOut]>
+                <span class="text-light fw-600 pre-line ellipsis-in-text">{{ userLogged?.name }}</span>
+                <span class="text-medium-active fw-400 ellipsis-in-text">{{ userLogged?.email }}</span>
+            </div>
+            <div class="column content-user gap-2" *ngIf="menuExpanded && currentUrl && !isAuthenticated" [@fadeInOut]>
+                <span class="text-light fw-600 pre-line">{{ 'button.enter' | translate }}</span>
+            </div>
+            <div class="inline logout-opt wth-100" *ngIf="menuExpanded && isAuthenticated">
+                <mat-progress-spinner *ngIf="loading && menuExpanded" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
+                <mat-icon *ngIf="menuExpanded && !loading" class="svg-icon primary-600 log-out-icon" svgIcon="log-out" (click)="doLogout(); $event.stopPropagation()"></mat-icon>
+            </div>
+        </div>
+    </div>
+    <div class="menu-buttons-container column" *ngIf="isAuthenticated">
+        <button class="menu-button" (click)="closeMenu()"
+            (mouseenter)="hoverIconClassService.onMouseEnter(button.icon)"
+            (mouseleave)="hoverIconClassService.onMouseLeave(button.icon)"
+            *ngFor="let button of menuButtons" [routerLink]="button.link" [queryParams]="button.queryParams"
+            routerLinkActive="activated" [routerLinkActiveOptions]="myMatchOptions" mat-flat-button>
+            <mat-icon class="svg-icon primary-light" [svgIcon]="button.icon"
+                [ngClass]="hoverIconClassService.getSvgClass(button.icon, 'svg-icon primary-600', 'svg-icon primary-light')">
+            </mat-icon>
+            <span class="button-span" *ngIf="menuExpanded" [@fadeInOut]>{{ button.textPath | translate }}</span>
+        </button>
+    </div>
+    <div class="menu-buttons-container column" *ngIf="menuExpanded && isAuthenticated">
+        <button class="menu-button" (click)="closeMenu()"
+            (mouseenter)="hoverIconClassService.onMouseEnter(incomeReportsButton.icon)"
+            (mouseleave)="hoverIconClassService.onMouseLeave(incomeReportsButton.icon)"
+            [routerLink]="incomeReportsButton.link" [queryParams]="incomeReportsButton.queryParams"
+            routerLinkActive="activated" [routerLinkActiveOptions]="myMatchOptions" mat-flat-button>
+            <mat-icon class="svg-icon primary-light" [svgIcon]="incomeReportsButton.icon"
+                [ngClass]="hoverIconClassService.getSvgClass(incomeReportsButton.icon, 'svg-icon primary-600', 'svg-icon primary-light')">
+            </mat-icon>
+            <span class="button-span" *ngIf="menuExpanded" [@fadeInOut]>{{ 'menu.' + incomeReportsButton.textPath | translate }}</span>
+        </button>
+    </div>
+    <div class="indications column card-border-primary card-default gap-20 to-point"
+        (click)="goToIndications()"
+        *ngIf="menuExpanded && isAuthenticated" [@fadeInOut]>
+        <div class="inline between">
+            <div class="inline gap-8">
+                <mat-icon class="svg-icon primary-light user-plus" svgIcon="user-plus"></mat-icon>
+                <span class="primary-light fw-600">{{ 'menu.indications' | translate }}</span>
+            </div>
+            <div class="inline gap-8 to-point">
+                <span class="primary-700 fw-600">{{ 'button.seeMore' | translate }}</span>
+                <mat-icon class="svg-icon primary-700 chevron-right" svgIcon="chevron-right"></mat-icon>
+            </div>
+        </div>
+        <div class="inline between">
+            <span class="primary-gray fw-400">{{ 'menu.totalBalanceReceived' | translate }}</span>
+            <span class="primary-gray fw-400">{{ totalCommission | currency: usefulSettings.fiatCurrency.currency }}</span>
+        </div>
+        <div class="divider-line"></div>
+        <div class="inline between">
+            <span class="primary-gray fw-400">{{ 'menu.nominees' | translate }}</span>
+            <span class="primary-gray fw-400">{{ myCommunity?.length || 0 }}</span>
+        </div>
+        <button class="btn primary to-point btn-invitation" (click)="copy(); $event.stopPropagation()">
+            <span class="primary-dark">{{ 'button.copyLink' | translate }}</span>
+            <mat-icon class="svg-icon primary-dark" svgIcon="copy"></mat-icon>
+        </button>
+    </div>
+</div>

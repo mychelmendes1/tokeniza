@@ -1,0 +1,297 @@
+<div class="modal-container modal-content column gap-8 min-width-250">
+    <div class="modal-full-content">
+        <div class="between">
+            <span class="primary-dark fw-700 fs-20">{{ project.name }}</span>
+            <mat-icon class="svg-icon primary-gray to-point" svgIcon="close" matDialogClose></mat-icon>
+        </div>
+
+        <div class="column gap-12 wth-100 text-align-left margin-top-20">
+            <span class="primary-600 fw-600 fs-20">{{ translateHeaderText().title | translate }}</span>
+            <div class="progress-bar">
+                <div class="progress-bar__value" [ngStyle]="{'width.%' : progressBarWidth}"></div>
+            </div>
+        </div>
+        <mat-horizontal-stepper [linear]="true" #stepper animationDuration="500">
+            <!-- Step 0 Investment -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formInvestment">
+                    <div class="input-container column margin-top-30">
+                        <div class="inline align-start gap-8">
+                            <label class="inline label-dark align-start">
+                                {{ 'crowdfunding.checkout.amountInvest' | translate}}
+                            </label>
+                            <mat-icon class="svg-icon primary-dark to-point alert-circle"
+                                [matTooltip]="('crowdfunding.checkout.minimumContribution' | translate) + ': ' + ((project.minimumContribution || 0) | currency: project.isDolar ? 'USD' : 'BRL')"
+                                matTooltipClass="dark-tooltip" matTooltipPosition="above"
+                                svgIcon="alert-circle">
+                            </mat-icon>
+                        </div>
+                        <input class="input-fill-default medium-border" formControlName="amount" currencyMask
+                            [options]="{ prefix: project.isDolar ? 'US$' : 'R$' + ' ', precision: 2 }"
+                            inputmode="numeric" [placeholder]="fiatCurrency.symbol + ' 0,00'" required
+                            (ngModelChange)="changeAmount($event)" [readonly]="project.fixed_value || loading"
+                        >
+                        <span class="error-hint" *ngIf="showError('amount', formInvestment)">
+                            {{ 'crowdfunding.checkout.amount.hint' | translate }}: {{ project.minimumContribution | currency: project.isDolar ? 'USD' : 'BRL' }}
+                        </span>
+                    </div>
+                    <!-- <div class="column margin-top-30 align-start gap-20" *ngIf="project?.crypto">
+                        <span *ngIf="project?.crypto" class="primary-dark fw-700">{{ 'crowdfunding.checkout.amountInvestConverted' | translate}}</span>
+                        <div class="inline between wth-100" *ngFor="let opt of options; index as i">
+                            <div class="column align-start">
+                                <p class="primary-dark fw-700 text-align-left"><b>{{ opt?.value | floorCurrency: opt?.name: true: '1.4-4' }}:&nbsp;</b></p>
+                                <small class="crowdfunding-checkout-contract__read-and-agree primary-gray" *ngIf="!opt?.showTax">
+                                    ({{'crowdfunding.checkout.currentQuotation' | translate}}: {{ opt?.quote | number:'1.2-2'}})
+                                </small>
+                            </div>
+                            <span class="crowdfunding-checkout-contract__read-and-agree primary-red fw-400" *ngIf="opt?.showMissingBalance">
+                                {{ 'paymentModal.missingBalance' | translate }}
+                            </span>
+                        </div>
+                    </div> -->
+                    <div class="inline gap-16 margin-top-30">
+                        <button class="btn doutline wth-100" matDialogClose>
+                            <span>{{ 'button.cancel' | translate }}</span>
+                        </button>
+                        <button class="btn primary wth-100" [disabled]="!formInvestment.valid || loading" (click)="goForward()">
+                            <span class="primary-dark">{{ 'button.invest' | translate }}</span>
+                        </button>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 1 Contracts -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formContracts">
+                    <div class="wrapper-hint top-text margin-top-30 column align-start">
+                        <div class="column align-start gap-8">
+                            <span class="primary-dark fw-700">{{'crowdfunding.checkout.oursContracts' | translate }}</span>
+                            <span class="primary-dark fw-400 text-align-left">{{'crowdfunding.checkout.oursContracts.description' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="column align-start gap-8 margin-top-30">
+                        <span class="primary-dark fw-700">
+                            {{'crowdfunding.checkout.contractInvestment' | translate}}
+                        </span>
+                        <span class="primary-700 fw-700 underline-text to-point"
+                            (click)="openContract()">{{'crowdfunding.checkout.readAndAgree' | translate}}
+                        </span>
+                    </div>
+                    <div class="column align-start gap-8 margin-top-10">
+                        <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="signed" color="primary">
+                            <span class="primary-dark fw-400">{{ 'crowdfunding.checkout.agree' | translate }}</span>
+                        </mat-checkbox>
+                    </div>
+    
+                    <div class="inline gap-16 margin-top-30">
+                        <button class="btn dark-shade wth-100" matStepperPrevious [disabled]="loading"
+                            *ngIf="!data.pendingPaymentId"
+                            (mouseenter)="hoverIconClassService.onMouseEnter('back')"
+                            (mouseleave)="hoverIconClassService.onMouseLeave('back')">
+                            <mat-icon class="svg-icon" svgIcon="arrow-left"
+                                [ngClass]="hoverIconClassService.getSvgClass('back', 'svg-icon primary-dark', 'svg-icon primary-light')"
+                            ></mat-icon>
+                            <span>{{ 'button.back' | translate }}</span>
+                        </button>
+                        <button [disabled]="loading || !signed" mat-flat-button (click)="signContract()"
+                            class="btn primary wth-100">{{ 'crowdfunding.checkout.assignerContract' | translate }}
+                        </button>
+                    </div>
+                </form>
+            </mat-step>
+            <!-- Step 2 Payment -->
+            <mat-step [editable]="true">
+                <form [formGroup]="formPayment" class="flex">
+                    <div class="inline margin-top-30">
+                        <div class="column gap-8 align-start">
+                            <span class="primary-dark text-align-left fs-20"><b>
+                                {{ 'crowdfunding.checkout.payment.excellent' | translate }}
+                                {{ (user.name || user.firstName )}}, {{'crowdfunding.checkout.payment.almostThere' | translate}}
+                            </b>
+                            </span>
+                            <span class="primary-dark fw-400 text-align-left">{{'crowdfunding.checkout.payment.description' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="gap-12 margin-top-30 align-start">
+                        <div class="column gap-8 align-start">
+                            <span class="primary-dark fw-700 text-align-left fs-20">
+                                <b>{{'crowdfunding.checkout.payment.title' | translate}}</b>
+                            </span>
+                            <span class="primary-dark fw-400 text-align-left">{{'crowdfunding.checkout.payment.methods' | translate}}</span>
+                        </div>
+                        <div class="wth-100 margin-top-20">
+                            <div class="column centered gap-12 wth-100 margin-bottom-20">
+                                <span class="primary-dark fw-700 fs-20">
+                                    {{'crowdfunding.checkout.payment.value' | translate}}
+                                </span>
+                                <span class="primary-700 fw-700 fs-20">
+                                    {{ formInvestment.get('amount')?.value | currency: project.isDolar ? 'USD' : 'BRL'}}
+                                </span>
+                            </div>
+                            
+                            <!-- Select de Método de Pagamento -->
+                            <div class="column gap-8 margin-top-20" *ngIf="availablePaymentMethods.length > 0">
+                                <label class="primary-dark fw-700 text-align-left">
+                                    {{'crowdfunding.checkout.payment.bank.methods' | translate}}:
+                                </label>
+                                <mat-form-field appearance="outline" class="wth-100">
+                                    <mat-select [formControl]="formPayment.get('methods')" 
+                                                (selectionChange)="onPaymentMethodChange($event.value)"
+                                                [value]="selectedPaymentMethod">
+                                        <mat-option *ngFor="let method of availablePaymentMethods" [value]="method.value">
+                                            {{ method.label | translate }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Conteúdo PIX -->
+                            <div class="payment-card margin-top-20" *ngIf="selectedPaymentMethod === 'PIX' && bankList.length > 0 && !loading">
+                                <div class="crowdfunding-card-checkout-payment-content__info--bank" *ngFor="let bank of bankList">
+                                    <div class="checkout-card-bank-header">
+                                        <span class="checkout-card-bank-header__bank-name">{{ bank.name }}</span>
+                                    </div>
+                            
+                                    <div class="checkout-card-bank-methods">
+                                        <span class="primary-dark fw-400">
+                                            {{'crowdfunding.checkout.payment.bank.methods' | translate}}: {{'PIX' | translate}}
+                                        </span>
+                                    </div>
+                            
+                                    <div class="inline centered mt-3">
+                                        <qrcode class="qr-code-link" elementType="img" [margin]="2"
+                                            [qrdata]="qrCodeId" [width]="150" [allowEmptyString]="true">
+                                        </qrcode>
+                                    </div>
+                            
+                                    <div class="inline gap-2 mt-2">
+                                        <div class="column align-start gap-1">
+                                            <span class="checkour-card-bank-infos__description primary-dark fw-400">
+                                                {{ 'crowdfunding.checkout.payment.bank.pix_key' | translate }}:
+                                            </span>
+                                            <span class="primary-dark fw-700" style="font-size:12px;">{{ qrCodeId ? qrCodeId.substring(0, 30) : bank?.pix_key }}</span>
+                                        </div>
+                                        <div class="hover-icon primary-shade" 
+                                             (click)="copyPublicWallet(qrCodeId ? qrCodeId : bank?.pix_key)"
+                                             [matTooltip]="'tooltip.copy' | translate"
+                                             matTooltipClass="dark-tooltip" matTooltipPosition="above">
+                                            <mat-icon class="svg-icon primary-dark to-point" svgIcon="copy"></mat-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conteúdo TED/DOC -->
+                            <div class="payment-card column align-start gap-2 margin-top-20" *ngIf="selectedPaymentMethod === 'TED' && getCurrentBank()">
+                                <div class="checkout-card-bank-header">
+                                    <span class="checkout-card-bank-header__bank-name" style="font-size:14px; color: #2a2a2a; font-weight:600">{{getCurrentBank()?.name}}</span>
+                                    <span class="checkout-card-bank-header__bank-description" style="font-size:14px; color: #2a2a2a; font-weight:600">
+                                        {{'crowdfunding.checkout.payment.bank.description.tedOrDoc' | translate}}
+                                    </span>
+                                </div>
+                            
+                                <div class="checkout-card-bank-methods">
+                                    <span class="primary-dark fw-400">
+                                        {{'crowdfunding.checkout.payment.bank.methods' | translate}}: {{'crowdfunding.checkout.payment.bank.tedOrDoc' | translate}}
+                                    </span>
+                                </div>
+                            
+                                <div class="checkout-card-bank-infos">
+                                    <span class="checkour-card-bank-infos__description title">{{ getCurrentBank()?.name }}</span>
+                                    
+                                    <div class="inline margin-top-10">
+                                        <span class="checkour-card-bank-infos__description" style="font-size:14px; color:#2a2a2a">
+                                            {{ 'crowdfunding.checkout.payment.bank.agency' | translate }}:
+                                        </span>
+                                        <span style="font-size:14px; color:#2a2a2a; font-weight: 600;">{{ getCurrentBank()?.agency }}</span>
+                                    </div>
+                            
+                                    <div class="inline margin-top-10">
+                                        <span class="checkour-card-bank-infos__description" style="font-size:14px; color:#2a2a2a">
+                                            {{ 'crowdfunding.checkout.payment.bank.type' | translate }}:
+                                        </span>
+                                        <span style="font-size:14px; color:#2a2a2a; font-weight: 600;">{{ getCurrentBank()?.type }}</span>
+                                    </div>
+                            
+                                    <div class="inline margin-top-10">
+                                        <span class="checkour-card-bank-infos__description" style="font-size:14px; color:#2a2a2a">
+                                            {{ 'crowdfunding.checkout.payment.bank.account' | translate }}:
+                                        </span>
+                                        <span style="font-size:14px; color:#2a2a2a; font-weight: 600;">{{ getCurrentBank()?.account }}</span>
+                                    </div>
+                            
+                                    <div class="inline margin-top-10">
+                                        <span class="checkour-card-bank-infos__description" style="font-size:14px; color:#2a2a2a">
+                                            {{ 'crowdfunding.checkout.payment.bank.cnpj' | translate }}:
+                                        </span>
+                                        <span style="font-size:14px; color:#2a2a2a; font-weight: 600;">{{ getCurrentBank()?.identifier }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conteúdo CRIPTO -->
+                            <div class="payment-card column gap-2 margin-top-20" *ngIf="selectedPaymentMethod === 'CRYPTO'">
+                                <div class="checkout-card-bank-methods">
+                                    <span class="primary-dark fw-400">
+                                        {{'crowdfunding.checkout.payment.bank.methods' | translate}}: {{'Cripto' | translate}}
+                                    </span>
+                                </div>
+                            
+                                <div class="crowdfunding-checkout-bank-container column align-start" style="overflow-y: auto; max-height: 158px; margin-bottom: 7px">
+                                    <mat-radio-group class="radio-group" (change)="toggleAdd($event.value, opt.allowed)" [disabled]="loading"
+                                        *ngFor="let opt of options; index as i">
+                            
+                                        <mat-radio-button *ngIf="!opt.isSplitted" [disabled]="!opt.allowed"
+                                            class="default-label" [value]="opt.name"
+                                            [checked]="option == opt?.name || opt?.isMandatory">
+                                            
+                                            <span class="primary-dark fw-700">{{ opt?.value | floorCurrency: opt?.name: true: '1.4-4' }}</span>
+                            
+                                            <span *ngIf="opt?.showMissingBalance" class="primary-red fw-400 inline wrap">
+                                                {{ 'paymentModal.missingBalance' | translate }}
+                                            </span>
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+
+                                    <p *ngIf="options?.length === 0" style="color: #2a2a2a !important; font-size: 14px; font-weight: 600; margin-top: 10px; margin-bottom: 10px">
+                                        {{ 'crowdfunding.checkout.payment.noDigitalAssetsAccepted' | translate }}
+                                    </p>
+                                </div>
+                            
+                                <div class="inline centered mt-3">
+                                    <button (click)="checkout()" [disabled]="loading || !enablePaymentButton"
+                                        class="btn dark-shade w-100">
+                                        {{ 'paymentModal.paymentButton' | translate}}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inline between wth-100 margin-top-30">
+                            <span class="primary-dark fw-400 text-align-left">
+                                {{'crowdfunding.checkout.payment.view' | translate}}:
+                            </span>
+                            <button class="btn primary" (click)="openCrowdfundingPayments()">
+                                {{ 'crowdfunding.checkout.payment.view.btn' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="inline between wth-100 margin-top-30">
+                        <div class="column gap-12 align-start">
+                            <span class="primary-dark fw-700">
+                                {{'crowdfunding.checkout.payment.help'| translate}}
+                            </span>
+                            <span class="primary-dark fw-400">
+                                {{'crowdfunding.checkout.payment.help.description' | translate}}
+                            </span>
+                        </div>
+                        <div class="crowdfunding-card-payment-support__content-right">
+                            <button mat-flat-button class="btn primary" (click)="callToSpecialist()">
+                                {{ 'crowdfunding.checkout.payment.download.help.btn' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </div>
+</div>
+<mat-progress-spinner *ngIf="loading || loadingRequest" class="spinner" [mode]="'indeterminate'"></mat-progress-spinner>
